@@ -29,6 +29,8 @@ import static io.github.jopenlibs.vault.api.LogicalUtilities.jsonObjectToWriteFr
  */
 public class Logical extends OperationsBase {
 
+    private static final WriteOptions EMPTY_WRITE_OPTIONS = new WriteOptions().build();
+
     private String nameSpace;
 
     public enum logicalOperations {authentication, deleteV1, deleteV2, destroy, listV1, listV2, readV1, readV2, writeV1, writeV2, unDelete, mount}
@@ -201,9 +203,9 @@ public class Logical extends OperationsBase {
     public LogicalResponse write(final String path, final Map<String, Object> nameValuePairs)
             throws VaultException {
         if (engineVersionForSecretPath(path).equals(2)) {
-            return write(path, nameValuePairs, logicalOperations.writeV2, null);
+            return write(path, nameValuePairs, logicalOperations.writeV2, null, EMPTY_WRITE_OPTIONS);
         } else {
-            return write(path, nameValuePairs, logicalOperations.writeV1, null);
+            return write(path, nameValuePairs, logicalOperations.writeV1, null, EMPTY_WRITE_OPTIONS);
         }
     }
 
@@ -238,47 +240,35 @@ public class Logical extends OperationsBase {
             final Integer wrapTTL)
             throws VaultException {
         if (engineVersionForSecretPath(path).equals(2)) {
-            return write(path, nameValuePairs, logicalOperations.writeV2, wrapTTL);
+            return write(path, nameValuePairs, logicalOperations.writeV2, wrapTTL, EMPTY_WRITE_OPTIONS);
         } else {
-            return write(path, nameValuePairs, logicalOperations.writeV1, wrapTTL);
+            return write(path, nameValuePairs, logicalOperations.writeV1, wrapTTL, EMPTY_WRITE_OPTION);
         }
     }
 
+    public LogicalResponse write(final String path, final Map<String, Object> nameValuePairs,
+            final WriteOptions writeOptions)
+            throws VaultException {
+        if (this.engineVersionForSecretPath(path) != 2) {
+            throw new VaultException("Write options are only supported in KV Engine version 2.");
+        }
+	// TODO handle wrapTTL
+        return write(path, nameValuePairs, logicalOperations.writeV2, null, writeOptions);
+    }
+
     private LogicalResponse write(final String path, final Map<String, Object> nameValuePairs,
-            final logicalOperations operation, final Integer wrapTTL) throws VaultException {
+             final logicalOperations operation, final Integer wrapTTL, final WriteOptions writeOptions)
+             throws VaultException {
 
         return retry(attempt -> {
-            JsonObject requestJson = Json.object();
-            if (nameValuePairs != null) {
-                for (final Map.Entry<String, Object> pair : nameValuePairs.entrySet()) {
-                    final Object value = pair.getValue();
-                    if (value == null) {
-                        requestJson = requestJson.add(pair.getKey(), (String) null);
-                    } else if (value instanceof Boolean) {
-                        requestJson = requestJson.add(pair.getKey(), (Boolean) pair.getValue());
-                    } else if (value instanceof Integer) {
-                        requestJson = requestJson.add(pair.getKey(), (Integer) pair.getValue());
-                    } else if (value instanceof Long) {
-                        requestJson = requestJson.add(pair.getKey(), (Long) pair.getValue());
-                    } else if (value instanceof Float) {
-                        requestJson = requestJson.add(pair.getKey(), (Float) pair.getValue());
-                    } else if (value instanceof Double) {
-                        requestJson = requestJson.add(pair.getKey(), (Double) pair.getValue());
-                    } else if (value instanceof JsonValue) {
-                        requestJson = requestJson.add(pair.getKey(),
-                                (JsonValue) pair.getValue());
-                    } else {
-                        requestJson = requestJson.add(pair.getKey(),
-                                pair.getValue().toString());
-                    }
-                }
-            }
-            // Make an HTTP request to Vault
+            JsonObject dataJson = buildJsonFromMap(nameValuePairs);
+            JsonObject optionsJson = writeOptions.isEmpty() ? null : buildJsonFromMap(writeOptions.getOptionsMap());	
+             // Make an HTTP request to Vault
             final RestResponse restResponse = getRest()//NOPMD
                     .url(config.getAddress() + "/v1/" + adjustPathForReadOrWrite(path,
                             config.getPrefixPathDepth(), operation))
-                    .body(jsonObjectToWriteFromEngineVersion(operation, requestJson).toString()
-                            .getBytes(StandardCharsets.UTF_8))
+                    .body(jsonObjectToWriteFromEngineVersion(operation, dataJson, optionsJson).toString()
+                            .getBytes(StandardCharsets.UTF_8))		
                     .header("X-Vault-Token", config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
@@ -607,4 +597,34 @@ public class Logical extends OperationsBase {
     public Integer getEngineVersionForSecretPath(final String path) {
         return this.engineVersionForSecretPath(path);
     }
+
+    private JsonObject buildJsonFromMap(Map<String, Object> nameValuePairs) {
+        JsonObject requestJson = Json.object();
+        if (nameValuePairs != null) {
+            for (final Map.Entry<String, Object> pair : nameValuePairs.entrySet()) {
+                final Object value = pair.getValue();
+                if (value == null) {
+                    requestJson = requestJson.add(pair.getKey(), (String) null);
+                } else if (value instanceof Boolean) {
+                    requestJson = requestJson.add(pair.getKey(), (Boolean) pair.getValue());
+                } else if (value instanceof Integer) {
+                    requestJson = requestJson.add(pair.getKey(), (Integer) pair.getValue());
+                } else if (value instanceof Long) {
+                    requestJson = requestJson.add(pair.getKey(), (Long) pair.getValue());
+                } else if (value instanceof Float) {
+                    requestJson = requestJson.add(pair.getKey(), (Float) pair.getValue());
+                } else if (value instanceof Double) {
+                    requestJson = requestJson.add(pair.getKey(), (Double) pair.getValue());
+                } else if (value instanceof JsonValue) {
+                    requestJson = requestJson.add(pair.getKey(),
+                            (JsonValue) pair.getValue());
+                } else {
+                    requestJson = requestJson.add(pair.getKey(),
+                            pair.getValue().toString());
+                }
+            }
+        }
+        return jsonObject;
+    }
+
 }

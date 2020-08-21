@@ -25,6 +25,7 @@ public class LogicalResponse extends VaultResponse {
     private WrapResponse wrapResponse;
     private Boolean renewable;
     private Long leaseDuration;
+    private final Map<String, String> metadata = new HashMap<>();
 
     /**
      * @param restResponse The raw HTTP response from Vault.
@@ -62,8 +63,13 @@ public class LogicalResponse extends VaultResponse {
         return leaseDuration;
     }
 
+
     public WrapResponse getWrapResponse() {
         return wrapResponse;
+    }
+
+    public Map<String, String> getMetadata() {
+        return metadata;
     }
 
     private void parseMetadataFields() {
@@ -91,16 +97,14 @@ public class LogicalResponse extends VaultResponse {
             }
             data = new HashMap<>();
             dataObject = jsonObject.get("data").asObject();
-            for (final JsonObject.Member member : dataObject) {
-                final JsonValue jsonValue = member.getValue();
-                if (jsonValue == null || jsonValue.isNull()) {
-                    continue;
-                } else if (jsonValue.isString()) {
-                    data.put(member.getName(), jsonValue.asString());
-                } else {
-                    data.put(member.getName(), jsonValue.toString());
-                }
+            parseJsonIntoMap(dataObject, data);
+
+            JsonValue metadataValue = jsonObject.get("metadata");
+            if (null != metadataValue) {
+                JsonObject metadataObject = metadataValue.asObject();
+                parseJsonIntoMap(metadataObject, metadata);
             }
+
             // For list operations convert the array of keys to a list of values
             if (operation.equals(Logical.logicalOperations.listV1) || operation.equals(
                     Logical.logicalOperations.listV2)) {
@@ -119,4 +123,18 @@ public class LogicalResponse extends VaultResponse {
         } catch (Exception ignored) {
         }
     }
+
+    private void parseJsonIntoMap(JsonObject jsonObject, Map<String, String> map) {
+        for (final JsonObject.Member member : jsonObject) {
+            final JsonValue jsonValue = member.getValue();
+            if (jsonValue == null || jsonValue.isNull()) {
+                continue;
+            } else if (jsonValue.isString()) {
+                map.put(member.getName(), jsonValue.asString());
+            } else {
+                map.put(member.getName(), jsonValue.toString());
+            }
+        }
+    }
+
 }
