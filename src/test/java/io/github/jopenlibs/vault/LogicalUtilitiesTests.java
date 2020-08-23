@@ -124,8 +124,12 @@ public class LogicalUtilitiesTests {
         Assert.assertNull(jsonObjectFromEngineVersionV2.get("options"));
 
         JsonObject optionsJsonObject = new JsonObject().add("cas", "0");
+<<<<<<< HEAD:src/test/java/io/github/jopenlibs/vault/LogicalUtilitiesTests.java
         JsonObject jsonObjectFromEngineVersion2WithOptions = LogicalUtilities.jsonObjectToWriteFromEngineVersion(
                 Logical.logicalOperations.writeV2, jsonObjectV2, optionsJsonObject);
+=======
+        JsonObject jsonObjectFromEngineVersion2WithOptions = LogicalUtilities.jsonObjectToWriteFromEngineVersion(Logical.logicalOperations.writeV2, jsonObjectV2, optionsJsonObject);
+>>>>>>> 4ab63c8 (Improve api and add tests):src/test/java/com/bettercloud/vault/LogicalUtilitiesTests.java
         Assert.assertEquals(jsonObjectFromEngineVersion2WithOptions.get("data"), jsonObjectV2);
         Assert.assertEquals(jsonObjectFromEngineVersion2WithOptions.get("options"), optionsJsonObject);
 
