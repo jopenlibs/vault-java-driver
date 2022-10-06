@@ -7,12 +7,11 @@ import io.github.jopenlibs.vault.json.JsonObject;
 import io.github.jopenlibs.vault.response.LogicalResponse;
 import io.github.jopenlibs.vault.vault.VaultTestUtils;
 import io.github.jopenlibs.vault.vault.mock.MockVault;
+import java.util.Collections;
+import java.util.Optional;
 import org.eclipse.jetty.server.Server;
 import org.junit.After;
 import org.junit.Test;
-
-import java.util.Collections;
-import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 

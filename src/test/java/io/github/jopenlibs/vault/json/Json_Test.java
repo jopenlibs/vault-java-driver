@@ -27,7 +27,6 @@ import java.io.Reader;
 import java.io.StringReader;
 import org.junit.Test;
 
-import static io.github.jopenlibs.vault.json.TestUtil.assertException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
