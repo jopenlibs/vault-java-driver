@@ -6,8 +6,8 @@ import io.github.jopenlibs.vault.api.pki.CredentialFormat;
 import io.github.jopenlibs.vault.api.pki.RoleOptions;
 import io.github.jopenlibs.vault.response.PkiResponse;
 import io.github.jopenlibs.vault.rest.RestResponse;
-import io.github.jopenlibs.vault.util.VaultContainer;
 import io.github.jopenlibs.vault.util.SSLUtils;
+import io.github.jopenlibs.vault.util.VaultContainer;
 import java.io.IOException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -22,8 +22,6 @@ import org.junit.ClassRule;
 import org.junit.Test;
 
 import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertNotNull;
-import static junit.framework.TestCase.assertNull;
 import static junit.framework.TestCase.assertTrue;
 
 /**

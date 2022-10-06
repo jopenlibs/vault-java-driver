@@ -1,9 +1,9 @@
 package io.github.jopenlibs.vault.util;
 
+import com.github.dockerjava.api.model.Capability;
 import io.github.jopenlibs.vault.Vault;
 import io.github.jopenlibs.vault.VaultConfig;
 import io.github.jopenlibs.vault.VaultException;
-import com.github.dockerjava.api.model.Capability;
 import java.nio.file.Path;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

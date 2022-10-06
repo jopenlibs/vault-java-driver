@@ -1,12 +1,12 @@
 package io.github.jopenlibs.vault.util;
 
+import com.github.dockerjava.api.model.Capability;
 import io.github.jopenlibs.vault.SslConfig;
 import io.github.jopenlibs.vault.Vault;
 import io.github.jopenlibs.vault.VaultConfig;
 import io.github.jopenlibs.vault.VaultException;
 import io.github.jopenlibs.vault.json.Json;
 import io.github.jopenlibs.vault.json.JsonObject;
-import com.github.dockerjava.api.model.Capability;
 import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
