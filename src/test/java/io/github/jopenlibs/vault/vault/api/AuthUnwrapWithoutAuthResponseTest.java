@@ -2,9 +2,7 @@ package io.github.jopenlibs.vault.vault.api;
 
 import io.github.jopenlibs.vault.Vault;
 import io.github.jopenlibs.vault.VaultConfig;
-import io.github.jopenlibs.vault.json.JsonArray;
 import io.github.jopenlibs.vault.json.JsonObject;
-import io.github.jopenlibs.vault.response.AuthResponse;
 import io.github.jopenlibs.vault.response.UnwrapResponse;
 import io.github.jopenlibs.vault.vault.VaultTestUtils;
 import io.github.jopenlibs.vault.vault.mock.MockVault;
@@ -14,7 +12,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 public class AuthUnwrapWithoutAuthResponseTest {
     private static final JsonObject RESPONSE_AUTH_UNWRAP = new JsonObject()
