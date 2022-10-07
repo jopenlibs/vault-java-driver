@@ -8,6 +8,7 @@ import io.github.jopenlibs.vault.json.JsonObject;
 import io.github.jopenlibs.vault.response.AuthResponse;
 import io.github.jopenlibs.vault.response.LogicalResponse;
 import io.github.jopenlibs.vault.response.LookupResponse;
+import io.github.jopenlibs.vault.response.UnwrapResponse;
 import io.github.jopenlibs.vault.rest.Rest;
 import io.github.jopenlibs.vault.rest.RestResponse;
 import java.io.Serializable;
@@ -37,7 +38,6 @@ public class Auth {
      * post-initialization logic is necessary.</p>
      */
     public static class TokenRequest implements Serializable {
-
         private UUID id;
         private List<String> polices;
         private Map<String, String> meta;
@@ -308,36 +308,39 @@ public class Auth {
                 // Parse parameters to JSON
                 final JsonObject jsonObject = Json.object();
 
-                if (tokenRequest.id != null) jsonObject.add("id", tokenRequest.id.toString());
-                if (tokenRequest.polices != null && !tokenRequest.polices.isEmpty()) {
-                    jsonObject.add("policies", Json.array(tokenRequest.polices.toArray(new String[tokenRequest.polices.size()])));//NOPMD
+                if (tokenRequest.getId() != null) jsonObject.add("id", tokenRequest.getId().toString());
+                if (tokenRequest.getPolices() != null && !tokenRequest.getPolices().isEmpty()) {
+                    jsonObject.add(
+                            "policies",
+                            Json.array(tokenRequest.getPolices().toArray(new String[0]))
+                    ); //NOPMD
                 }
-                if (tokenRequest.meta != null && !tokenRequest.meta.isEmpty()) {
+                if (tokenRequest.getMeta() != null && !tokenRequest.getMeta().isEmpty()) {
                     final JsonObject metaMap = Json.object();
-                    for (final Map.Entry<String, String> entry : tokenRequest.meta.entrySet()) {
+                    for (final Map.Entry<String, String> entry : tokenRequest.getMeta().entrySet()) {
                         metaMap.add(entry.getKey(), entry.getValue());
                     }
                     jsonObject.add("meta", metaMap);
                 }
-                if (tokenRequest.noParent != null) jsonObject.add("no_parent", tokenRequest.noParent);
-                if (tokenRequest.noDefaultPolicy != null)
-                    jsonObject.add("no_default_policy", tokenRequest.noDefaultPolicy);
-                if (tokenRequest.ttl != null) jsonObject.add("ttl", tokenRequest.ttl);
-                if (tokenRequest.displayName != null) jsonObject.add("display_name", tokenRequest.displayName);
-                if (tokenRequest.numUses != null) jsonObject.add("num_uses", tokenRequest.numUses);
-                if (tokenRequest.renewable != null) jsonObject.add("renewable", tokenRequest.renewable);
-                if (tokenRequest.type != null) jsonObject.add("type", tokenRequest.type);
-                if (tokenRequest.explicitMaxTtl != null) jsonObject.add("explicit_max_ttl", tokenRequest.explicitMaxTtl);
-                if (tokenRequest.period != null) jsonObject.add("period", tokenRequest.period);
-                if (tokenRequest.entityAlias != null) jsonObject.add("entity_alias", tokenRequest.entityAlias);
+                if (tokenRequest.getNoParent() != null) jsonObject.add("no_parent", tokenRequest.getNoParent());
+                if (tokenRequest.getNoDefaultPolicy() != null)
+                    jsonObject.add("no_default_policy", tokenRequest.getNoDefaultPolicy());
+                if (tokenRequest.getTtl() != null) jsonObject.add("ttl", tokenRequest.getTtl());
+                if (tokenRequest.getDisplayName() != null) jsonObject.add("display_name", tokenRequest.getDisplayName());
+                if (tokenRequest.getNumUses() != null) jsonObject.add("num_uses", tokenRequest.getNumUses());
+                if (tokenRequest.getRenewable() != null) jsonObject.add("renewable", tokenRequest.getRenewable());
+                if (tokenRequest.getType() != null) jsonObject.add("type", tokenRequest.getType());
+                if (tokenRequest.getExplicitMaxTtl() != null) jsonObject.add("explicit_max_ttl", tokenRequest.getExplicitMaxTtl());
+                if (tokenRequest.getPeriod() != null) jsonObject.add("period", tokenRequest.getPeriod());
+                if (tokenRequest.getEntityAlias() != null) jsonObject.add("entity_alias", tokenRequest.getEntityAlias());
                 final String requestJson = jsonObject.toString();
 
                 final StringBuilder urlBuilder = new StringBuilder(config.getAddress())//NOPMD
                         .append("/v1/auth/")
                         .append(mount)
                         .append("/create");
-                if (tokenRequest.role != null) {
-                    urlBuilder.append("/").append(tokenRequest.role);
+                if (tokenRequest.getRole() != null) {
+                    urlBuilder.append("/").append(tokenRequest.getRole());
                 }
                 final String url = urlBuilder.toString();
 
@@ -368,12 +371,8 @@ public class Auth {
                 // If there are retries to perform, then pause for the configured interval and then execute the loop again...
                 if (retryCount < config.getMaxRetries()) {
                     retryCount++;
-                    try {
-                        final int retryIntervalMilliseconds = config.getRetryIntervalMilliseconds();
-                        Thread.sleep(retryIntervalMilliseconds);
-                    } catch (InterruptedException e1) {
-                        e1.printStackTrace();
-                    }
+
+                    Utils.sleep(config.getRetryIntervalMilliseconds());
                 } else if (e instanceof VaultException) {
                     // ... otherwise, give up.
                     throw (VaultException) e;
@@ -436,12 +435,8 @@ public class Auth {
                 // If there are retries to perform, then pause for the configured interval and then execute the loop again...
                 if (retryCount < config.getMaxRetries()) {
                     retryCount++;
-                    try {
-                        final int retryIntervalMilliseconds = config.getRetryIntervalMilliseconds();
-                        Thread.sleep(retryIntervalMilliseconds);
-                    } catch (InterruptedException e1) {
-                        e1.printStackTrace();
-                    }
+
+                    Utils.sleep(config.getRetryIntervalMilliseconds());
                 } else if (e instanceof VaultException) {
                     // ... otherwise, give up.
                     throw (VaultException) e;
@@ -531,12 +526,8 @@ public class Auth {
             } catch (Exception e) {
                 if (retryCount < config.getMaxRetries()) {
                     retryCount++;
-                    try {
-                        final int retryIntervalMilliseconds = config.getRetryIntervalMilliseconds();
-                        Thread.sleep(retryIntervalMilliseconds);
-                    } catch (InterruptedException e1) {
-                        e1.printStackTrace();
-                    }
+
+                    Utils.sleep(config.getRetryIntervalMilliseconds());
                 } else if (e instanceof VaultException) {
                     // ... otherwise, give up.
                     throw (VaultException) e;
@@ -616,12 +607,8 @@ public class Auth {
             } catch (Exception e) {
                 if (retryCount < config.getMaxRetries()) {
                     retryCount++;
-                    try {
-                        final int retryIntervalMilliseconds = config.getRetryIntervalMilliseconds();
-                        Thread.sleep(retryIntervalMilliseconds);
-                    } catch (InterruptedException e1) {
-                        e1.printStackTrace();
-                    }
+
+                    Utils.sleep(config.getRetryIntervalMilliseconds());
                 } else if (e instanceof VaultException) {
                     // ... otherwise, give up.
                     throw (VaultException) e;
@@ -741,12 +728,8 @@ public class Auth {
                 // If there are retries to perform, then pause for the configured interval and then execute the loop again...
                 if (retryCount < config.getMaxRetries()) {
                     retryCount++;
-                    try {
-                        final int retryIntervalMilliseconds = config.getRetryIntervalMilliseconds();
-                        Thread.sleep(retryIntervalMilliseconds);
-                    } catch (InterruptedException e1) {
-                        e1.printStackTrace();
-                    }
+
+                    Utils.sleep(config.getRetryIntervalMilliseconds());
                 } else if (e instanceof VaultException) {
                     // ... otherwise, give up.
                     throw (VaultException) e;
@@ -819,12 +802,8 @@ public class Auth {
                 // If there are retries to perform, then pause for the configured interval and then execute the loop again...
                 if (retryCount < config.getMaxRetries()) {
                     retryCount++;
-                    try {
-                        final int retryIntervalMilliseconds = config.getRetryIntervalMilliseconds();
-                        Thread.sleep(retryIntervalMilliseconds);
-                    } catch (InterruptedException e1) {
-                        e1.printStackTrace();
-                    }
+
+                    Utils.sleep(config.getRetryIntervalMilliseconds());
                 } else if (e instanceof VaultException) {
                     // ... otherwise, give up.
                     throw (VaultException) e;
@@ -900,12 +879,8 @@ public class Auth {
                 // If there are retries to perform, then pause for the configured interval and then execute the loop again...
                 if (retryCount < config.getMaxRetries()) {
                     retryCount++;
-                    try {
-                        final int retryIntervalMilliseconds = config.getRetryIntervalMilliseconds();
-                        Thread.sleep(retryIntervalMilliseconds);
-                    } catch (InterruptedException e1) {
-                        e1.printStackTrace();
-                    }
+
+                    Utils.sleep(config.getRetryIntervalMilliseconds());
                 } else if (e instanceof VaultException) {
                     // ... otherwise, give up.
                     throw (VaultException) e;
@@ -987,12 +962,8 @@ public class Auth {
                 // If there are retries to perform, then pause for the configured interval and then execute the loop again...
                 if (retryCount < config.getMaxRetries()) {
                     retryCount++;
-                    try {
-                        final int retryIntervalMilliseconds = config.getRetryIntervalMilliseconds();
-                        Thread.sleep(retryIntervalMilliseconds);
-                    } catch (InterruptedException e1) {
-                        e1.printStackTrace();
-                    }
+
+                    Utils.sleep(config.getRetryIntervalMilliseconds());
                 } else if (e instanceof VaultException) {
                     // ... otherwise, give up.
                     throw (VaultException) e;
@@ -1053,12 +1024,8 @@ public class Auth {
                 // If there are retries to perform, then pause for the configured interval and then execute the loop again...
                 if (retryCount < config.getMaxRetries()) {
                     retryCount++;
-                    try {
-                        final int retryIntervalMilliseconds = config.getRetryIntervalMilliseconds();
-                        Thread.sleep(retryIntervalMilliseconds);
-                    } catch (InterruptedException e1) {
-                        e1.printStackTrace();
-                    }
+
+                    Utils.sleep(config.getRetryIntervalMilliseconds());
                 } else if (e instanceof VaultException) {
                     // ... otherwise, give up.
                     throw (VaultException) e;
@@ -1194,12 +1161,8 @@ public class Auth {
                 // If there are retries to perform, then pause for the configured interval and then execute the loop again...
                 if (retryCount < config.getMaxRetries()) {
                     retryCount++;
-                    try {
-                        final int retryIntervalMilliseconds = config.getRetryIntervalMilliseconds();
-                        Thread.sleep(retryIntervalMilliseconds);
-                    } catch (InterruptedException e1) {
-                        e1.printStackTrace();
-                    }
+
+                    Utils.sleep(config.getRetryIntervalMilliseconds());
                 } else if (e instanceof VaultException) {
                     // ... otherwise, give up.
                     throw (VaultException) e;
@@ -1278,12 +1241,8 @@ public class Auth {
                 // If there are retries to perform, then pause for the configured interval and then execute the loop again...
                 if (retryCount < config.getMaxRetries()) {
                     retryCount++;
-                    try {
-                        final int retryIntervalMilliseconds = config.getRetryIntervalMilliseconds();
-                        Thread.sleep(retryIntervalMilliseconds);
-                    } catch (InterruptedException e1) {
-                        e1.printStackTrace();
-                    }
+
+                    Utils.sleep(config.getRetryIntervalMilliseconds());
                 } else if (e instanceof VaultException) {
                     // ... otherwise, give up.
                     throw (VaultException) e;
@@ -1342,12 +1301,8 @@ public class Auth {
                 // If there are retries to perform, then pause for the configured interval and then execute the loop again...
                 if (retryCount < config.getMaxRetries()) {
                     retryCount++;
-                    try {
-                        final int retryIntervalMilliseconds = config.getRetryIntervalMilliseconds();
-                        Thread.sleep(retryIntervalMilliseconds);
-                    } catch (InterruptedException e1) {
-                        e1.printStackTrace();
-                    }
+
+                    Utils.sleep(config.getRetryIntervalMilliseconds());
                 } else if (e instanceof VaultException) {
                     // ... otherwise, give up.
                     throw (VaultException) e;
@@ -1406,12 +1361,8 @@ public class Auth {
                 // again...
                 if (retryCount < config.getMaxRetries()) {
                     retryCount++;
-                    try {
-                        final int retryIntervalMilliseconds = config.getRetryIntervalMilliseconds();
-                        Thread.sleep(retryIntervalMilliseconds);
-                    } catch (InterruptedException e1) {
-                        e1.printStackTrace();
-                    }
+
+                    Utils.sleep(config.getRetryIntervalMilliseconds());
                 } else if (e instanceof VaultException) {
                     // ... otherwise, give up.
                     throw (VaultException) e;
@@ -1464,12 +1415,8 @@ public class Auth {
                 // If there are retries to perform, then pause for the configured interval and then execute the loop again...
                 if (retryCount < config.getMaxRetries()) {
                     retryCount++;
-                    try {
-                        final int retryIntervalMilliseconds = config.getRetryIntervalMilliseconds();
-                        Thread.sleep(retryIntervalMilliseconds);
-                    } catch (InterruptedException e1) {
-                        e1.printStackTrace();
-                    }
+
+                    Utils.sleep(config.getRetryIntervalMilliseconds());
                 } else if (e instanceof VaultException) {
                     // ... otherwise, give up.
                     throw (VaultException) e;
@@ -1502,7 +1449,7 @@ public class Auth {
      * @throws VaultException If any error occurs, or unexpected response received from Vault
      * @see #unwrap(String)
      */
-    public AuthResponse unwrap() throws VaultException {
+    public UnwrapResponse unwrap() throws VaultException {
         return unwrap(null);
     }
 
@@ -1526,13 +1473,13 @@ public class Auth {
      * }</pre>
      * </blockquote>
      *
-     * @param wrappedToken Specifies the wrapping token ID, do NOT also put this in your {@link VaultConfig#token},
-     *                     if token is {@code null}, this method will unwrap the auth token in {@link VaultConfig#token}
+     * @param wrappedToken Specifies the wrapping token ID, do NOT also put this in your {@link VaultConfig#getToken()},
+     *                     if token is {@code null}, this method will unwrap the auth token in {@link VaultConfig#getToken()}
      * @return The response information returned from Vault
      * @throws VaultException If any error occurs, or unexpected response received from Vault
      * @see #unwrap()
      */
-    public AuthResponse unwrap(final String wrappedToken) throws VaultException {
+    public UnwrapResponse unwrap(final String wrappedToken) throws VaultException {
         int retryCount = 0;
         while (true) {
             try {
@@ -1567,18 +1514,14 @@ public class Auth {
                 if (!mimeType.equals("application/json")) {
                     throw new VaultException("Vault responded with MIME type: " + mimeType, restResponse.getStatus());
                 }
-                return new AuthResponse(restResponse, retryCount);
+                return new UnwrapResponse(restResponse, retryCount);
             } catch (final Exception e) {
                 // If there are retries to perform, then pause for the configured interval and then execute the
                 // loop again...
                 if (retryCount < config.getMaxRetries()) {
                     retryCount++;
-                    try {
-                        final int retryIntervalMilliseconds = config.getRetryIntervalMilliseconds();
-                        Thread.sleep(retryIntervalMilliseconds);
-                    } catch (InterruptedException e1) {
-                        e1.printStackTrace();
-                    }
+
+                    Utils.sleep(config.getRetryIntervalMilliseconds());
                 } else if (e instanceof VaultException) {
                     // ... otherwise, give up.
                     throw (VaultException) e;
@@ -1588,5 +1531,4 @@ public class Auth {
             }
         }
     }
-
 }
