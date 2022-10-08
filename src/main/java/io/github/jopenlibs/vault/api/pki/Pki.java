@@ -129,7 +129,7 @@ public class Pki {
                 if (restResponse.getStatus() != 204 && restResponse.getStatus() != 200) {
                     throw new VaultException("Vault responded with HTTP status code: " + restResponse.getStatus(), restResponse.getStatus());
                 }
-                
+
                 return new PkiResponse(restResponse, retryCount);
             } catch (Exception e) {
                 // If there are retries to perform, then pause for the configured interval and then execute the loop again...

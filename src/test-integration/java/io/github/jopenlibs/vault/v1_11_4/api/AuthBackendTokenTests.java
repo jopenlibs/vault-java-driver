@@ -3,7 +3,6 @@ package io.github.jopenlibs.vault.v1_11_4.api;
 import io.github.jopenlibs.vault.Vault;
 import io.github.jopenlibs.vault.VaultException;
 import io.github.jopenlibs.vault.api.Auth.TokenRequest;
-import io.github.jopenlibs.vault.api.Utils;
 import io.github.jopenlibs.vault.json.Json;
 import io.github.jopenlibs.vault.response.AuthResponse;
 import io.github.jopenlibs.vault.response.LookupResponse;
