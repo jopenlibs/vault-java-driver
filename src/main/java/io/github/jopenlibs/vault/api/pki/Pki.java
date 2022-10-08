@@ -2,6 +2,7 @@ package io.github.jopenlibs.vault.api.pki;
 
 import io.github.jopenlibs.vault.VaultConfig;
 import io.github.jopenlibs.vault.VaultException;
+import io.github.jopenlibs.vault.api.Utils;
 import io.github.jopenlibs.vault.json.Json;
 import io.github.jopenlibs.vault.json.JsonObject;
 import io.github.jopenlibs.vault.response.PkiResponse;
@@ -124,20 +125,18 @@ public class Pki {
                         .post();
 
                 // Validate restResponse
-                if (restResponse.getStatus() != 204) {
+                // TODO: handle warnings
+                if (restResponse.getStatus() != 204 && restResponse.getStatus() != 200) {
                     throw new VaultException("Vault responded with HTTP status code: " + restResponse.getStatus(), restResponse.getStatus());
                 }
+                
                 return new PkiResponse(restResponse, retryCount);
             } catch (Exception e) {
                 // If there are retries to perform, then pause for the configured interval and then execute the loop again...
                 if (retryCount < config.getMaxRetries()) {
                     retryCount++;
-                    try {
-                        final int retryIntervalMilliseconds = config.getRetryIntervalMilliseconds();
-                        Thread.sleep(retryIntervalMilliseconds);
-                    } catch (InterruptedException e1) {
-                        e1.printStackTrace();
-                    }
+
+                    Utils.sleep(config.getRetryIntervalMilliseconds());
                 } else if (e instanceof VaultException) {
                     // ... otherwise, give up.
                     throw (VaultException) e;
@@ -193,12 +192,8 @@ public class Pki {
                 // If there are retries to perform, then pause for the configured interval and then execute the loop again...
                 if (retryCount < config.getMaxRetries()) {
                     retryCount++;
-                    try {
-                        final int retryIntervalMilliseconds = config.getRetryIntervalMilliseconds();
-                        Thread.sleep(retryIntervalMilliseconds);
-                    } catch (InterruptedException e1) {
-                        e1.printStackTrace();
-                    }
+
+                    Utils.sleep(config.getRetryIntervalMilliseconds());
                 } else if (e instanceof VaultException) {
                     // ... otherwise, give up.
                     throw (VaultException) e;
@@ -261,12 +256,8 @@ public class Pki {
                 // If there are retries to perform, then pause for the configured interval and then execute the loop again...
                 if (retryCount < config.getMaxRetries()) {
                     retryCount++;
-                    try {
-                        final int retryIntervalMilliseconds = config.getRetryIntervalMilliseconds();
-                        Thread.sleep(retryIntervalMilliseconds);
-                    } catch (InterruptedException e1) {
-                        e1.printStackTrace();
-                    }
+
+                    Utils.sleep(config.getRetryIntervalMilliseconds());
                 } else if (e instanceof VaultException) {
                     // ... otherwise, give up.
                     throw (VaultException) e;
@@ -322,12 +313,8 @@ public class Pki {
                 // If there are retries to perform, then pause for the configured interval and then execute the loop again...
                 if (retryCount < config.getMaxRetries()) {
                     retryCount++;
-                    try {
-                        final int retryIntervalMilliseconds = config.getRetryIntervalMilliseconds();
-                        Thread.sleep(retryIntervalMilliseconds);
-                    } catch (InterruptedException e1) {
-                        e1.printStackTrace();
-                    }
+
+                    Utils.sleep(config.getRetryIntervalMilliseconds());
                 } else if (e instanceof VaultException) {
                     // ... otherwise, give up.
                     throw (VaultException) e;
@@ -480,12 +467,8 @@ public class Pki {
                 // If there are retries to perform, then pause for the configured interval and then execute the loop again...
                 if (retryCount < config.getMaxRetries()) {
                     retryCount++;
-                    try {
-                        final int retryIntervalMilliseconds = config.getRetryIntervalMilliseconds();
-                        Thread.sleep(retryIntervalMilliseconds);
-                    } catch (InterruptedException e1) {
-                        e1.printStackTrace();
-                    }
+
+                    Utils.sleep(config.getRetryIntervalMilliseconds());
                 } else if (e instanceof VaultException) {
                     // ... otherwise, give up.
                     throw (VaultException) e;
