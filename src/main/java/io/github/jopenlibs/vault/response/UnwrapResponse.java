@@ -1,6 +1,6 @@
 package io.github.jopenlibs.vault.response;
 
-import io.github.jopenlibs.vault.json.JsonValue;
+import io.github.jopenlibs.vault.json.JsonObject;
 import io.github.jopenlibs.vault.rest.RestResponse;
 
 /**
@@ -17,7 +17,9 @@ public class UnwrapResponse extends AuthResponse {
         super(restResponse, retries);
     }
 
-    public JsonValue getData() {
-        return jsonResponse.get("data");
+    public JsonObject getData() {
+        assert jsonResponse.get("data").isObject();
+
+        return jsonResponse.get("data").asObject();
     }
 }

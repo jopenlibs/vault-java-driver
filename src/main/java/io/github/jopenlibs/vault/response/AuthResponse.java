@@ -40,7 +40,7 @@ public class AuthResponse extends VaultResponse {
             final String responseJson = new String(restResponse.getBody(), StandardCharsets.UTF_8);
             jsonResponse = Json.parse(responseJson).asObject();
             JsonValue authJsonVal = jsonResponse.get("auth");
-            final JsonObject authJsonObject = authJsonVal != null ? authJsonVal.asObject() : null;
+            final JsonObject authJsonObject = authJsonVal != null && !authJsonVal.isNull() ? authJsonVal.asObject() : null;
 
             if (authJsonObject != null) {
                 authLeaseDuration = authJsonObject.getInt("lease_duration", 0);

@@ -9,12 +9,14 @@ import io.github.jopenlibs.vault.response.AuthResponse;
 import io.github.jopenlibs.vault.response.LogicalResponse;
 import io.github.jopenlibs.vault.response.LookupResponse;
 import io.github.jopenlibs.vault.response.UnwrapResponse;
+import io.github.jopenlibs.vault.response.WrapResponse;
 import io.github.jopenlibs.vault.rest.Rest;
 import io.github.jopenlibs.vault.rest.RestResponse;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 
@@ -38,6 +40,7 @@ public class Auth {
      * post-initialization logic is necessary.</p>
      */
     public static class TokenRequest implements Serializable {
+
         private UUID id;
         private List<String> polices;
         private Map<String, String> meta;
@@ -371,8 +374,12 @@ public class Auth {
                 // If there are retries to perform, then pause for the configured interval and then execute the loop again...
                 if (retryCount < config.getMaxRetries()) {
                     retryCount++;
-
-                    Utils.sleep(config.getRetryIntervalMilliseconds());
+                    try {
+                        final int retryIntervalMilliseconds = config.getRetryIntervalMilliseconds();
+                        Thread.sleep(retryIntervalMilliseconds);
+                    } catch (InterruptedException e1) {
+                        e1.printStackTrace();
+                    }
                 } else if (e instanceof VaultException) {
                     // ... otherwise, give up.
                     throw (VaultException) e;
@@ -435,8 +442,12 @@ public class Auth {
                 // If there are retries to perform, then pause for the configured interval and then execute the loop again...
                 if (retryCount < config.getMaxRetries()) {
                     retryCount++;
-
-                    Utils.sleep(config.getRetryIntervalMilliseconds());
+                    try {
+                        final int retryIntervalMilliseconds = config.getRetryIntervalMilliseconds();
+                        Thread.sleep(retryIntervalMilliseconds);
+                    } catch (InterruptedException e1) {
+                        e1.printStackTrace();
+                    }
                 } else if (e instanceof VaultException) {
                     // ... otherwise, give up.
                     throw (VaultException) e;
@@ -526,8 +537,12 @@ public class Auth {
             } catch (Exception e) {
                 if (retryCount < config.getMaxRetries()) {
                     retryCount++;
-
-                    Utils.sleep(config.getRetryIntervalMilliseconds());
+                    try {
+                        final int retryIntervalMilliseconds = config.getRetryIntervalMilliseconds();
+                        Thread.sleep(retryIntervalMilliseconds);
+                    } catch (InterruptedException e1) {
+                        e1.printStackTrace();
+                    }
                 } else if (e instanceof VaultException) {
                     // ... otherwise, give up.
                     throw (VaultException) e;
@@ -607,8 +622,12 @@ public class Auth {
             } catch (Exception e) {
                 if (retryCount < config.getMaxRetries()) {
                     retryCount++;
-
-                    Utils.sleep(config.getRetryIntervalMilliseconds());
+                    try {
+                        final int retryIntervalMilliseconds = config.getRetryIntervalMilliseconds();
+                        Thread.sleep(retryIntervalMilliseconds);
+                    } catch (InterruptedException e1) {
+                        e1.printStackTrace();
+                    }
                 } else if (e instanceof VaultException) {
                     // ... otherwise, give up.
                     throw (VaultException) e;
@@ -728,8 +747,12 @@ public class Auth {
                 // If there are retries to perform, then pause for the configured interval and then execute the loop again...
                 if (retryCount < config.getMaxRetries()) {
                     retryCount++;
-
-                    Utils.sleep(config.getRetryIntervalMilliseconds());
+                    try {
+                        final int retryIntervalMilliseconds = config.getRetryIntervalMilliseconds();
+                        Thread.sleep(retryIntervalMilliseconds);
+                    } catch (InterruptedException e1) {
+                        e1.printStackTrace();
+                    }
                 } else if (e instanceof VaultException) {
                     // ... otherwise, give up.
                     throw (VaultException) e;
@@ -802,8 +825,12 @@ public class Auth {
                 // If there are retries to perform, then pause for the configured interval and then execute the loop again...
                 if (retryCount < config.getMaxRetries()) {
                     retryCount++;
-
-                    Utils.sleep(config.getRetryIntervalMilliseconds());
+                    try {
+                        final int retryIntervalMilliseconds = config.getRetryIntervalMilliseconds();
+                        Thread.sleep(retryIntervalMilliseconds);
+                    } catch (InterruptedException e1) {
+                        e1.printStackTrace();
+                    }
                 } else if (e instanceof VaultException) {
                     // ... otherwise, give up.
                     throw (VaultException) e;
@@ -879,8 +906,12 @@ public class Auth {
                 // If there are retries to perform, then pause for the configured interval and then execute the loop again...
                 if (retryCount < config.getMaxRetries()) {
                     retryCount++;
-
-                    Utils.sleep(config.getRetryIntervalMilliseconds());
+                    try {
+                        final int retryIntervalMilliseconds = config.getRetryIntervalMilliseconds();
+                        Thread.sleep(retryIntervalMilliseconds);
+                    } catch (InterruptedException e1) {
+                        e1.printStackTrace();
+                    }
                 } else if (e instanceof VaultException) {
                     // ... otherwise, give up.
                     throw (VaultException) e;
@@ -962,8 +993,12 @@ public class Auth {
                 // If there are retries to perform, then pause for the configured interval and then execute the loop again...
                 if (retryCount < config.getMaxRetries()) {
                     retryCount++;
-
-                    Utils.sleep(config.getRetryIntervalMilliseconds());
+                    try {
+                        final int retryIntervalMilliseconds = config.getRetryIntervalMilliseconds();
+                        Thread.sleep(retryIntervalMilliseconds);
+                    } catch (InterruptedException e1) {
+                        e1.printStackTrace();
+                    }
                 } else if (e instanceof VaultException) {
                     // ... otherwise, give up.
                     throw (VaultException) e;
@@ -1024,8 +1059,12 @@ public class Auth {
                 // If there are retries to perform, then pause for the configured interval and then execute the loop again...
                 if (retryCount < config.getMaxRetries()) {
                     retryCount++;
-
-                    Utils.sleep(config.getRetryIntervalMilliseconds());
+                    try {
+                        final int retryIntervalMilliseconds = config.getRetryIntervalMilliseconds();
+                        Thread.sleep(retryIntervalMilliseconds);
+                    } catch (InterruptedException e1) {
+                        e1.printStackTrace();
+                    }
                 } else if (e instanceof VaultException) {
                     // ... otherwise, give up.
                     throw (VaultException) e;
@@ -1161,8 +1200,12 @@ public class Auth {
                 // If there are retries to perform, then pause for the configured interval and then execute the loop again...
                 if (retryCount < config.getMaxRetries()) {
                     retryCount++;
-
-                    Utils.sleep(config.getRetryIntervalMilliseconds());
+                    try {
+                        final int retryIntervalMilliseconds = config.getRetryIntervalMilliseconds();
+                        Thread.sleep(retryIntervalMilliseconds);
+                    } catch (InterruptedException e1) {
+                        e1.printStackTrace();
+                    }
                 } else if (e instanceof VaultException) {
                     // ... otherwise, give up.
                     throw (VaultException) e;
@@ -1241,8 +1284,12 @@ public class Auth {
                 // If there are retries to perform, then pause for the configured interval and then execute the loop again...
                 if (retryCount < config.getMaxRetries()) {
                     retryCount++;
-
-                    Utils.sleep(config.getRetryIntervalMilliseconds());
+                    try {
+                        final int retryIntervalMilliseconds = config.getRetryIntervalMilliseconds();
+                        Thread.sleep(retryIntervalMilliseconds);
+                    } catch (InterruptedException e1) {
+                        e1.printStackTrace();
+                    }
                 } else if (e instanceof VaultException) {
                     // ... otherwise, give up.
                     throw (VaultException) e;
@@ -1301,8 +1348,12 @@ public class Auth {
                 // If there are retries to perform, then pause for the configured interval and then execute the loop again...
                 if (retryCount < config.getMaxRetries()) {
                     retryCount++;
-
-                    Utils.sleep(config.getRetryIntervalMilliseconds());
+                    try {
+                        final int retryIntervalMilliseconds = config.getRetryIntervalMilliseconds();
+                        Thread.sleep(retryIntervalMilliseconds);
+                    } catch (InterruptedException e1) {
+                        e1.printStackTrace();
+                    }
                 } else if (e instanceof VaultException) {
                     // ... otherwise, give up.
                     throw (VaultException) e;
@@ -1361,8 +1412,12 @@ public class Auth {
                 // again...
                 if (retryCount < config.getMaxRetries()) {
                     retryCount++;
-
-                    Utils.sleep(config.getRetryIntervalMilliseconds());
+                    try {
+                        final int retryIntervalMilliseconds = config.getRetryIntervalMilliseconds();
+                        Thread.sleep(retryIntervalMilliseconds);
+                    } catch (InterruptedException e1) {
+                        e1.printStackTrace();
+                    }
                 } else if (e instanceof VaultException) {
                     // ... otherwise, give up.
                     throw (VaultException) e;
@@ -1415,8 +1470,12 @@ public class Auth {
                 // If there are retries to perform, then pause for the configured interval and then execute the loop again...
                 if (retryCount < config.getMaxRetries()) {
                     retryCount++;
-
-                    Utils.sleep(config.getRetryIntervalMilliseconds());
+                    try {
+                        final int retryIntervalMilliseconds = config.getRetryIntervalMilliseconds();
+                        Thread.sleep(retryIntervalMilliseconds);
+                    } catch (InterruptedException e1) {
+                        e1.printStackTrace();
+                    }
                 } else if (e instanceof VaultException) {
                     // ... otherwise, give up.
                     throw (VaultException) e;
@@ -1454,13 +1513,22 @@ public class Auth {
     }
 
     /**
-     * <p>Returns the original response inside the given wrapped auth token. This method is useful if you need to unwrap
-     * a token, while being already authenticated. Do NOT authenticate in vault with your wrapping token, since it will
-     * both fail authentication and invalidate the wrapping token at the same time. See {@link #unwrap()} if you need to
-     * do that without being authenticated.</p>
+     * <p>Provide access to the {@code /sys/wrapping/unwrap} endpoint.</p>
+     *
+     * <p>Returns the original response inside the given wrapping token. Unlike simply reading
+     * {@code cubbyhole/response} (which is deprecated), this endpoint provides additional
+     * validation checks on the token, returns the original value on the wire rather than
+     * a JSON string representation of it, and ensures that the response is properly audit-logged.</p>
+     *
+     * </p> This endpoint can be used by using a wrapping token as the client token in the API call,
+     * in which case the token parameter is not required; or, a different token with permissions
+     * to access this endpoint can make the call and pass in the wrapping token in
+     * the token parameter. Do not use the wrapping token in both locations;
+     * this will cause the wrapping token to be revoked but the value to be unable to be looked up,
+     * as it will basically be a double-use of the token!</p>
      *
      * <p>In the example below, {@code authToken} is NOT your wrapped token, and should have unwrapping permissions.
-     * The unwrapped token in {@code unwrappedToken}. Example usage:</p>
+     * The unwrapped data in {@link UnwrapResponse#getData()}. Example usage:</p>
      *
      * <blockquote>
      * <pre>{@code
@@ -1468,8 +1536,19 @@ public class Auth {
      * final String wrappingToken = "...";
      * final VaultConfig config = new VaultConfig().address(...).token(authToken).build();
      * final Vault vault = new Vault(config);
-     * final AuthResponse response = vault.auth().unwrap(wrappingToken);
-     * final String unwrappedToken = response.getAuthClientToken();
+     *
+     * final WrapResponse wrapResponse = vault.auth().wrap(
+     *                 // Data to wrap
+     *                 new JsonObject()
+     *                         .add("foo", "bar")
+     *                         .add("zoo", "zar"),
+     *
+     *                 // TTL of the response-wrapping token
+     *                 60
+     *         );
+     *
+     * final UnwrapResponse unwrapResponse = vault.auth().unwrap(wrapResponse.getToken());
+     * final JsonObject unwrappedData = response.getData(); // original data
      * }</pre>
      * </blockquote>
      *
@@ -1477,6 +1556,7 @@ public class Auth {
      *                     if token is {@code null}, this method will unwrap the auth token in {@link VaultConfig#getToken()}
      * @return The response information returned from Vault
      * @throws VaultException If any error occurs, or unexpected response received from Vault
+     * @see #wrap(JsonObject, int)
      * @see #unwrap()
      */
     public UnwrapResponse unwrap(final String wrappedToken) throws VaultException {
@@ -1520,8 +1600,123 @@ public class Auth {
                 // loop again...
                 if (retryCount < config.getMaxRetries()) {
                     retryCount++;
+                    try {
+                        final int retryIntervalMilliseconds = config.getRetryIntervalMilliseconds();
+                        Thread.sleep(retryIntervalMilliseconds);
+                    } catch (InterruptedException e1) {
+                        e1.printStackTrace();
+                    }
+                } else if (e instanceof VaultException) {
+                    // ... otherwise, give up.
+                    throw (VaultException) e;
+                } else {
+                    throw new VaultException(e);
+                }
+            }
+        }
+    }
 
-                    Utils.sleep(config.getRetryIntervalMilliseconds());
+    /**
+     * <p>Provide access to the {@code /sys/wrapping/wrap} endpoint.</p>
+     *
+     * <p>This provides a powerful mechanism for information sharing in many environments.
+     * In the types of scenarios, often the best practical option is to provide cover
+     * for the secret information, be able to detect malfeasance (interception, tampering),
+     * and limit lifetime of the secret's exposure.
+     * Response wrapping performs all three of these duties:</p>
+     *
+     * <ul>
+     *     <li>It provides cover by ensuring that the value being transmitted across the wire is
+     *     not the actual secret but a reference to such a secret, namely the response-wrapping token.
+     *     Information stored in logs or captured along the way do not directly see the sensitive information.
+     *     </li>
+     *     <li>It provides malfeasance detection by ensuring that only a single party can ever
+     *     unwrap the token and see what's inside. A client receiving a token that cannot be unwrapped
+     *     can trigger an immediate security incident. In addition, a client can inspect
+     *     a given token before unwrapping to ensure that its origin is from the expected
+     *     location in Vault.
+     *     </li>
+     *     <li>It limits the lifetime of secret exposure because the response-wrapping token has
+     *     a lifetime that is separate from the wrapped secret (and often can be much shorter),
+     *     so if a client fails to come up and unwrap the token, the token can expire very quickly.
+     *     </li>
+     * </ul>
+     *
+     * <blockquote>
+     * <pre>{@code
+     * final String authToken = "...";
+     * final String wrappingToken = "...";
+     * final VaultConfig config = new VaultConfig().address(...).token(authToken).build();
+     * final Vault vault = new Vault(config);
+     *
+     * final WrapResponse wrapResponse = vault.auth().wrap(
+     *                 // Data to wrap
+     *                 new JsonObject()
+     *                         .add("foo", "bar")
+     *                         .add("zoo", "zar"),
+     *
+     *                 // TTL of the response-wrapping token
+     *                 60
+     *         );
+     *
+     * final UnwrapResponse unwrapResponse = vault.auth().unwrap(wrapResponse.getToken());
+     * final JsonObject unwrappedData = response.getData(); // original data
+     * }</pre>
+     * </blockquote>
+     *
+     * @param jsonObject User data to wrap.
+     * @param ttlInSec Wrap TTL in seconds
+     * @return The response information returned from Vault
+     * @throws VaultException If any error occurs, or unexpected response received from Vault
+     * @see #unwrap(String)
+     */
+    public WrapResponse wrap(final JsonObject jsonObject, int ttlInSec) throws VaultException {
+        Objects.requireNonNull(jsonObject);
+
+        int retryCount = 0;
+        while (true) {
+            try {
+                // Parse parameters to JSON
+                final String requestJson = jsonObject.toString();
+                final String url = config.getAddress() + "/v1/sys/wrapping/wrap";
+
+                // HTTP request to Vault
+                final RestResponse restResponse = new Rest()
+                        .url(url)
+                        .header("X-Vault-Token", config.getToken())
+                        .header("X-Vault-Wrap-TTL", Integer.toString(ttlInSec))
+                        .header("X-Vault-Namespace", this.nameSpace)
+                        .body(requestJson.getBytes(StandardCharsets.UTF_8))
+                        .connectTimeoutSeconds(config.getOpenTimeout())
+                        .readTimeoutSeconds(config.getReadTimeout())
+                        .sslVerification(config.getSslConfig().isVerify())
+                        .sslContext(config.getSslConfig().getSslContext())
+                        .post();
+
+                // Validate restResponse
+                if (restResponse.getStatus() != 200) {
+                    throw new VaultException("Vault responded with HTTP status code: " + restResponse.getStatus()
+                            + "\nResponse body: " + new String(restResponse.getBody(), StandardCharsets.UTF_8),
+                            restResponse.getStatus());
+                }
+
+                final String mimeType = restResponse.getMimeType() == null ? "null" : restResponse.getMimeType();
+                if (!mimeType.equals("application/json")) {
+                    throw new VaultException("Vault responded with MIME type: " + mimeType, restResponse.getStatus());
+                }
+
+                return new WrapResponse(restResponse, retryCount);
+            } catch (final Exception e) {
+                // If there are retries to perform, then pause for the configured interval and then execute the
+                // loop again...
+                if (retryCount < config.getMaxRetries()) {
+                    retryCount++;
+                    try {
+                        final int retryIntervalMilliseconds = config.getRetryIntervalMilliseconds();
+                        Thread.sleep(retryIntervalMilliseconds);
+                    } catch (InterruptedException e1) {
+                        e1.printStackTrace();
+                    }
                 } else if (e instanceof VaultException) {
                     // ... otherwise, give up.
                     throw (VaultException) e;
