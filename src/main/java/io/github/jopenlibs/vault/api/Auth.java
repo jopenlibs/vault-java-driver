@@ -1520,7 +1520,7 @@ public class Auth {
      * validation checks on the token, returns the original value on the wire rather than
      * a JSON string representation of it, and ensures that the response is properly audit-logged.</p>
      *
-     * </p> This endpoint can be used by using a wrapping token as the client token in the API call,
+     * <p> This endpoint can be used by using a wrapping token as the client token in the API call,
      * in which case the token parameter is not required; or, a different token with permissions
      * to access this endpoint can make the call and pass in the wrapping token in
      * the token parameter. Do not use the wrapping token in both locations;
