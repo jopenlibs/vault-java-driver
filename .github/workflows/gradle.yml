@@ -8,7 +8,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        java: [11, 12]
+        java: [11, 18]
         os: [ubuntu-latest, windows-latest]
         include:
           # TODO(casz) remove once https://github.com/testcontainers/testcontainers-java/pull/1780 is available
@@ -29,4 +29,3 @@ jobs:
             ${{ matrix.tasks }}
             -s
             --info
-            -Porg.gradle.jvmargs="-Djdk.tls.client.protocols=TLSv1.2"
