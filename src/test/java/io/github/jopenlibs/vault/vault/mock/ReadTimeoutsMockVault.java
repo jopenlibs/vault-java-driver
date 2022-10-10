@@ -56,8 +56,8 @@ import org.eclipse.jetty.server.Request;
 public class ReadTimeoutsMockVault extends MockVault {
 
     private final int delaySeconds;
-    private final  int mockStatus;
-    private final  String mockResponse;
+    private final int mockStatus;
+    private final String mockResponse;
 
     public ReadTimeoutsMockVault(final int delaySeconds, final int mockStatus, final String mockResponse) {
         this.delaySeconds = delaySeconds;
