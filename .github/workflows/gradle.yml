@@ -22,4 +22,4 @@ jobs:
         with:
           java-version: ${{ matrix.java }}
       - name: Build with Gradle
-        run: ./gradlew build ${{ matrix.tasks }} -s --info GRADLE_OPTS="-Djdk.tls.client.protocols=TLSv1.2"
+        run: ./gradlew build ${{ matrix.tasks }} -s --info -Djdk.tls.client.protocols=TLSv1.2
