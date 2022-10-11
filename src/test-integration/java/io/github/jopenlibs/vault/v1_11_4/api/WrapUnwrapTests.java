@@ -13,6 +13,8 @@ import org.junit.ClassRule;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Integration tests for the wrap/unwrap data.
@@ -51,6 +53,32 @@ public class WrapUnwrapTests {
         );
 
         UnwrapResponse unwrapResponse = vault.auth().unwrap(wrapResponse.getToken());
+
+        assertEquals("bar", unwrapResponse.getData().get("foo").asString());
+        assertEquals("zar", unwrapResponse.getData().get("zoo").asString());
+    }
+
+    /**
+     * Tests rewrap.
+     */
+    @Test
+    public void testRewrap() throws Exception {
+        final Vault vault = container.getVault(NONROOT_TOKEN);
+
+        WrapResponse wrapResponse0 = vault.auth().wrap(
+                new JsonObject()
+                        .add("foo", "bar")
+                        .add("zoo", "zar"),
+                60
+        );
+
+        WrapResponse wrapResponse1 = vault.auth().rewrap(wrapResponse0.getToken());
+
+        VaultException ex = assertThrows(VaultException.class, () -> {
+            vault.auth().unwrap(wrapResponse0.getToken());
+        });
+
+        UnwrapResponse unwrapResponse = vault.auth().unwrap(wrapResponse1.getToken());
 
         assertEquals("bar", unwrapResponse.getData().get("foo").asString());
         assertEquals("zar", unwrapResponse.getData().get("zoo").asString());

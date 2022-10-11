@@ -1590,4 +1590,81 @@ public class Auth extends OperationsBase {
             return new WrapResponse(restResponse, attempt);
         });
     }
+
+    /**
+     * <p>Provide access to the {@code /sys/wrapping/rewrap} endpoint. This endpoint rewraps a
+     * response-wrapped token. The new token will use the same creation TTL as the original token
+     * and contain the same response. The old token will be invalidated. This can be used for
+     * long-term storage of a secret in a response-wrapped token when rotation is a
+     * requirement.</p>
+     *
+     * <blockquote>
+     * <pre>{@code
+     * final String authToken = "...";
+     * final String wrappingToken = "...";
+     * final VaultConfig config = new VaultConfig().address(...).token(authToken).build();
+     * final Vault vault = new Vault(config);
+     *
+     * final WrapResponse wrapResponse = vault.auth().wrap(
+     *                 // Data to wrap
+     *                 new JsonObject()
+     *                         .add("foo", "bar")
+     *                         .add("zoo", "zar"),
+     *
+     *                 // TTL of the response-wrapping token
+     *                 60
+     *         );
+     * ...
+     * final WrapResponse wrapResponse2 = vault.auth().rewrap(wrapResponse.getToken());
+     *
+     * final UnwrapResponse unwrapResponse = vault.auth().unwrap(wrapResponse2.getToken());
+     * final JsonObject unwrappedData = response.getData(); // original data
+     * }</pre>
+     * </blockquote>
+     *
+     * @param wrappedToken Wrapped token ID to re-wrap.
+     * @return The response information returned from Vault
+     * @throws VaultException If any error occurs, or unexpected response received from Vault
+     * @see #wrap(JsonObject, int)
+     */
+    public WrapResponse rewrap(final String wrappedToken) throws VaultException {
+        Objects.requireNonNull(wrappedToken);
+
+        return retry(attempt -> {
+            // Parse parameters to JSON
+            final String requestJson = new JsonObject().add("token", wrappedToken).asString();
+            final String url = config.getAddress() + "/v1/sys/wrapping/rewrap";
+
+            // HTTP request to Vault
+            final RestResponse restResponse = new Rest()
+                    .url(url)
+                    .header("X-Vault-Token", config.getToken())
+                    .header("X-Vault-Namespace", this.nameSpace)
+                    .header("X-Vault-Request", "true")
+                    .body(requestJson.getBytes(StandardCharsets.UTF_8))
+                    .connectTimeoutSeconds(config.getOpenTimeout())
+                    .readTimeoutSeconds(config.getReadTimeout())
+                    .sslVerification(config.getSslConfig().isVerify())
+                    .sslContext(config.getSslConfig().getSslContext())
+                    .post();
+
+            // Validate restResponse
+            if (restResponse.getStatus() != 200) {
+                throw new VaultException(
+                        "Vault responded with HTTP status code: " + restResponse.getStatus()
+                                + "\nResponse body: " + new String(restResponse.getBody(),
+                                StandardCharsets.UTF_8),
+                        restResponse.getStatus());
+            }
+
+            final String mimeType =
+                    restResponse.getMimeType() == null ? "null" : restResponse.getMimeType();
+            if (!mimeType.equals("application/json")) {
+                throw new VaultException("Vault responded with MIME type: " + mimeType,
+                        restResponse.getStatus());
+            }
+
+            return new WrapResponse(restResponse, attempt);
+        });
+    }
 }
