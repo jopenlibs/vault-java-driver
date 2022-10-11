@@ -199,7 +199,7 @@ public class Rest {
      * <p>The number of seconds to wait before giving up on establishing an HTTP(S) connection.</p>
      *
      * @param connectTimeoutSeconds Number of seconds to wait for an HTTP(S) connection to successfully establish
-     * @return This object, with connectTimeoutSeconds  populated, ready for other builder-pattern config methods or an HTTP verb method
+     * @return This object, with connectTimeoutSeconds populated, ready for other builder-pattern config methods or an HTTP verb method
      */
     public Rest connectTimeoutSeconds(final Integer connectTimeoutSeconds) {
         this.connectTimeoutSeconds = connectTimeoutSeconds;
