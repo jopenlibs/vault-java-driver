@@ -1632,7 +1632,7 @@ public class Auth extends OperationsBase {
 
         return retry(attempt -> {
             // Parse parameters to JSON
-            final String requestJson = new JsonObject().add("token", wrappedToken).asString();
+            final String requestJson = Json.object().add("token", wrappedToken).toString();
             final String url = config.getAddress() + "/v1/sys/wrapping/rewrap";
 
             // HTTP request to Vault
