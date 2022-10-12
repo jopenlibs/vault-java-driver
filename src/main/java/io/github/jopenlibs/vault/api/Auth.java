@@ -1330,6 +1330,50 @@ public class Auth extends OperationsBase {
         });
     }
 
+    public LogicalResponse lookupWrap(final String wrappedToken, boolean inBody) throws VaultException {
+        final String requestJson = inBody ? Json.object().add("token", wrappedToken).toString() : null;
+
+        return retry(attempt -> {
+            // HTTP request to Vault
+            Rest rest = new Rest()//NOPMD
+                    .url(config.getAddress() + "/v1/sys/wrapping/lookup")
+                    .header("X-Vault-Namespace", this.nameSpace)
+                    .header("X-Vault-Request", "true")
+                    .connectTimeoutSeconds(config.getOpenTimeout())
+                    .readTimeoutSeconds(config.getReadTimeout())
+                    .sslVerification(config.getSslConfig().isVerify())
+                    .sslContext(config.getSslConfig().getSslContext());
+
+            if (inBody) {
+                rest = rest
+                        .header("X-Vault-Token", config.getToken())
+                        .body(requestJson.getBytes(StandardCharsets.UTF_8));
+            } else {
+                rest = rest.header("X-Vault-Token", wrappedToken);
+            }
+
+            final RestResponse restResponse = rest.post();
+
+            // Validate restResponse
+            if (restResponse.getStatus() != 200) {
+                throw new VaultException(
+                        "Vault responded with HTTP status code: " + restResponse.getStatus() +
+                                "\nResponse body: " + new String(restResponse.getBody(),
+                                StandardCharsets.UTF_8),
+                        restResponse.getStatus());
+            }
+
+            final String mimeType = restResponse.getMimeType();
+            if (!"application/json".equals(mimeType)) {
+                throw new VaultException("Vault responded with MIME type: " + mimeType,
+                        restResponse.getStatus());
+            }
+
+            return new LogicalResponse(restResponse, attempt,
+                    Logical.logicalOperations.authentication);
+        });
+    }
+
     /**
      * <p>Revokes current client token.</p>
      *
@@ -1399,7 +1443,7 @@ public class Auth extends OperationsBase {
      * @see #unwrap(String)
      */
     public UnwrapResponse unwrap() throws VaultException {
-        return unwrap(null);
+        return unwrap(config.getToken(), false);
     }
 
     /**
@@ -1452,28 +1496,87 @@ public class Auth extends OperationsBase {
      * @see #unwrap()
      */
     public UnwrapResponse unwrap(final String wrappedToken) throws VaultException {
-        return retry(attempt -> {
-            // Parse parameters to JSON
-            final JsonObject jsonObject = Json.object();
-            if (wrappedToken != null) {
-                jsonObject.add("token", wrappedToken);
-            }
+        return unwrap(wrappedToken, true);
+    }
 
-            final String requestJson = jsonObject.toString();
+    /**
+     * <p>Provide access to the {@code /sys/wrapping/unwrap} endpoint.</p>
+     *
+     * <p>Returns the original response inside the given wrapping token. Unlike simply reading
+     * {@code cubbyhole/response} (which is deprecated), this endpoint provides additional
+     * validation checks on the token, returns the original value on the wire rather than a JSON
+     * string representation of it, and ensures that the response is properly audit-logged.</p>
+     *
+     * <p> This endpoint can be used by using a wrapping token as the client token in the API call,
+     * in which case the token parameter is not required; or, a different token with permissions to
+     * access this endpoint can make the call and pass in the wrapping token in the token parameter.
+     * Do not use the wrapping token in both locations; this will cause the wrapping token to be
+     * revoked but the value to be unable to be looked up, as it will basically be a double-use of
+     * the token!</p>
+     *
+     * <p>In the example below, {@code authToken} is NOT your wrapped token, and should have
+     * unwrapping permissions. The unwrapped data in {@link UnwrapResponse#getData()}. Example
+     * usage:</p>
+     *
+     * <blockquote>
+     * <pre>{@code
+     * final String authToken = "...";
+     * final String wrappingToken = "...";
+     * final VaultConfig config = new VaultConfig().address(...).token(authToken).build();
+     * final Vault vault = new Vault(config);
+     *
+     * final WrapResponse wrapResponse = vault.auth().wrap(
+     *                 // Data to wrap
+     *                 new JsonObject()
+     *                         .add("foo", "bar")
+     *                         .add("zoo", "zar"),
+     *
+     *                 // TTL of the response-wrapping token
+     *                 60
+     *         );
+     *
+     * final UnwrapResponse unwrapResponse = vault.auth().unwrap(wrapResponse.getToken(), true);
+     * final JsonObject unwrappedData = response.getData(); // original data
+     * }</pre>
+     * </blockquote>
+     *
+     * @param wrappedToken Specifies the wrapping token ID, do NOT also put this in your
+     * {@link VaultConfig#getToken()}, if token is {@code null}, this method will unwrap the auth
+     * token in {@link VaultConfig#getToken()}
+     * @param inBody When {@code true} the token value placed in the body request: {@code {"token": "$wrappedToken"}},
+     *      otherwise, set the token into header: {@code "X-Vault-Token: $wrappedToken"}.
+     * @return The response information returned from Vault
+     * @throws VaultException If any error occurs, or unexpected response received from Vault
+     * @see #wrap(JsonObject, int)
+     * @see #unwrap()
+     */
+    public UnwrapResponse unwrap(final String wrappedToken, boolean inBody) throws VaultException {
+        Objects.requireNonNull(wrappedToken, "Wrapped token is null");
+
+        return retry(attempt -> {
             final String url = config.getAddress() + "/v1/sys/wrapping/unwrap";
 
             // HTTP request to Vault
-            final RestResponse restResponse = new Rest()
+            Rest rest = new Rest()
                     .url(url)
-                    .header("X-Vault-Token", config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
-                    .body(requestJson.getBytes(StandardCharsets.UTF_8))
                     .connectTimeoutSeconds(config.getOpenTimeout())
                     .readTimeoutSeconds(config.getReadTimeout())
                     .sslVerification(config.getSslConfig().isVerify())
-                    .sslContext(config.getSslConfig().getSslContext())
-                    .post();
+                    .sslContext(config.getSslConfig().getSslContext());
+
+            if (inBody) {
+                final String requestJson = Json.object().add("token", wrappedToken).toString();
+                rest = rest
+                        .header("X-Vault-Token", config.getToken())
+                        .body(requestJson.getBytes(StandardCharsets.UTF_8));
+            } else {
+                rest = rest
+                        .header("X-Vault-Token", wrappedToken);
+            }
+
+            RestResponse restResponse = rest.post();
 
             // Validate restResponse
             if (restResponse.getStatus() != 200) {
@@ -1638,6 +1741,7 @@ public class Auth extends OperationsBase {
             // HTTP request to Vault
             final RestResponse restResponse = new Rest()
                     .url(url)
+//                    .header("X-Vault-Token", wrappedToken)
                     .header("X-Vault-Token", config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
