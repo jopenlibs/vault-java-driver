@@ -178,7 +178,7 @@ if (hasProperty("publish")) {
                     licenses {
                         license {
                             name 'MIT'
-                            url 'https://github.com/jopenlibs/vault-java-driver/blob/master/README.md'
+                            url 'https://github.com/jopenlibs/vault-java-driver/blob/master/README.md#license'
                         }
                     }
 
