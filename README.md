@@ -278,7 +278,7 @@ may require modifications in your code to migrate.  Changes to the minor version
 should represent non-breaking changes.  The third number represents any very minor bugfix patches.
 
 * **5.2.0**:  This release contains the following updates:
-  * Move code packages and maven groupdId from com.bettercloud to io.github.jopenlibs. [(PR #2)](https://github.com/jopenlibs/vault-java-driver/pull/2)
+  * Move code packages and maven groupdId from `com.bettercloud` to `io.github.jopenlibs`. [(PR #2)](https://github.com/jopenlibs/vault-java-driver/pull/2)
   * Port the [patch of Ian Ferguson](https://github.com/BetterCloud/vault-java-driver/pull/229/files)  that includes `X-Vault-Request: true` header on all requests to work with Vault Agent's w/ require_request_header set to true. [(PR #16)](https://github.com/jopenlibs/vault-java-driver/pull/16)
   * Upgrade tests dependencies. [(PR #11)](https://github.com/jopenlibs/vault-java-driver/pull/11)
   * Fix and refactoring data wrapping, add integration tests with last Vault version. [(PR #4)](https://github.com/jopenlibs/vault-java-driver/pull/4),  [(PR #17)](https://github.com/jopenlibs/vault-java-driver/pull/17)
