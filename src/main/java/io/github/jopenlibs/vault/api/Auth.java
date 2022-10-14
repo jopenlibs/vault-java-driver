@@ -1282,7 +1282,7 @@ public class Auth extends OperationsBase {
 
     /**
      * <p>Returns information about the current client token for a wrapped token, for which the
-     * lookup endpoint is different at "sys/wrapping/lookup". Example usage:</p>
+     * lookup endpoint is at "sys/wrapping/lookup". Example usage:</p>
      *
      * <blockquote>
      * <pre>{@code
@@ -1299,37 +1299,55 @@ public class Auth extends OperationsBase {
      * @throws VaultException If any error occurs, or unexpected response received from Vault
      */
     public LogicalResponse lookupWrap() throws VaultException {
-        return retry(attempt -> {
-            // HTTP request to Vault
-            final RestResponse restResponse = new Rest()//NOPMD
-                    .url(config.getAddress() + "/v1/sys/wrapping/lookup")
-                    .header("X-Vault-Token", config.getToken())
-                    .header("X-Vault-Namespace", this.nameSpace)
-                    .header("X-Vault-Request", "true")
-                    .connectTimeoutSeconds(config.getOpenTimeout())
-                    .readTimeoutSeconds(config.getReadTimeout())
-                    .sslVerification(config.getSslConfig().isVerify())
-                    .sslContext(config.getSslConfig().getSslContext())
-                    .get();
-
-            // Validate restResponse
-            if (restResponse.getStatus() != 200) {
-                throw new VaultException(
-                        "Vault responded with HTTP status code: " + restResponse.getStatus(),
-                        restResponse.getStatus());
-            }
-
-            final String mimeType = restResponse.getMimeType();
-            if (!"application/json".equals(mimeType)) {
-                throw new VaultException("Vault responded with MIME type: " + mimeType,
-                        restResponse.getStatus());
-            }
-
-            return new LogicalResponse(restResponse, attempt,
-                    Logical.logicalOperations.authentication);
-        });
+        return lookupWrap(config.getToken(), false);
     }
 
+    /**
+     * <p>Returns information about the a wrapped token when authorization is needed for lookup,
+     * for which the lookup endpoint is at "sys/wrapping/lookup". Example usage:</p>
+     *
+     * <blockquote>
+     * <pre>{@code
+     * final VaultConfig config = new VaultConfig().address(...).token(authToken).build();
+     * final Vault vault = new Vault(config);
+     * ...
+     * final String wrappingToken = "...";
+     * final LogicalResponse response = vault.auth().lookupWarp(wrappingToken);
+     * // Then you can validate "path" for example ...
+     * final String path = response.getData().get("path");
+     * }</pre>
+     * </blockquote>
+     *
+     * @param wrappedToken Wrapped token.
+     * @return The response information returned from Vault
+     * @throws VaultException If any error occurs, or unexpected response received from Vault
+     */
+    public LogicalResponse lookupWrap(final String wrappedToken) throws VaultException {
+        return lookupWrap(wrappedToken, true);
+    }
+
+    /**
+     * <p>Returns information about the a wrapped token,
+     * for which the lookup endpoint is at "sys/wrapping/lookup". Example usage:</p>
+     *
+     * <blockquote>
+     * <pre>{@code
+     * final VaultConfig config = new VaultConfig().address(...).token(authToken).build();
+     * final Vault vault = new Vault(config);
+     * ...
+     * final String wrappingToken = "...";
+     * final LogicalResponse response = vault.auth().lookupWarp(wrappingToken);
+     * // Then you can validate "path" for example ...
+     * final String path = response.getData().get("path");
+     * }</pre>
+     * </blockquote>
+     *
+     * @param wrappedToken Wrapped token.
+     * @param inBody When {@code true} the token value placed in the body request: {@code {"token": "$wrappedToken"}},
+     *      otherwise, set the token into header: {@code "X-Vault-Token: $wrappedToken"}.
+     * @return The response information returned from Vault
+     * @throws VaultException If any error occurs, or unexpected response received from Vault
+     */
     public LogicalResponse lookupWrap(final String wrappedToken, boolean inBody) throws VaultException {
         final String requestJson = inBody ? Json.object().add("token", wrappedToken).toString() : null;
 
@@ -1663,7 +1681,7 @@ public class Auth extends OperationsBase {
             // HTTP request to Vault
             final RestResponse restResponse = new Rest()
                     .url(url)
-                    .header("X-Vault-Token", config.getToken())
+                    .header("X-Vault-Token",  config.getToken())
                     .header("X-Vault-Wrap-TTL", Integer.toString(ttlInSec))
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
