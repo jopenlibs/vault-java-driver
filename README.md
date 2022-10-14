@@ -279,9 +279,9 @@ should represent non-breaking changes.  The third number represents any very min
 
 * **5.2.0**:  This release contains the following updates:
   * Move code packages and maven groupdId from `com.bettercloud` to `io.github.jopenlibs`. [(PR #2)](https://github.com/jopenlibs/vault-java-driver/pull/2)
-  * Port the [patch of Ian Ferguson](https://github.com/BetterCloud/vault-java-driver/pull/229/files)  that includes `X-Vault-Request: true` header on all requests to work with Vault Agent's w/ require_request_header set to true. [(PR #16)](https://github.com/jopenlibs/vault-java-driver/pull/16)
+  * Fix and refactoring data wrapping, add integration tests with the last Vault version (vault 1.11.4). [(PR #4)](https://github.com/jopenlibs/vault-java-driver/pull/4),  [(PR #17)](https://github.com/jopenlibs/vault-java-driver/pull/17)
   * Upgrade tests dependencies. [(PR #11)](https://github.com/jopenlibs/vault-java-driver/pull/11)
-  * Fix and refactoring data wrapping, add integration tests with last Vault version. [(PR #4)](https://github.com/jopenlibs/vault-java-driver/pull/4),  [(PR #17)](https://github.com/jopenlibs/vault-java-driver/pull/17)
+  * Port the [patch of Ian Ferguson](https://github.com/BetterCloud/vault-java-driver/pull/229/files)  that includes `X-Vault-Request: true` header on all requests to work with Vault Agent's w/ require_request_header set to true. [(PR #16)](https://github.com/jopenlibs/vault-java-driver/pull/16)
   
 * **5.1.0**:  This release contains the following updates:
   * Supports path prefixes when using K/V engine V2.  [(PR #189)](https://github.com/BetterCloud/vault-java-driver/pull/189)
