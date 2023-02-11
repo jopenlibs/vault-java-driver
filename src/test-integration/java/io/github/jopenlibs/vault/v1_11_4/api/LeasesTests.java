@@ -49,8 +49,7 @@ public class LeasesTests {
         vault = container.getRootVault();
     }
 
-    @Test(expected = VaultException.class)
-    public void testRevoke() throws VaultException {
+    public DatabaseResponse generateCredentials() throws VaultException {
         List<String> creationStatements = new ArrayList<>();
         creationStatements.add(
                 "CREATE USER \"{{name}}\" WITH PASSWORD '{{password}}'; GRANT ALL PRIVILEGES ON DATABASE \"postgres\" to \"{{name}}\";");
@@ -64,6 +63,13 @@ public class LeasesTests {
         TestCase.assertEquals(200, credsResponse.getRestResponse().getStatus());
 
         TestCase.assertTrue(credsResponse.getCredential().getUsername().contains("new-role"));
+
+        return credsResponse;
+    }
+
+    @Test(expected = VaultException.class)
+    public void testRevoke() throws VaultException {
+        DatabaseResponse credsResponse = this.generateCredentials();
 
         final VaultResponse response = vault.leases().revoke(credsResponse.getLeaseId());
         assertEquals(204, response.getRestResponse().getStatus());
@@ -71,19 +77,8 @@ public class LeasesTests {
 
     @Test(expected = VaultException.class)
     public void testRevokePrefix() throws VaultException {
-        List<String> creationStatements = new ArrayList<>();
-        creationStatements.add(
-                "CREATE USER \"{{name}}\" WITH PASSWORD '{{password}}'; GRANT ALL PRIVILEGES ON DATABASE \"postgres\" to \"{{name}}\";");
+        DatabaseResponse credsResponse = this.generateCredentials();
 
-        DatabaseResponse databaseResponse = vault.database().createOrUpdateRole("new-role",
-                new DatabaseRoleOptions().dbName("postgres")
-                        .creationStatements(creationStatements));
-        TestCase.assertEquals(204, databaseResponse.getRestResponse().getStatus());
-
-        DatabaseResponse credsResponse = vault.database().creds("new-role");
-        TestCase.assertEquals(200, credsResponse.getRestResponse().getStatus());
-
-        TestCase.assertTrue(credsResponse.getCredential().getUsername().contains("new-role"));
         String prefix = Arrays.stream(credsResponse.getLeaseId().split("([^/]+)$"))
                 .map(str -> str.substring(0, str.length() - 1)).findFirst().get();
 
@@ -93,19 +88,8 @@ public class LeasesTests {
 
     @Test
     public void testRevokeForce() throws VaultException {
-        List<String> creationStatements = new ArrayList<>();
-        creationStatements.add(
-                "CREATE USER \"{{name}}\" WITH PASSWORD '{{password}}'; GRANT ALL PRIVILEGES ON DATABASE \"postgres\" to \"{{name}}\";");
+        DatabaseResponse credsResponse = this.generateCredentials();
 
-        DatabaseResponse databaseResponse = vault.database().createOrUpdateRole("new-role",
-                new DatabaseRoleOptions().dbName("postgres")
-                        .creationStatements(creationStatements));
-        TestCase.assertEquals(204, databaseResponse.getRestResponse().getStatus());
-
-        DatabaseResponse credsResponse = vault.database().creds("new-role");
-        TestCase.assertEquals(200, credsResponse.getRestResponse().getStatus());
-
-        TestCase.assertTrue(credsResponse.getCredential().getUsername().contains("new-role"));
         String prefix = Arrays.stream(credsResponse.getLeaseId().split("([^/]+)$"))
                 .map(str -> str.substring(0, str.length() - 1)).findFirst().get();
 
@@ -115,19 +99,7 @@ public class LeasesTests {
 
     @Test
     public void testRenew() throws VaultException {
-        List<String> creationStatements = new ArrayList<>();
-        creationStatements.add(
-                "CREATE USER \"{{name}}\" WITH PASSWORD '{{password}}'; GRANT ALL PRIVILEGES ON DATABASE \"postgres\" to \"{{name}}\";");
-
-        DatabaseResponse databaseResponse = vault.database().createOrUpdateRole("new-role",
-                new DatabaseRoleOptions().dbName("postgres")
-                        .creationStatements(creationStatements));
-        TestCase.assertEquals(204, databaseResponse.getRestResponse().getStatus());
-
-        DatabaseResponse credsResponse = vault.database().creds("new-role");
-        TestCase.assertEquals(200, credsResponse.getRestResponse().getStatus());
-
-        TestCase.assertTrue(credsResponse.getCredential().getUsername().contains("new-role"));
+        DatabaseResponse credsResponse = this.generateCredentials();
 
         final VaultResponse response = vault.leases().renew(credsResponse.getLeaseId(),
                 credsResponse.getLeaseDuration());
