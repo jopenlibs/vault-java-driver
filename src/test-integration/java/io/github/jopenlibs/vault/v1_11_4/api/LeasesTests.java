@@ -25,9 +25,6 @@ import static junit.framework.TestCase.assertTrue;
  * According to the Vault documentation, it is possible to use a dynamic secret like database to
  * test these methods
  */
-/* FIXME: In some cases, database secret may occours to fail in revoke methods. Fail is not related to
- *        method implementation, so tests are marked to detect exception and manage it
- */
 public class LeasesTests {
 
     @ClassRule
@@ -52,7 +49,8 @@ public class LeasesTests {
     public DatabaseResponse generateCredentials() throws VaultException {
         List<String> creationStatements = new ArrayList<>();
         creationStatements.add(
-                "CREATE USER \"{{name}}\" WITH PASSWORD '{{password}}'; GRANT ALL PRIVILEGES ON DATABASE \"postgres\" to \"{{name}}\";");
+                "CREATE USER \"{{name}}\" WITH PASSWORD '{{password}}';"
+                        + "GRANT SELECT ON ALL TABLES IN SCHEMA public TO \"{{name}}\";");
 
         DatabaseResponse databaseResponse = vault.database().createOrUpdateRole("new-role",
                 new DatabaseRoleOptions().dbName("postgres")
@@ -67,7 +65,7 @@ public class LeasesTests {
         return credsResponse;
     }
 
-    @Test(expected = VaultException.class)
+    @Test
     public void testRevoke() throws VaultException {
         DatabaseResponse credsResponse = this.generateCredentials();
 
@@ -75,7 +73,7 @@ public class LeasesTests {
         assertEquals(204, response.getRestResponse().getStatus());
     }
 
-    @Test(expected = VaultException.class)
+    @Test
     public void testRevokePrefix() throws VaultException {
         DatabaseResponse credsResponse = this.generateCredentials();
 
