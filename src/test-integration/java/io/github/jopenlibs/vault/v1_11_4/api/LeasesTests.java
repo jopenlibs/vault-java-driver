@@ -11,13 +11,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 
 import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertTrue;
 
 /**
  * <p>Integration tests for the leases (i.e. "sys/leases") Vault API operations.</p>
@@ -57,12 +57,12 @@ public class LeasesTests {
         DatabaseResponse databaseResponse = vault.database().createOrUpdateRole("new-role",
                 new DatabaseRoleOptions().dbName("postgres")
                         .creationStatements(creationStatements));
-        TestCase.assertEquals(204, databaseResponse.getRestResponse().getStatus());
+        assertEquals(204, databaseResponse.getRestResponse().getStatus());
 
         DatabaseResponse credsResponse = vault.database().creds("new-role");
-        TestCase.assertEquals(200, credsResponse.getRestResponse().getStatus());
+        assertEquals(200, credsResponse.getRestResponse().getStatus());
 
-        TestCase.assertTrue(credsResponse.getCredential().getUsername().contains("new-role"));
+        assertTrue(credsResponse.getCredential().getUsername().contains("new-role"));
 
         return credsResponse;
     }
