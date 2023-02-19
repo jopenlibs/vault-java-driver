@@ -10,6 +10,7 @@ import io.github.jopenlibs.vault.json.JsonObject;
 import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.BindMode;
@@ -28,7 +29,8 @@ import static org.junit.Assume.assumeTrue;
 public class VaultContainer extends GenericContainer<VaultContainer> implements TestConstants,
         TestLifecycleAware {
 
-    public static final String DEFAULT_IMAGE_AND_TAG = "vault:1.11.4";
+    public static final String VAULT_DEFAULT_IMAGE = "vault";
+    public static final String VAULT_DEFAULT_TAG = "latest";
     private static final Logger LOGGER = LoggerFactory.getLogger(VaultContainer.class);
     private String rootToken;
     private String unsealKey;
@@ -73,7 +75,8 @@ public class VaultContainer extends GenericContainer<VaultContainer> implements 
     }
 
     public VaultContainer() {
-        this(DEFAULT_IMAGE_AND_TAG);
+        this(VAULT_DEFAULT_IMAGE + ":" + Optional.ofNullable(
+                System.getenv("VAULT_VERSION")).orElse(VAULT_DEFAULT_TAG));
     }
 
     /**
