@@ -24,4 +24,13 @@ public class Sys extends OperationsBase {
             this.nameSpace = this.config.getNameSpace();
         }
     }
+
+    /**
+     * Returns the implementing class for <code>/v1/sys/wrapping/*</code> REST endpoints
+     *
+     * @return The implementing class for wrapping operations
+     */
+    public Wrapping wrapping() {
+        return new Wrapping(this.config);
+    }
 }
