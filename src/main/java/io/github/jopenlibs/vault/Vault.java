@@ -8,6 +8,7 @@ import io.github.jopenlibs.vault.api.Seal;
 import io.github.jopenlibs.vault.api.database.Database;
 import io.github.jopenlibs.vault.api.mounts.Mounts;
 import io.github.jopenlibs.vault.api.pki.Pki;
+import io.github.jopenlibs.vault.api.sys.Sys;
 import io.github.jopenlibs.vault.json.Json;
 import io.github.jopenlibs.vault.json.JsonObject;
 import io.github.jopenlibs.vault.json.JsonValue;
@@ -180,6 +181,16 @@ public class Vault {
      */
     public Auth auth() {
         return new Auth(vaultConfig);
+    }
+
+    /**
+     * Returns the implementing class for operations on Vault's <code>/v1/sys/*</code> REST
+     * endpoints
+     *
+     * @return The implementing class for Vault's auth operations.
+     */
+    public Sys sys() {
+        return new Sys(vaultConfig);
     }
 
     /**
