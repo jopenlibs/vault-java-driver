@@ -33,4 +33,14 @@ public class Sys extends OperationsBase {
     public Wrapping wrapping() {
         return new Wrapping(this.config);
     }
+
+    /**
+     * Returns the implementing class for Vault's seal operations (e.g. seal, unseal, sealStatus).
+     *
+     * @return The implementing class for Vault's seal operations (e.g. seal, unseal, sealStatus).
+     */
+    public Seal seal() {
+        return new Seal(this.config);
+    }
+
 }
