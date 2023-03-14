@@ -4,10 +4,10 @@ import io.github.jopenlibs.vault.api.Auth;
 import io.github.jopenlibs.vault.api.Debug;
 import io.github.jopenlibs.vault.api.Leases;
 import io.github.jopenlibs.vault.api.Logical;
-import io.github.jopenlibs.vault.api.Seal;
 import io.github.jopenlibs.vault.api.database.Database;
 import io.github.jopenlibs.vault.api.mounts.Mounts;
 import io.github.jopenlibs.vault.api.pki.Pki;
+import io.github.jopenlibs.vault.api.sys.Seal;
 import io.github.jopenlibs.vault.api.sys.Sys;
 import io.github.jopenlibs.vault.json.Json;
 import io.github.jopenlibs.vault.json.JsonObject;
@@ -266,9 +266,8 @@ public class Vault {
     }
 
     /**
-     * Returns the implementing class for Vault's seal operations (e.g. seal, unseal, sealStatus).
-     *
-     * @return The implementing class for Vault's seal operations (e.g. seal, unseal, sealStatus).
+     * @see Sys#seal()
+     * @deprecated This method is deprecated and in future it will be removed
      */
     public Seal seal() {
         return new Seal(vaultConfig);
