@@ -5,7 +5,7 @@ import io.github.jopenlibs.vault.api.Debug;
 import io.github.jopenlibs.vault.api.Leases;
 import io.github.jopenlibs.vault.api.Logical;
 import io.github.jopenlibs.vault.api.database.Database;
-import io.github.jopenlibs.vault.api.mounts.Mounts;
+import io.github.jopenlibs.vault.api.sys.mounts.Mounts;
 import io.github.jopenlibs.vault.api.pki.Pki;
 import io.github.jopenlibs.vault.api.sys.Seal;
 import io.github.jopenlibs.vault.api.sys.Sys;
@@ -256,10 +256,8 @@ public class Vault {
     }
 
     /**
-     * Returns the implementing class for Vault's sys mounts operations (i.e.
-     * <code>/v1/sys/mounts/*</code> REST endpoints).
-     *
-     * @return the implementing class for Vault's sys mounts operations
+     * @see Sys#mounts()
+     * @deprecated This method is deprecated and in future it will be removed
      */
     public Mounts mounts() {
         return new Mounts(vaultConfig);

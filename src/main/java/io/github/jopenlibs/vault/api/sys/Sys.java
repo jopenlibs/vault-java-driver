@@ -3,6 +3,7 @@ package io.github.jopenlibs.vault.api.sys;
 import io.github.jopenlibs.vault.Vault;
 import io.github.jopenlibs.vault.VaultConfig;
 import io.github.jopenlibs.vault.api.OperationsBase;
+import io.github.jopenlibs.vault.api.sys.mounts.Mounts;
 
 /**
  * <p>The implementing class for operations on Vault's <code>/v1/sys/*</code> REST endpoints.</p>
@@ -43,4 +44,13 @@ public class Sys extends OperationsBase {
         return new Seal(this.config);
     }
 
+    /**
+     * Returns the implementing class for Vault's sys mounts operations (i.e.
+     * <code>/v1/sys/mounts/*</code> REST endpoints).
+     *
+     * @return the implementing class for Vault's sys mounts operations
+     */
+    public Mounts mounts() {
+        return new Mounts(this.config);
+    }
 }
