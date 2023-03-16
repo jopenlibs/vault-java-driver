@@ -26,6 +26,11 @@ public class Sys extends OperationsBase {
         }
     }
 
+    public Sys withNameSpace(final String nameSpace) {
+        this.nameSpace = nameSpace;
+        return this;
+    }
+
     /**
      * Returns the implementing class for <code>/v1/sys/wrapping/*</code> REST endpoints
      *
