@@ -53,4 +53,14 @@ public class Sys extends OperationsBase {
     public Mounts mounts() {
         return new Mounts(this.config);
     }
+
+    /**
+     * Returns the implementing class for Vault's lease operations <code>/v1/sys/leases/*</code>
+     * REST endpoints).
+     *
+     * @return The implementing class for Vault's lease operations
+     */
+    public Leases leases() {
+        return new Leases(this.config);
+    }
 }

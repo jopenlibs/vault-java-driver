@@ -2,7 +2,7 @@ package io.github.jopenlibs.vault;
 
 import io.github.jopenlibs.vault.api.Auth;
 import io.github.jopenlibs.vault.api.Debug;
-import io.github.jopenlibs.vault.api.Leases;
+import io.github.jopenlibs.vault.api.sys.Leases;
 import io.github.jopenlibs.vault.api.Logical;
 import io.github.jopenlibs.vault.api.database.Database;
 import io.github.jopenlibs.vault.api.sys.mounts.Mounts;
@@ -238,9 +238,8 @@ public class Vault {
     }
 
     /**
-     * Returns the implementing class for Vault's lease operations (e.g. revoke, revoke-prefix).
-     *
-     * @return The implementing class for Vault's lease operations (e.g. revoke, revoke-prefix).
+     * @see Sys#leases()
+     * @deprecated This method is deprecated and in future it will be removed
      */
     public Leases leases() {
         return new Leases(vaultConfig);
