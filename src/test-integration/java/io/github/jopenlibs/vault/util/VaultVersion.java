@@ -54,7 +54,7 @@ public class VaultVersion implements Comparable<VaultVersion> {
                 return false;
             }
 
-            if (current.compareTo(accepted) > 0) {
+            if (current.compareTo(accepted) >= 0) {
                 return false;
             }
 
