@@ -992,11 +992,11 @@ public class Auth extends OperationsBase {
     }
 
     /**
-     * <p>Basic login operation to authenticate to an JWT backend.  Example usage:</p>
+     * <p>Basic login operation to authenticate to an JWT backend with custom authentication path.  Example usage:</p>
      *
      * <blockquote>
      * <pre>{@code
-     * final AuthResponse response = vault.auth().loginByJwt("kubernetes", "dev", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...");
+     * final AuthResponse response = vault.auth().loginByJwt("kubernetes", "dev", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...", "custom/path");
      *
      * final String token = response.getAuthClientToken();
      * }</pre>
@@ -1069,7 +1069,7 @@ public class Auth extends OperationsBase {
 
 
     /**
-     * Basic login operation to authenticate to an kubernetes backend. Example usage:
+     * Basic login operation to authenticate to a kubernetes backend. Example usage:
      *
      * <blockquote>
      *
