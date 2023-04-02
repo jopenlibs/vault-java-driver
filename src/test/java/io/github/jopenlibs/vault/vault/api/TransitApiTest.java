@@ -2,6 +2,7 @@ package io.github.jopenlibs.vault.vault.api;
 
 import io.github.jopenlibs.vault.Vault;
 import io.github.jopenlibs.vault.VaultConfig;
+import io.github.jopenlibs.vault.VaultImpl;
 import io.github.jopenlibs.vault.json.JsonArray;
 import io.github.jopenlibs.vault.json.JsonObject;
 import io.github.jopenlibs.vault.response.LogicalResponse;
@@ -52,7 +53,7 @@ public class TransitApiTest {
         final VaultConfig vaultConfig = new VaultConfig()
                 .address("http://127.0.0.1:8999")
                 .build();
-        final Vault vault = new Vault(vaultConfig, 1);
+        final Vault vault = new VaultImpl(vaultConfig, 1);
 
         LogicalResponse response = vault.logical().write("transit/encrypt/test",
                 Collections.singletonMap("plaintext", PLAIN_DATA[0]));
@@ -75,7 +76,7 @@ public class TransitApiTest {
         final VaultConfig vaultConfig = new VaultConfig()
                 .address("http://127.0.0.1:8999")
                 .build();
-        final Vault vault = new Vault(vaultConfig, 1);
+        final Vault vault = new VaultImpl(vaultConfig, 1);
 
         LogicalResponse response = vault.logical().write("transit/decrypt/test",
                 Collections.singletonMap("ciphertext", CIPHER_DATA[0]));
@@ -106,7 +107,7 @@ public class TransitApiTest {
         final VaultConfig vaultConfig = new VaultConfig()
                 .address("http://127.0.0.1:8999")
                 .build();
-        final Vault vault = new Vault(vaultConfig, 1);
+        final Vault vault = new VaultImpl(vaultConfig, 1);
 
         JsonArray batch = new JsonArray();
         for (String text : PLAIN_DATA) {
@@ -141,7 +142,7 @@ public class TransitApiTest {
         final VaultConfig vaultConfig = new VaultConfig()
                 .address("http://127.0.0.1:8999")
                 .build();
-        final Vault vault = new Vault(vaultConfig, 1);
+        final Vault vault = new VaultImpl(vaultConfig, 1);
 
         JsonArray batch = new JsonArray();
         for (String text : CIPHER_DATA) {

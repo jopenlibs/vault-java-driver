@@ -56,7 +56,7 @@ public class VaultAgentContainer extends GenericContainer<VaultAgentContainer> i
                         .openTimeout(5)
                         .readTimeout(30)
                         .build();
-        return new Vault(config);
+        return new VaultImpl(config);
     }
 
     /**

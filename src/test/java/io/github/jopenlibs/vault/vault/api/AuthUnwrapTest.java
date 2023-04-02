@@ -2,6 +2,7 @@ package io.github.jopenlibs.vault.vault.api;
 
 import io.github.jopenlibs.vault.Vault;
 import io.github.jopenlibs.vault.VaultConfig;
+import io.github.jopenlibs.vault.VaultImpl;
 import io.github.jopenlibs.vault.json.JsonArray;
 import io.github.jopenlibs.vault.json.JsonObject;
 import io.github.jopenlibs.vault.response.AuthResponse;
@@ -43,7 +44,7 @@ public class AuthUnwrapTest {
             throws Exception {
         VaultConfig vaultConfig = new VaultConfig().address("http://127.0.0.1:8999")
                 .token("wrappedToken").build();
-        Vault vault = new Vault(vaultConfig);
+        Vault vault = new VaultImpl(vaultConfig);
         AuthResponse response = vault.auth().unwrap();
 
         assertEquals(200, response.getRestResponse().getStatus());
@@ -60,7 +61,7 @@ public class AuthUnwrapTest {
     public void should_unwrap_param_sends_token_and_return_unwrapped_token() throws Exception {
         VaultConfig vaultConfig = new VaultConfig().address("http://127.0.0.1:8999")
                 .token("authToken").build();
-        Vault vault = new Vault(vaultConfig);
+        Vault vault = new VaultImpl(vaultConfig);
         AuthResponse response = vault.auth().unwrap("wrappedToken");
 
         assertEquals(200, response.getRestResponse().getStatus());

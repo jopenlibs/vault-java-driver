@@ -69,7 +69,7 @@ public class Pki extends OperationsBase {
      * <blockquote>
      * <pre>{@code
      * final VaultConfig config = new VaultConfig.address(...).token(...).build();
-     * final Vault vault = new Vault(config);
+     * final Vault vault = new VaultImpl(config);
      * final PkiResponse response = vault.pki().createOrUpdateRole("testRole");
      *
      * assertEquals(204, response.getRestResponse().getStatus());
@@ -94,7 +94,7 @@ public class Pki extends OperationsBase {
      * <blockquote>
      * <pre>{@code
      * final VaultConfig config = new VaultConfig.address(...).token(...).build();
-     * final Vault vault = new Vault(config);
+     * final Vault vault = new VaultImpl(config);
      *
      * final RoleOptions options = new RoleOptions()
      *                              .allowedDomains(new ArrayList<String>(){{ add("myvault.com"); }})
@@ -152,7 +152,7 @@ public class Pki extends OperationsBase {
      * <blockquote>
      * <pre>{@code
      * final VaultConfig config = new VaultConfig.address(...).token(...).build();
-     * final Vault vault = new Vault(config);
+     * final Vault vault = new VaultImpl(config);
      * final PkiResponse response = vault.pki().getRole("testRole");
      *
      * final RoleOptions details = response.getRoleOptions();
@@ -198,7 +198,7 @@ public class Pki extends OperationsBase {
      * <blockquote>
      * <pre>{@code
      * final VaultConfig config = new VaultConfig.address(...).token(...).build();
-     * final Vault vault = new Vault(config);
+     * final Vault vault = new VaultImpl(config);
      *
      * final PkiResponse response = vault.pki().revoke("serialnumber");
      * assertEquals(204, response.getRestResponse().getStatus();
@@ -249,7 +249,7 @@ public class Pki extends OperationsBase {
      * <blockquote>
      * <pre>{@code
      * final VaultConfig config = new VaultConfig.address(...).token(...).build();
-     * final Vault vault = new Vault(config);
+     * final Vault vault = new VaultImpl(config);
      *
      * final PkiResponse response = vault.pki().deleteRole("testRole");
      * assertEquals(204, response.getRestResponse().getStatus();
@@ -297,7 +297,7 @@ public class Pki extends OperationsBase {
      * <blockquote>
      * <pre>{@code
      * final VaultConfig config = new VaultConfig.address(...).token(...).build();
-     * final Vault vault = new Vault(config);
+     * final Vault vault = new VaultImpl(config);
      *
      * final PkiResponse response = vault.pki().deleteRole("testRole");
      * assertEquals(204, response.getRestResponse().getStatus();
@@ -347,7 +347,7 @@ public class Pki extends OperationsBase {
      * <blockquote>
      * <pre>{@code
      * final VaultConfig config = new VaultConfig.address(...).token(...).build();
-     * final Vault vault = new Vault(config);
+     * final Vault vault = new VaultImpl(config);
      *
      * final PkiResponse response = vault.pki().deleteRole("testRole");
      * assertEquals(204, response.getRestResponse().getStatus();

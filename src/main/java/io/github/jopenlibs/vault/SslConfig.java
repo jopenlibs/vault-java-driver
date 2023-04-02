@@ -699,7 +699,7 @@ public class SslConfig implements Serializable {
     }
 
     /**
-     * <p>There was a community request to make {@link Vault} and its config class serializable
+     * <p>There was a community request to make {@link VaultImpl} and its config class serializable
      * (<a
      * href="https://github.com/BetterCloud/vault-java-driver/pull/51">https://github.com/BetterCloud/vault-java-driver/pull/51</a>).
      * However, this SslConfig class now contains a member field of type {@link SSLContext}, which

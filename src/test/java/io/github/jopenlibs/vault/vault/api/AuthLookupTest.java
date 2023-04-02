@@ -2,6 +2,7 @@ package io.github.jopenlibs.vault.vault.api;
 
 import io.github.jopenlibs.vault.Vault;
 import io.github.jopenlibs.vault.VaultConfig;
+import io.github.jopenlibs.vault.VaultImpl;
 import io.github.jopenlibs.vault.json.JsonArray;
 import io.github.jopenlibs.vault.json.JsonObject;
 import io.github.jopenlibs.vault.response.LookupResponse;
@@ -41,7 +42,7 @@ public class AuthLookupTest {
     public void should_lookup_self_use_url_auth_token_lookup_self() throws Exception {
         VaultConfig vaultConfig = new VaultConfig().address("http://127.0.0.1:8999").token("token")
                 .build();
-        Vault vault = new Vault(vaultConfig);
+        Vault vault = new VaultImpl(vaultConfig);
         LookupResponse response = vault.auth().lookupSelf();
 
         assertEquals(200, response.getRestResponse().getStatus());
@@ -60,7 +61,7 @@ public class AuthLookupTest {
     public void should_lookup_self_with_param_use_url_auth_mount_lookup_self() throws Exception {
         VaultConfig vaultConfig = new VaultConfig().address("http://127.0.0.1:8999").token("token")
                 .build();
-        Vault vault = new Vault(vaultConfig);
+        Vault vault = new VaultImpl(vaultConfig);
         LookupResponse response = vault.auth().lookupSelf("mount");
 
         assertEquals(200, response.getRestResponse().getStatus());

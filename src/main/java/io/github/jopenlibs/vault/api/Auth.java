@@ -1,6 +1,6 @@
 package io.github.jopenlibs.vault.api;
 
-import io.github.jopenlibs.vault.Vault;
+import io.github.jopenlibs.vault.VaultImpl;
 import io.github.jopenlibs.vault.VaultConfig;
 import io.github.jopenlibs.vault.VaultException;
 import io.github.jopenlibs.vault.json.Json;
@@ -27,7 +27,7 @@ import java.util.UUID;
  * <code>Vault</code> in a DSL-style builder pattern.  See the Javadoc comments of each
  * <code>public</code> method for usage examples.</p>
  *
- * @see Vault#auth()
+ * @see VaultImpl#auth()
  */
 public class Auth extends OperationsBase {
 
@@ -273,7 +273,7 @@ public class Auth extends OperationsBase {
      * <blockquote>
      * <pre>{@code
      * final VaultConfig config = new VaultConfig().address(...).token(...).build();
-     * final Vault vault = new Vault(config);
+     * final Vault vault = new VaultImpl(config);
      * final AuthResponse response = vault.auth().createToken(new TokenRequest().withTtl("1h"));
      *
      * final String token = response.getAuthClientToken();
@@ -295,7 +295,7 @@ public class Auth extends OperationsBase {
      * <blockquote>
      * <pre>{@code
      * final VaultConfig config = new VaultConfig().address(...).token(...).build();
-     * final Vault vault = new Vault(config);
+     * final Vault vault = new VaultImpl(config);
      * final AuthResponse response = vault.auth().createToken(new TokenRequest().withTtl("1h"));
      *
      * final String token = response.getAuthClientToken();
@@ -1079,7 +1079,7 @@ public class Auth extends OperationsBase {
      *                                  .address("https://127.0.0.1:8200")
      *                                  .sslConfig(sslConfig)
      *                                  .build();
-     * final Vault vault = new Vault(vaultConfig);
+     * final Vault vault = new VaultImpl(vaultConfig);
      *
      * final AuthResponse response = vault.auth().loginByCert();
      * final String token = response.getAuthClientToken();
@@ -1107,7 +1107,7 @@ public class Auth extends OperationsBase {
      *                                  .address("https://127.0.0.1:8200")
      *                                  .sslConfig(sslConfig)
      *                                  .build();
-     * final Vault vault = new Vault(vaultConfig);
+     * final Vault vault = new VaultImpl(vaultConfig);
      *
      * final AuthResponse response = vault.auth().loginByCert();
      * final String token = response.getAuthClientToken();
@@ -1287,7 +1287,7 @@ public class Auth extends OperationsBase {
      * <pre>{@code
      * final String wrappingToken = "...";
      * final VaultConfig config = new VaultConfig().address(...).token(wrappingToken).build();
-     * final Vault vault = new Vault(config);
+     * final Vault vault = new VaultImpl(config);
      * final LogicalResponse response = vault.auth().lookupWarp();
      * // Then you can validate "path" for example ...
      * final String path = response.getData().get("path");
@@ -1308,7 +1308,7 @@ public class Auth extends OperationsBase {
      * <blockquote>
      * <pre>{@code
      * final VaultConfig config = new VaultConfig().address(...).token(authToken).build();
-     * final Vault vault = new Vault(config);
+     * final Vault vault = new VaultImpl(config);
      * ...
      * final String wrappingToken = "...";
      * final LogicalResponse response = vault.auth().lookupWarp(wrappingToken);
@@ -1332,7 +1332,7 @@ public class Auth extends OperationsBase {
      * <blockquote>
      * <pre>{@code
      * final VaultConfig config = new VaultConfig().address(...).token(authToken).build();
-     * final Vault vault = new Vault(config);
+     * final Vault vault = new VaultImpl(config);
      * ...
      * final String wrappingToken = "...";
      * final LogicalResponse response = vault.auth().lookupWarp(wrappingToken);
@@ -1452,7 +1452,7 @@ public class Auth extends OperationsBase {
      * <pre>{@code
      * final String wrappingToken = "...";
      * final VaultConfig config = new VaultConfig().address(...).token(wrappingToken).build();
-     * final Vault vault = new Vault(config);
+     * final Vault vault = new VaultImpl(config);
      * final AuthResponse response = vault.auth().unwrap();
      * final String unwrappedToken = response.getAuthClientToken();
      * }</pre>
@@ -1490,7 +1490,7 @@ public class Auth extends OperationsBase {
      * final String authToken = "...";
      * final String wrappingToken = "...";
      * final VaultConfig config = new VaultConfig().address(...).token(authToken).build();
-     * final Vault vault = new Vault(config);
+     * final Vault vault = new VaultImpl(config);
      *
      * final WrapResponse wrapResponse = vault.auth().wrap(
      *                 // Data to wrap
@@ -1543,7 +1543,7 @@ public class Auth extends OperationsBase {
      * final String authToken = "...";
      * final String wrappingToken = "...";
      * final VaultConfig config = new VaultConfig().address(...).token(authToken).build();
-     * final Vault vault = new Vault(config);
+     * final Vault vault = new VaultImpl(config);
      *
      * final WrapResponse wrapResponse = vault.auth().wrap(
      *                 // Data to wrap
@@ -1650,7 +1650,7 @@ public class Auth extends OperationsBase {
      * final String authToken = "...";
      * final String wrappingToken = "...";
      * final VaultConfig config = new VaultConfig().address(...).token(authToken).build();
-     * final Vault vault = new Vault(config);
+     * final Vault vault = new VaultImpl(config);
      *
      * final WrapResponse wrapResponse = vault.auth().wrap(
      *                 // Data to wrap
@@ -1727,7 +1727,7 @@ public class Auth extends OperationsBase {
      * final String authToken = "...";
      * final String wrappingToken = "...";
      * final VaultConfig config = new VaultConfig().address(...).token(authToken).build();
-     * final Vault vault = new Vault(config);
+     * final Vault vault = new VaultImpl(config);
      *
      * final WrapResponse wrapResponse = vault.auth().wrap(
      *                 // Data to wrap

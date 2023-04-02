@@ -33,7 +33,7 @@ public class SSLTests {
                 .sslConfig(new SslConfig().verify(false))
                 .engineVersion(1)
                 .build();
-        final Vault vault = new Vault(vaultConfig);
+        final Vault vault = new VaultImpl(vaultConfig);
         final LogicalResponse response = vault.logical().read("secret/hello");
 
         assertEquals(200, response.getRestResponse().getStatus());
@@ -52,7 +52,7 @@ public class SSLTests {
                 .address("https://127.0.0.1:9998")
                 .token("mock_token")
                 .build();
-        final Vault vault = new Vault(vaultConfig);
+        final Vault vault = new VaultImpl(vaultConfig);
 
         try {
             final LogicalResponse response = vault.logical().read("secret/hello");
@@ -73,7 +73,7 @@ public class SSLTests {
                 .sslConfig(new SslConfig().pemResource("/cert.pem").build())
                 .token("mock_token")
                 .build();
-        final Vault vault = new Vault(vaultConfig);
+        final Vault vault = new VaultImpl(vaultConfig);
         HashMap<String, Object> testMap = new HashMap<>();
         testMap.put("value", "world");
         final LogicalResponse response = vault.logical().write("secret/hello", testMap);
@@ -90,7 +90,7 @@ public class SSLTests {
 
         final VaultConfig vaultConfig = new VaultConfig().address("https://127.0.0.1:9998")
                 .token("mock_token").build();
-        final Vault vault = new Vault(vaultConfig);
+        final Vault vault = new VaultImpl(vaultConfig);
 
         try {
             final LogicalResponse response = vault.logical().read("secret/hello");
@@ -122,7 +122,7 @@ public class SSLTests {
                 .token("mock_token")
                 .sslConfig(new SslConfig().pemFile(pem).build())
                 .build();
-        final Vault vault = new Vault(vaultConfig);
+        final Vault vault = new VaultImpl(vaultConfig);
         final LogicalResponse response = vault.logical().read("secret/hello");
 
         VaultTestUtils.shutdownMockVault(server);
@@ -139,7 +139,7 @@ public class SSLTests {
                 .token("mock_token")
                 .sslConfig(new SslConfig().pemResource("/cert.pem").build())
                 .build();
-        final Vault vault = new Vault(vaultConfig);
+        final Vault vault = new VaultImpl(vaultConfig);
         final LogicalResponse response = vault.logical().read("secret/hello");
 
         VaultTestUtils.shutdownMockVault(server);
@@ -156,7 +156,7 @@ public class SSLTests {
                 .token("mock_token")
                 .sslConfig(new SslConfig().pemResource("/cert.pem").build())
                 .build();
-        final Vault vault = new Vault(vaultConfig);
+        final Vault vault = new VaultImpl(vaultConfig);
         HashMap<String, Object> testMap = new HashMap<>();
         testMap.put("value", "world");
         final LogicalResponse response = vault.logical()
@@ -187,7 +187,7 @@ public class SSLTests {
                 .token("mock_token")
                 .sslConfig(new SslConfig().pemUTF8(pemUTF8).build())
                 .build();
-        final Vault vault = new Vault(vaultConfig);
+        final Vault vault = new VaultImpl(vaultConfig);
         final LogicalResponse response = vault.logical().read("secret/hello");
 
         VaultTestUtils.shutdownMockVault(server);
@@ -204,7 +204,7 @@ public class SSLTests {
                 .token("mock_token")
                 .sslConfig(new SslConfig().trustStoreResource("/keystore.jks").build())
                 .build();
-        final Vault vault = new Vault(vaultConfig);
+        final Vault vault = new VaultImpl(vaultConfig);
         final LogicalResponse response = vault.logical().read("secret/hello");
 
         VaultTestUtils.shutdownMockVault(server);
@@ -235,7 +235,7 @@ public class SSLTests {
                 .token("mock_token")
                 .sslConfig(new SslConfig().trustStoreFile(jks).build())
                 .build();
-        final Vault vault = new Vault(vaultConfig);
+        final Vault vault = new VaultImpl(vaultConfig);
         final LogicalResponse response = vault.logical().read("secret/hello");
 
         VaultTestUtils.shutdownMockVault(server);
@@ -256,7 +256,7 @@ public class SSLTests {
                 .token("mock_token")
                 .sslConfig(new SslConfig().trustStore(trustStore).build())
                 .build();
-        final Vault vault = new Vault(vaultConfig);
+        final Vault vault = new VaultImpl(vaultConfig);
         final LogicalResponse response = vault.logical().read("secret/hello");
 
         VaultTestUtils.shutdownMockVault(server);
@@ -274,7 +274,7 @@ public class SSLTests {
                 .sslConfig(new SslConfig().trustStoreResource("/keystore.jks").keyStoreResource(
                         "/keystore.jks", "password").build())
                 .build();
-        final Vault vault = new Vault(vaultConfig);
+        final Vault vault = new VaultImpl(vaultConfig);
         final LogicalResponse response = vault.logical().read("secret/hello");
 
         VaultTestUtils.shutdownMockVault(server);

@@ -100,7 +100,7 @@ Once you have initialized a `VaultConfig` object, you can use it to construct an
 the `Vault` primary driver class:
 
 ```
-final Vault vault = new Vault(config);
+final Vault vault = Vault.create(config);
 ```
 
 Key Value Secret Engine Config

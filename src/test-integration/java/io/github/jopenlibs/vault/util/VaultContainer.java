@@ -302,7 +302,7 @@ public class VaultContainer extends GenericContainer<VaultContainer> implements 
      */
     public Vault getVault(final VaultConfig config, final Integer maxRetries,
             final Integer retryMillis) {
-        Vault vault = new Vault(config);
+        Vault vault = new VaultImpl(config);
         if (maxRetries != null && retryMillis != null) {
             vault = vault.withRetries(maxRetries, retryMillis);
         } else if (maxRetries != null) {
@@ -353,7 +353,7 @@ public class VaultContainer extends GenericContainer<VaultContainer> implements 
                         .readTimeout(30)
                         .sslConfig(new SslConfig().pemFile(new File(CERT_PEMFILE)).build())
                         .build();
-        return new Vault(config).withRetries(MAX_RETRIES, RETRY_MILLIS);
+        return new VaultImpl(config).withRetries(MAX_RETRIES, RETRY_MILLIS);
     }
 
     /**
@@ -368,7 +368,7 @@ public class VaultContainer extends GenericContainer<VaultContainer> implements 
                         .readTimeout(30)
                         .sslConfig(new SslConfig().pemFile(new File(CERT_PEMFILE)).build())
                         .build();
-        return new Vault(config).withRetries(MAX_RETRIES, RETRY_MILLIS);
+        return new VaultImpl(config).withRetries(MAX_RETRIES, RETRY_MILLIS);
     }
 
     /**

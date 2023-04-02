@@ -27,7 +27,7 @@ public class TimeoutTests {
                 .token("mock_token")
                 .openTimeout(3)
                 .build();
-        final Vault vault = new Vault(vaultConfig);
+        final Vault vault = new VaultImpl(vaultConfig);
 
         // The Vault call should succeed
         final LogicalResponse response = vault.logical().read("secret/hello");
@@ -49,7 +49,7 @@ public class TimeoutTests {
                 .token("mock_token")
                 .openTimeout(1)
                 .build();
-        final Vault vault = new Vault(vaultConfig);
+        final Vault vault = new VaultImpl(vaultConfig);
 
         // The Vault call should time out
         try {
@@ -74,7 +74,7 @@ public class TimeoutTests {
                 .token("mock_token")
                 .readTimeout(3)
                 .build();
-        final Vault vault = new Vault(vaultConfig);
+        final Vault vault = new VaultImpl(vaultConfig);
 
         // The Vault call should succeed
         final LogicalResponse response = vault.logical().read("secret/hello");
@@ -96,7 +96,7 @@ public class TimeoutTests {
                 .token("mock_token")
                 .readTimeout(1)
                 .build();
-        final Vault vault = new Vault(vaultConfig);
+        final Vault vault = new VaultImpl(vaultConfig);
 
         // The Vault call should time out
         try {
