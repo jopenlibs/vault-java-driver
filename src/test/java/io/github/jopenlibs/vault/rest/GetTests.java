@@ -192,4 +192,15 @@ public class GetTests {
                 responseBody.contains("User-Agent"));
     }
 
+
+    /**
+     * <p>Verify that response body does not cause NPE when input stream is null.</p>
+     */
+    @Test
+    public void test_handleResponseInputStream() {
+        final Rest rest = new Rest();
+        final byte[] result = rest.handleResponseInputStream(null);
+        assertEquals(0, result.length);
+    }
+
 }

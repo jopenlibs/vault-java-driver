@@ -545,14 +545,7 @@ public class Rest {
                     inputStream = httpURLConnection.getErrorStream();
                 }
             }
-            final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            int bytesRead;
-            final byte[] bytes = new byte[16384];
-            while ((bytesRead = inputStream.read(bytes, 0, bytes.length)) != -1) {
-                byteArrayOutputStream.write(bytes, 0, bytesRead);
-            }
-            byteArrayOutputStream.flush();
-            return byteArrayOutputStream.toByteArray();
+            return handleResponseInputStream(inputStream);
         } catch (IOException e) {
             return new byte[0];
         }
@@ -586,4 +579,31 @@ public class Rest {
         return statusCode;
     }
 
+    /**
+     * <p>This method handles the response stream from the connection.</p>
+     *
+     * @param inputStream The input stream from the connection.
+     * @return The body payload, downloaded from the HTTP connection response
+     */
+    protected byte[] handleResponseInputStream(final InputStream inputStream) {
+        try {
+            // getErrorStream() can return null so handle it.
+            if (inputStream != null) {
+                final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
+                int bytesRead;
+                final byte[] bytes = new byte[16384];
+                while ((bytesRead = inputStream.read(bytes, 0, bytes.length)) != -1) {
+                    byteArrayOutputStream.write(bytes, 0, bytesRead);
+                }
+
+                byteArrayOutputStream.flush();
+                return byteArrayOutputStream.toByteArray();
+            } else {
+                return new byte[0];
+            }
+        } catch (IOException e) {
+            return new byte[0];
+        }
+    }
 }
