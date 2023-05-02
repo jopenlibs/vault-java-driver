@@ -21,6 +21,8 @@ import org.junit.rules.ExpectedException;
 
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertFalse;
+import static junit.framework.TestCase.assertNotNull;
+import static junit.framework.TestCase.assertNotSame;
 import static junit.framework.TestCase.assertTrue;
 
 /**
@@ -63,6 +65,30 @@ public class LogicalTests {
         vault.logical().write(pathToWrite, testMap);
 
         final String valueRead = vault.logical().read(pathToRead).getData().get("value");
+        assertEquals(value, valueRead);
+    }
+
+    /**
+     * Write a wrapped secret and verify that it can be read, using KV Secrets engine version 2.
+     *
+     * @throws VaultException On error.
+     */
+    @Test
+    public void testWriteAndReadWrapped() throws VaultException {
+        final String pathToWrite = "secret/hellowrapped";
+        final String pathToRead = "secret/hellowrapped";
+
+        final String value = "world";
+        final Vault vault = container.getRootVault();
+
+        final Map<String, Object> testMap = new HashMap<>();
+        testMap.put("value", value);
+
+        LogicalResponse response = vault.logical().write(pathToWrite, testMap,60);
+
+        final String valueRead = vault.logical().read(pathToRead).getData().get("value");
+        assertNotNull(response.getWrappedToken());
+        assertNotSame("", response.getWrappedToken());
         assertEquals(value, valueRead);
     }
 
