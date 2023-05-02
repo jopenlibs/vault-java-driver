@@ -283,7 +283,7 @@ public class Logical extends OperationsBase {
                     .header("X-Vault-Token", config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
-                    .header("X-Vault-Wrap-TTL", String.valueOf(wrapTTL))
+                    .header("X-Vault-Wrap-TTL", wrapTTL != null ? wrapTTL.toString() : null)
                     .connectTimeoutSeconds(config.getOpenTimeout())
                     .readTimeoutSeconds(config.getReadTimeout())
                     .sslVerification(config.getSslConfig().isVerify())
