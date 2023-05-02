@@ -22,6 +22,7 @@ public class LogicalResponse extends VaultResponse {
     private List<String> listData = new ArrayList<>();
     private JsonObject dataObject = null;
     private String leaseId;
+    private String wrappedToken;
     private Boolean renewable;
     private Long leaseDuration;
 
@@ -61,6 +62,10 @@ public class LogicalResponse extends VaultResponse {
         return leaseDuration;
     }
 
+    public String getWrappedToken() {
+        return wrappedToken;
+    }
+
     private void parseMetadataFields() {
         try {
             final String jsonString = new String(getRestResponse().getBody(),
@@ -70,6 +75,9 @@ public class LogicalResponse extends VaultResponse {
             this.leaseId = jsonObject.get("lease_id").asString();
             this.renewable = jsonObject.get("renewable").asBoolean();
             this.leaseDuration = jsonObject.get("lease_duration").asLong();
+
+            JsonObject wrapInfo = jsonObject.get("wrap_info").asObject();
+            this.wrappedToken = wrapInfo.get("token").asString();
         } catch (Exception ignored) {
         }
     }
