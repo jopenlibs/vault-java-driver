@@ -202,14 +202,51 @@ public class Logical extends OperationsBase {
     public LogicalResponse write(final String path, final Map<String, Object> nameValuePairs)
             throws VaultException {
         if (engineVersionForSecretPath(path).equals(2)) {
-            return write(path, nameValuePairs, logicalOperations.writeV2);
+            return write(path, nameValuePairs, logicalOperations.writeV2, null);
         } else {
-            return write(path, nameValuePairs, logicalOperations.writeV1);
+            return write(path, nameValuePairs, logicalOperations.writeV1, null);
+        }
+    }
+
+    /**
+     * <p>Basic operation to store secrets.  Multiple name value pairs can be stored under the same
+     * secret key. E.g.:</p>
+     *
+     * <blockquote>
+     * <pre>{@code
+     * final Map<String, String> nameValuePairs = new HashMap<String, Object>();
+     * nameValuePairs.put("value", "foo");
+     * nameValuePairs.put("other_value", "bar");
+     *
+     * final LogicalResponse response = vault.logical().write("secret/hello", nameValuePairs);
+     * }</pre>
+     * </blockquote>
+     *
+     * <p>The values in these name-value pairs may be booleans, numerics, strings, or nested JSON
+     * objects.  However, be aware that this method does not recursively parse any nested
+     * structures.  If you wish to write arbitrary JSON objects to Vault... then you should parse
+     * them to JSON outside of this method, and pass them here as JSON strings.</p>
+     *
+     * @param path The Vault key value to which to write (e.g. <code>secret/hello</code>)
+     * @param nameValuePairs Secret name and value pairs to store under this Vault key (can be
+     * @param wrapTTL Time (in seconds) which secret is wrapped
+     * <code>null</code> for writing to keys that do not need or expect any fields to be specified)
+     * @return The response information received from Vault
+     * @throws VaultException If any errors occurs with the REST request, and the maximum number of
+     * retries is exceeded.
+     */
+    public LogicalResponse write(final String path, final Map<String, Object> nameValuePairs,
+            final Integer wrapTTL)
+            throws VaultException {
+        if (engineVersionForSecretPath(path).equals(2)) {
+            return write(path, nameValuePairs, logicalOperations.writeV2, wrapTTL);
+        } else {
+            return write(path, nameValuePairs, logicalOperations.writeV1, wrapTTL);
         }
     }
 
     private LogicalResponse write(final String path, final Map<String, Object> nameValuePairs,
-            final logicalOperations operation) throws VaultException {
+            final logicalOperations operation, final Integer wrapTTL) throws VaultException {
 
         return retry(attempt -> {
             JsonObject requestJson = Json.object();
@@ -246,6 +283,7 @@ public class Logical extends OperationsBase {
                     .header("X-Vault-Token", config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
+                    .header("X-Vault-Wrap-TTL", String.valueOf(wrapTTL))
                     .connectTimeoutSeconds(config.getOpenTimeout())
                     .readTimeoutSeconds(config.getReadTimeout())
                     .sslVerification(config.getSslConfig().isVerify())
