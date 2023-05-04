@@ -5,6 +5,7 @@ import io.github.jopenlibs.vault.VaultConfig;
 import io.github.jopenlibs.vault.VaultException;
 import io.github.jopenlibs.vault.response.AuthResponse;
 import io.github.jopenlibs.vault.response.LogicalResponse;
+import io.github.jopenlibs.vault.response.WrapResponse;
 import io.github.jopenlibs.vault.util.VaultContainer;
 import java.io.IOException;
 import java.util.HashMap;
@@ -77,6 +78,7 @@ public class LogicalTests {
     public void testWriteAndReadWrapped() throws VaultException {
         final String pathToWrite = "secret/hellowrapped";
         final String pathToRead = "secret/hellowrapped";
+        final int wrapTTL = 60;
 
         final String value = "world";
         final Vault vault = container.getRootVault();
@@ -84,11 +86,14 @@ public class LogicalTests {
         final Map<String, Object> testMap = new HashMap<>();
         testMap.put("value", value);
 
-        LogicalResponse response = vault.logical().write(pathToWrite, testMap,60);
+        LogicalResponse response = vault.logical().write(pathToWrite, testMap, wrapTTL);
 
         final String valueRead = vault.logical().read(pathToRead).getData().get("value");
-        assertNotNull(response.getWrappedToken());
-        assertNotSame("", response.getWrappedToken());
+        WrapResponse wrapResponse = response.getWrapResponse();
+        assertNotNull(response.getWrapResponse());
+
+        assertNotSame("", wrapResponse.getToken());
+        assertEquals(wrapTTL, wrapResponse.getTtl());
         assertEquals(value, valueRead);
     }
 
