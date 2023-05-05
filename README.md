@@ -48,7 +48,7 @@ Gradle:
 
 ```
 dependencies {
-    implementation 'io.github.jopenlibs:vault-java-driver:5.3.0'
+    implementation 'io.github.jopenlibs:vault-java-driver:5.4.0'
 }
 ```
 
@@ -58,7 +58,7 @@ Maven:
 <dependency>
     <groupId>io.github.jopenlibs</groupId>
     <artifactId>vault-java-driver</artifactId>
-    <version>5.3.0</version>
+    <version>5.4.0</version>
 </dependency>
 ```
 
@@ -310,16 +310,25 @@ and may require modifications in your code to migrate. Changes to the minor vers
 number) should represent non-breaking changes. The third number represents any very minor bugfix
 patches.
 
+* **5.4.0**: This release contains the following updates:
+    * Added wrapped TTL when write a logical
+      secret [(PR #33)](https://github.com/jopenlibs/vault-java-driver/pull/33)
+    * httpURLConnection.getErrorStream() can return null so handle
+      it. [(PR #31)](https://github.com/jopenlibs/vault-java-driver/pull/31)
+    * Add overloading method loginByKubernetes() with custom
+      authPath [(PR #29)](https://github.com/jopenlibs/vault-java-driver/pull/29)
 * **5.3.0**: This release contains the following updates:
-    * Created sys namespace [PR #21](https://github.com/jopenlibs/vault-java-driver/pull/25) 
-    * Add custom Vault Authentication Path when using k8s login method [(PR #27)](https://github.com/jopenlibs/vault-java-driver/pull/27)
-    * Parametrized integration tests [(PR #21)](https://github.com/jopenlibs/vault-java-driver/pull/21) 
+    * Add custom Vault Authentication Path when using k8s login
+      method [(PR #27)](https://github.com/jopenlibs/vault-java-driver/pull/27)
+    * Created sys namespace [(PR #25)](https://github.com/jopenlibs/vault-java-driver/pull/25)
+    * Parametrized integration
+      tests [(PR #21)](https://github.com/jopenlibs/vault-java-driver/pull/21)
     * Fix Leases section [(PR #18)](https://github.com/jopenlibs/vault-java-driver/pull/18)
 * **5.2.0**: This release contains the following updates:
     * Move code packages and maven groupdId from `com.bettercloud`
       to `io.github.jopenlibs`. [(PR #2)](https://github.com/jopenlibs/vault-java-driver/pull/2)
     * Fix and refactoring data wrapping, add integration tests with the last Vault version (vault
-      1.11.4). [(PR #4)](https://github.com/jopenlibs/vault-java-driver/pull/4),  [(PR #17)](https://github.com/jopenlibs/vault-java-driver/pull/17)
+      1.11.4). [(PR #4)](https://github.com/jopenlibs/vault-java-driver/pull/4), [(PR #17)](https://github.com/jopenlibs/vault-java-driver/pull/17)
     * Upgrade tests dependencies. [(PR #11)](https://github.com/jopenlibs/vault-java-driver/pull/11)
     * Port
       the [patch of Ian Ferguson](https://github.com/BetterCloud/vault-java-driver/pull/229/files)
