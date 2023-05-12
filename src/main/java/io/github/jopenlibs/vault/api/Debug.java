@@ -49,7 +49,7 @@ public class Debug extends OperationsBase {
      * <blockquote>
      * <pre>{@code
      * final VaultConfig config = new VaultConfig.address(...).token(...).build();
-     * final Vault vault = new VaultImpl(config);
+     * final Vault vault = Vault.create(config);
      *
      * final HealthResponse response = vault.sys().debug().health();
      *

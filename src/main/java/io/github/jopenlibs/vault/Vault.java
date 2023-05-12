@@ -94,7 +94,7 @@ public interface Vault {
      * <blockquote>
      * <pre>{@code
      * final VaultConfig config = new VaultConfig().address(...).token(...).build();
-     * final Vault vault = new VaultImpl(config);
+     * final Vault vault = Vault.create(config);
      * final PkiResponse response = vault.pki("root-ca").createOrUpdateRole("testRole");
      *
      * assertEquals(204, response.getRestResponse().getStatus());

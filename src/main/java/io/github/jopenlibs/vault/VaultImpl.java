@@ -35,7 +35,7 @@ import java.util.logging.Logger;
  *                                    .address("http://127.0.0.1:8200")
  *                                    .token("eace6676-4d78-c687-4e54-03cad00e3abf")
  *                                    .build();
- * final Vault vault = new VaultImpl(config);
+ * final Vault vault = Vault.create(config);
  *
  * ...
  *
@@ -203,7 +203,7 @@ public class VaultImpl implements Vault{
      * <blockquote>
      * <pre>{@code
      * final VaultConfig config = new VaultConfig().address(...).token(...).build();
-     * final Vault vault = new VaultImpl(config);
+     * final Vault vault = Vault.create(config);
      * final PkiResponse response = vault.pki("root-ca").createOrUpdateRole("testRole");
      *
      * assertEquals(204, response.getRestResponse().getStatus());

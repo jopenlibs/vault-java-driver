@@ -53,7 +53,7 @@ public class TransitApiTest {
         final VaultConfig vaultConfig = new VaultConfig()
                 .address("http://127.0.0.1:8999")
                 .build();
-        final Vault vault = new VaultImpl(vaultConfig, 1);
+        final Vault vault = Vault.create(vaultConfig, 1);
 
         LogicalResponse response = vault.logical().write("transit/encrypt/test",
                 Collections.singletonMap("plaintext", PLAIN_DATA[0]));
@@ -76,7 +76,7 @@ public class TransitApiTest {
         final VaultConfig vaultConfig = new VaultConfig()
                 .address("http://127.0.0.1:8999")
                 .build();
-        final Vault vault = new VaultImpl(vaultConfig, 1);
+        final Vault vault = Vault.create(vaultConfig, 1);
 
         LogicalResponse response = vault.logical().write("transit/decrypt/test",
                 Collections.singletonMap("ciphertext", CIPHER_DATA[0]));
@@ -107,7 +107,7 @@ public class TransitApiTest {
         final VaultConfig vaultConfig = new VaultConfig()
                 .address("http://127.0.0.1:8999")
                 .build();
-        final Vault vault = new VaultImpl(vaultConfig, 1);
+        final Vault vault = Vault.create(vaultConfig, 1);
 
         JsonArray batch = new JsonArray();
         for (String text : PLAIN_DATA) {
@@ -142,7 +142,7 @@ public class TransitApiTest {
         final VaultConfig vaultConfig = new VaultConfig()
                 .address("http://127.0.0.1:8999")
                 .build();
-        final Vault vault = new VaultImpl(vaultConfig, 1);
+        final Vault vault = Vault.create(vaultConfig, 1);
 
         JsonArray batch = new JsonArray();
         for (String text : CIPHER_DATA) {

@@ -18,7 +18,7 @@ public class VaultTests {
     @Test
     public void testDefaultVaultConstructor() {
         VaultConfig vaultConfig = new VaultConfig();
-        Vault vault = new VaultImpl(vaultConfig);
+        Vault vault = Vault.create(vaultConfig);
         Assert.assertNotNull(vault);
         Assert.assertEquals(String.valueOf(2),
                 vault.logical().getEngineVersionForSecretPath("*").toString());
@@ -27,7 +27,7 @@ public class VaultTests {
     @Test
     public void testGlobalEngineVersionVaultConstructor() {
         VaultConfig vaultConfig = new VaultConfig();
-        Vault vault = new VaultImpl(vaultConfig, 1);
+        Vault vault = Vault.create(vaultConfig, 1);
         Assert.assertNotNull(vault);
         Assert.assertEquals(String.valueOf(1),
                 vault.logical().getEngineVersionForSecretPath("*").toString());
@@ -36,7 +36,7 @@ public class VaultTests {
     @Test
     public void testNameSpaceProvidedVaultConstructor() throws VaultException {
         VaultConfig vaultConfig = new VaultConfig().nameSpace("testNameSpace");
-        Vault vault = new VaultImpl(vaultConfig, 1);
+        Vault vault = Vault.create(vaultConfig, 1);
         Assert.assertNotNull(vault);
     }
 
@@ -52,14 +52,14 @@ public class VaultTests {
     @Test(expected = IllegalArgumentException.class)
     public void testInvalidGlobalEngineVersionVaultConstructor() {
         VaultConfig vaultConfig = new VaultConfig();
-        Vault vault = new VaultImpl(vaultConfig, 3);
+        Vault vault = Vault.create(vaultConfig, 3);
         Assert.assertNull(vault);
     }
 
     @Test(expected = VaultException.class)
     public void testVaultWithNoKVEnginePathMap() throws VaultException {
         VaultConfig vaultConfig = new VaultConfig();
-        Vault vault = new VaultImpl(vaultConfig, true, 1);
+        Vault vault = Vault.create(vaultConfig, true, 1);
         Assert.assertNull(vault);
     }
 
@@ -67,7 +67,7 @@ public class VaultTests {
     public void testVaultWithEmptyKVEnginePathMap() throws VaultException {
         Map<String, String> emptyEngineKVMap = new HashMap<>();
         VaultConfig vaultConfig = new VaultConfig().secretsEnginePathMap(emptyEngineKVMap);
-        Vault vault = new VaultImpl(vaultConfig, true, 1);
+        Vault vault = Vault.create(vaultConfig, true, 1);
         Assert.assertNull(vault);
     }
 
@@ -76,7 +76,7 @@ public class VaultTests {
         Map<String, String> engineKVMap = new HashMap<>();
         engineKVMap.put("/hello", "2");
         VaultConfig vaultConfig = new VaultConfig().secretsEnginePathMap(engineKVMap);
-        Vault vault = new VaultImpl(vaultConfig, false, 1);
+        Vault vault = Vault.create(vaultConfig, false, 1);
         Assert.assertNotNull(vault);
         Assert.assertEquals(String.valueOf(1),
                 vault.logical().getEngineVersionForSecretPath("/hello").toString());
@@ -90,7 +90,7 @@ public class VaultTests {
         testMap.put("kv-v1/", "1");
         VaultConfig vaultConfig = new VaultConfig().secretsEnginePathMap(testMap);
         Assert.assertNotNull(vaultConfig);
-        Vault vault = new VaultImpl(vaultConfig, true, 2);
+        Vault vault = Vault.create(vaultConfig, true, 2);
         Assert.assertNotNull(vault);
         Assert.assertEquals(String.valueOf(1),
                 vault.logical().getEngineVersionForSecretPath("kv-v1").toString());
@@ -109,7 +109,7 @@ public class VaultTests {
                 .address("http://127.0.0.1:8999")
                 .token("mock_token")
                 .build();
-        final Vault vault = new VaultImpl(vaultConfig);
+        final Vault vault = Vault.create(vaultConfig);
 
         LogicalResponse response = vault.logical().read("path/that/does/not/exist/");
         VaultTestUtils.shutdownMockVault(server);

@@ -33,7 +33,7 @@ import org.eclipse.jetty.server.Request;
  * server.start();
  *
  * final VaultConfig vaultConfig = new VaultConfig("http://127.0.0.1:8999", "mock_token");
- * final Vault vault = new VaultImpl(vaultConfig);
+ * final Vault vault = Vault.create(vaultConfig);
  * final LogicalResponse response = vault.withRetries(5, 100).logical().read("secret/hello");
  * assertEquals(5, response.getRetries());
  * assertEquals("mock", response.getData().get("value"));

@@ -39,7 +39,7 @@ public class AuthBackendAwsTests {
         final VaultConfig vaultConfig = new VaultConfig()
                 .address("http://127.0.0.1:8999")
                 .build();
-        final Vault vault = new VaultImpl(vaultConfig);
+        final Vault vault = Vault.create(vaultConfig);
 
         String token = null;
         String nonce = null;
@@ -81,7 +81,7 @@ public class AuthBackendAwsTests {
         final VaultConfig vaultConfig = new VaultConfig()
                 .address("http://127.0.0.1:8999")
                 .build();
-        final Vault vault = new VaultImpl(vaultConfig);
+        final Vault vault = Vault.create(vaultConfig);
 
         System.out.println("Running Aws EC2 test");
 
@@ -122,7 +122,7 @@ public class AuthBackendAwsTests {
         final VaultConfig vaultConfig = new VaultConfig()
                 .address("http://127.0.0.1:8999")
                 .build();
-        final Vault vault = new VaultImpl(vaultConfig);
+        final Vault vault = Vault.create(vaultConfig);
 
         AuthResponse response = vault.auth()
                 .loginByAwsIam("role", "url", "body", "headers",

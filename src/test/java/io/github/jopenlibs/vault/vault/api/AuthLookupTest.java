@@ -42,7 +42,7 @@ public class AuthLookupTest {
     public void should_lookup_self_use_url_auth_token_lookup_self() throws Exception {
         VaultConfig vaultConfig = new VaultConfig().address("http://127.0.0.1:8999").token("token")
                 .build();
-        Vault vault = new VaultImpl(vaultConfig);
+        Vault vault = Vault.create(vaultConfig);
         LookupResponse response = vault.auth().lookupSelf();
 
         assertEquals(200, response.getRestResponse().getStatus());
@@ -61,7 +61,7 @@ public class AuthLookupTest {
     public void should_lookup_self_with_param_use_url_auth_mount_lookup_self() throws Exception {
         VaultConfig vaultConfig = new VaultConfig().address("http://127.0.0.1:8999").token("token")
                 .build();
-        Vault vault = new VaultImpl(vaultConfig);
+        Vault vault = Vault.create(vaultConfig);
         LookupResponse response = vault.auth().lookupSelf("mount");
 
         assertEquals(200, response.getRestResponse().getStatus());

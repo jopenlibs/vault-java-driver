@@ -24,7 +24,7 @@ public class RetryTests {
 
         final VaultConfig vaultConfig = new VaultConfig().address("http://127.0.0.1:8999")
                 .token("mock_token").engineVersion(1).build();
-        final Vault vault = new VaultImpl(vaultConfig);
+        final Vault vault = Vault.create(vaultConfig);
         final LogicalResponse response = vault.withRetries(5, 100).logical().read("secret/hello");
         assertEquals(5, response.getRetries());
         assertEquals("mock", response.getData().get("value"));
@@ -43,7 +43,7 @@ public class RetryTests {
 
         final VaultConfig vaultConfig = new VaultConfig().address("http://127.0.0.1:8999")
                 .token("mock_token").build();
-        final Vault vault = new VaultImpl(vaultConfig);
+        final Vault vault = Vault.create(vaultConfig);
         final LogicalResponse response = vault.withRetries(5, 100).logical()
                 .write("secret/hello", new HashMap<String, Object>() {{
                     put("value", "world");

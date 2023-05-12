@@ -44,7 +44,7 @@ public class AuthWrapTest {
     public void check_wrap_request_response() throws Exception {
         VaultConfig vaultConfig = new VaultConfig().address("http://127.0.0.1:8999")
                 .token("wrappedToken").build();
-        Vault vault = new VaultImpl(vaultConfig);
+        Vault vault = Vault.create(vaultConfig);
 
         WrapResponse response = vault.auth().wrap(
                 new JsonObject()

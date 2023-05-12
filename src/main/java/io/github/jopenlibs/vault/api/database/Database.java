@@ -69,7 +69,7 @@ public class Database extends OperationsBase {
      * <blockquote>
      * <pre>{@code
      * final VaultConfig config = new VaultConfig.address(...).token(...).build();
-     * final Vault vault = new VaultImpl(config);
+     * final Vault vault = Vault.create(config);
      *
      * final DatabaseRoleOptions options = new DatabaseRoleOptions()
      *                              .dbName("test")
@@ -124,7 +124,7 @@ public class Database extends OperationsBase {
      * <blockquote>
      * <pre>{@code
      * final VaultConfig config = new VaultConfig.address(...).token(...).build();
-     * final Vault vault = new VaultImpl(config);
+     * final Vault vault = Vault.create(config);
      * final DatabaseResponse response = vault.database().getRole("testRole");
      *
      * final RoleOptions details = response.getRoleOptions();
@@ -170,7 +170,7 @@ public class Database extends OperationsBase {
      * <blockquote>
      * <pre>{@code
      * final VaultConfig config = new VaultConfig.address(...).token(...).build();
-     * final Vault vault = new VaultImpl(config);
+     * final Vault vault = Vault.create(config);
      *
      * final DatabaseResponse response = vault.database().revoke("serialnumber");
      * assertEquals(204, response.getRestResponse().getStatus();
@@ -222,7 +222,7 @@ public class Database extends OperationsBase {
      * <blockquote>
      * <pre>{@code
      * final VaultConfig config = new VaultConfig.address(...).token(...).build();
-     * final Vault vault = new VaultImpl(config);
+     * final Vault vault = Vault.create(config);
      *
      * final DatabaseResponse response = vault.database().deleteRole("testRole");
      * assertEquals(204, response.getRestResponse().getStatus();
@@ -269,7 +269,7 @@ public class Database extends OperationsBase {
      * <blockquote>
      * <pre>{@code
      * final VaultConfig config = new VaultConfig.address(...).token(...).build();
-     * final Vault vault = new VaultImpl(config);
+     * final Vault vault = Vault.create(config);
      *
      * final DatabaseResponse response = vault.database().creds("testRole");
      * assertEquals(204, response.getRestResponse().getStatus();
