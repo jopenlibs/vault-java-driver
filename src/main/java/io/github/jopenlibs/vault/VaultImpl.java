@@ -2,12 +2,13 @@ package io.github.jopenlibs.vault;
 
 import io.github.jopenlibs.vault.api.Auth;
 import io.github.jopenlibs.vault.api.Debug;
-import io.github.jopenlibs.vault.api.Leases;
 import io.github.jopenlibs.vault.api.Logical;
-import io.github.jopenlibs.vault.api.Seal;
 import io.github.jopenlibs.vault.api.database.Database;
-import io.github.jopenlibs.vault.api.mounts.Mounts;
 import io.github.jopenlibs.vault.api.pki.Pki;
+import io.github.jopenlibs.vault.api.sys.Leases;
+import io.github.jopenlibs.vault.api.sys.Seal;
+import io.github.jopenlibs.vault.api.sys.Sys;
+import io.github.jopenlibs.vault.api.sys.mounts.Mounts;
 import io.github.jopenlibs.vault.json.Json;
 import io.github.jopenlibs.vault.json.JsonObject;
 import io.github.jopenlibs.vault.json.JsonValue;
@@ -56,7 +57,7 @@ import java.util.logging.Logger;
  * }</pre>
  * </blockquote>
  */
-public class VaultImpl implements Vault{
+public class VaultImpl implements Vault {
 
     private final VaultConfig vaultConfig;
     private final Logger logger = Logger.getLogger(VaultImpl.class.getCanonicalName());
@@ -121,7 +122,7 @@ public class VaultImpl implements Vault{
      * @throws VaultException If any error occurs
      */
     public VaultImpl(final VaultConfig vaultConfig, final Boolean useSecretsEnginePathMap,
-                     final Integer globalFallbackVersion)
+            final Integer globalFallbackVersion)
             throws VaultException {
         this.vaultConfig = vaultConfig;
         if (this.vaultConfig.getNameSpace() != null && !this.vaultConfig.getNameSpace().isEmpty()) {
@@ -157,6 +158,7 @@ public class VaultImpl implements Vault{
      * between retries
      * @return This object, with maxRetries and retryIntervalMilliseconds populated
      */
+    @Override
     public VaultImpl withRetries(final int maxRetries, final int retryIntervalMilliseconds) {
         this.vaultConfig.setMaxRetries(maxRetries);
         this.vaultConfig.setRetryIntervalMilliseconds(retryIntervalMilliseconds);
@@ -168,6 +170,7 @@ public class VaultImpl implements Vault{
      *
      * @return The implementing class for Vault's core/logical operations (e.g. read, write)
      */
+    @Override
     public Logical logical() {
         return new Logical(vaultConfig);
     }
@@ -178,8 +181,20 @@ public class VaultImpl implements Vault{
      *
      * @return The implementing class for Vault's auth operations.
      */
+    @Override
     public Auth auth() {
         return new Auth(vaultConfig);
+    }
+
+    /**
+     * Returns the implementing class for operations on Vault's <code>/v1/sys/*</code> REST
+     * endpoints
+     *
+     * @return The implementing class for Vault's auth operations.
+     */
+    @Override
+    public Sys sys() {
+        return new Sys(vaultConfig);
     }
 
     /**
@@ -188,6 +203,7 @@ public class VaultImpl implements Vault{
      *
      * @return The implementing class for Vault's PKI secret backend.
      */
+    @Override
     public Pki pki() {
         return new Pki(vaultConfig);
     }
@@ -214,14 +230,17 @@ public class VaultImpl implements Vault{
      * <code>/v1/</code> prefix
      * @return The implementing class for Vault's PKI secret backend.
      */
+    @Override
     public Pki pki(final String mountPath) {
         return new Pki(vaultConfig, mountPath);
     }
 
+    @Override
     public Database database() {
         return new Database(vaultConfig);
     }
 
+    @Override
     public Database database(final String mountPath) {
         return new Database(vaultConfig, mountPath);
     }
@@ -231,6 +250,7 @@ public class VaultImpl implements Vault{
      *
      * @return The implementing class for Vault's lease operations (e.g. revoke, revoke-prefix).
      */
+    @Override
     public Leases leases() {
         return new Leases(vaultConfig);
     }
@@ -240,6 +260,7 @@ public class VaultImpl implements Vault{
      *
      * @return The implementing class for Vault's debug operations (e.g. raw, health)
      */
+    @Override
     public Debug debug() {
         return new Debug(vaultConfig);
     }
@@ -250,6 +271,7 @@ public class VaultImpl implements Vault{
      *
      * @return the implementing class for Vault's sys mounts operations
      */
+    @Override
     public Mounts mounts() {
         return new Mounts(vaultConfig);
     }
@@ -259,6 +281,7 @@ public class VaultImpl implements Vault{
      *
      * @return The implementing class for Vault's seal operations (e.g. seal, unseal, sealStatus).
      */
+    @Override
     public Seal seal() {
         return new Seal(vaultConfig);
     }
@@ -323,6 +346,7 @@ public class VaultImpl implements Vault{
         }
     }
 
+    @Override
     public Map<String, String> getSecretEngineVersions() {
         return this.collectSecretEngineVersions();
     }
