@@ -1,4 +1,4 @@
-package io.github.jopenlibs.vault.api.mounts;
+package io.github.jopenlibs.vault.api.sys.mounts;
 
 import io.github.jopenlibs.vault.VaultConfig;
 import io.github.jopenlibs.vault.VaultException;
