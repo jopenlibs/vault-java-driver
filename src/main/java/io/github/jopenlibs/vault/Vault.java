@@ -2,12 +2,21 @@ package io.github.jopenlibs.vault;
 
 import io.github.jopenlibs.vault.api.Auth;
 import io.github.jopenlibs.vault.api.Debug;
-import io.github.jopenlibs.vault.api.Leases;
 import io.github.jopenlibs.vault.api.Logical;
-import io.github.jopenlibs.vault.api.Seal;
 import io.github.jopenlibs.vault.api.database.Database;
-import io.github.jopenlibs.vault.api.mounts.Mounts;
 import io.github.jopenlibs.vault.api.pki.Pki;
+import io.github.jopenlibs.vault.api.sys.Leases;
+import io.github.jopenlibs.vault.api.sys.Seal;
+import io.github.jopenlibs.vault.api.sys.Sys;
+import io.github.jopenlibs.vault.api.sys.mounts.Mounts;
+import io.github.jopenlibs.vault.json.Json;
+import io.github.jopenlibs.vault.json.JsonObject;
+import io.github.jopenlibs.vault.json.JsonValue;
+import io.github.jopenlibs.vault.rest.Rest;
+import io.github.jopenlibs.vault.rest.RestException;
+import io.github.jopenlibs.vault.rest.RestResponse;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.Map;
 
 public interface Vault {
@@ -76,6 +85,14 @@ public interface Vault {
     Auth auth();
 
     /**
+     * Returns the implementing class for operations on Vault's <code>/v1/sys/*</code> REST
+     * endpoints
+     *
+     * @return The implementing class for Vault's auth operations.
+     */
+    Sys sys();
+
+    /**
      * Returns the implementing class for Vault's PKI secret backend (i.e. <code>/v1/pki/*</code>
      * REST endpoints).
      *
@@ -112,9 +129,8 @@ public interface Vault {
     Database database(final String mountPath);
 
     /**
-     * Returns the implementing class for Vault's lease operations (e.g. revoke, revoke-prefix).
-     *
-     * @return The implementing class for Vault's lease operations (e.g. revoke, revoke-prefix).
+     * @see Sys#leases()
+     * @deprecated This method is deprecated and in future it will be removed
      */
     Leases leases();
 
@@ -126,17 +142,14 @@ public interface Vault {
     Debug debug();
 
     /**
-     * Returns the implementing class for Vault's sys mounts operations (i.e.
-     * <code>/v1/sys/mounts/*</code> REST endpoints).
-     *
-     * @return the implementing class for Vault's sys mounts operations
+     * @see Sys#mounts()
+     * @deprecated This method is deprecated and in future it will be removed
      */
     Mounts mounts();
 
     /**
-     * Returns the implementing class for Vault's seal operations (e.g. seal, unseal, sealStatus).
-     *
-     * @return The implementing class for Vault's seal operations (e.g. seal, unseal, sealStatus).
+     * @see Sys#seal()
+     * @deprecated This method is deprecated and in future it will be removed
      */
     Seal seal();
 
