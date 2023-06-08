@@ -1,7 +1,10 @@
-apply plugin: 'java'
-apply plugin: 'maven'
-apply plugin: 'signing'
-apply plugin: 'checkstyle'
+plugins{
+    id 'java-library'
+    id 'signing'
+    id 'checkstyle'
+    id 'maven-publish'
+}
+
 
 group 'io.github.jopenlibs'
 archivesBaseName = 'vault-java-driver'
@@ -46,11 +49,11 @@ compileJava {
     options.compilerArgs = ['--release', '8']
 }
 
-tasks.withType(JavaCompile){
+tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
 
-task compileModuleInfoJava(type: JavaCompile) {
+tasks.register('compileModuleInfoJava', JavaCompile) {
     classpath = files()
     source = 'src/main/java/module-info.java'
     destinationDir = compileJava.destinationDir
@@ -68,13 +71,15 @@ compileModuleInfoJava.dependsOn compileJava
 classes.dependsOn compileModuleInfoJava
 // End of Java 9 compatibility config
 
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    archiveClassifier = 'javadoc'
+tasks.register('javadocJar', Jar) {
+    dependsOn tasks.named("javadoc")
+    archiveClassifier.set('javadoc')
     from javadoc.destinationDir
 }
 
-task sourcesJar(type: Jar, dependsOn: classes) {
-    archiveClassifier = 'sources'
+tasks.register('sourcesJar', Jar) {
+    dependsOn tasks.named("classes")
+    archiveClassifier.set('sources')
     from sourceSets.main.allSource
 }
 
@@ -104,10 +109,8 @@ configurations {
 
 tasks.named('test') {
     useJUnit()
-
     testClassesDirs = sourceSets.unitTests.output.classesDirs
     classpath = sourceSets.unitTests.runtimeClasspath
-
     testLogging {
         events "passed", "skipped", "failed"
     }
@@ -118,20 +121,14 @@ tasks.named('test') {
 
 def integrationTestTask = tasks.register('integrationTest', Test) {
     useJUnit()
-
     testClassesDirs = sourceSets.integrationTests.output.classesDirs
     classpath = sourceSets.integrationTests.runtimeClasspath
-
     testLogging {
         events "passed", "skipped", "failed"
     }
 
     reports.html.enabled = false
     reports.junitXml.enabled = true
-}
-
-tasks.named('check') {
-    dependsOn(integrationTestTask)
 }
 
 //
@@ -155,74 +152,84 @@ artifacts {
 }
 
 if (hasProperty("publish")) {
-    signing {
-        sign configurations.archives
-    }
 
-    uploadArchives {
-        repositories {
-            mavenDeployer {
-                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                artifactId = 'vault-java-driver'
+                from components.java
 
-                repository(url: "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                    authentication(userName: ossrhUsername, password: ossrhPassword)
-                }
-
-                snapshotRepository(url: "https://s01.oss.sonatype.org/content/repositories/snapshots/") {
-                    authentication(userName: ossrhUsername, password: ossrhPassword)
-                }
-
-                pom.project {
-                    name 'vault-java-driver'
-                    packaging 'jar'
-                    // optionally artifactId can be defined here
-                    description 'Zero-dependency Java client for HashiCorp\'s Vault'
-                    url 'https://github.com/jopenlibs/vault-java-driver'
+                pom {
+                    name = 'vault-java-driver'
+                    packaging = 'jar'
+                    description = 'Zero-dependency Java client for HashiCorp\'s Vault'
+                    url = 'https://github.com/jopenlibs/vault-java-driver'
 
                     scm {
-                        connection 'https://github.com/jopenlibs/vault-java-driver.git'
-                        developerConnection 'https://github.com/jopenlibs/vault-java-driver.git'
-                        url 'https://github.com/jopenlibs/vault-java-driver'
+                        connection = 'https://github.com/jopenlibs/vault-java-driver.git'
+                        developerConnection = 'https://github.com/jopenlibs/vault-java-driver.git'
+                        url = 'https://github.com/jopenlibs/vault-java-driver'
                     }
 
                     licenses {
                         license {
-                            name 'MIT'
-                            url 'https://github.com/jopenlibs/vault-java-driver/blob/master/README.md#license'
+                            name = 'MIT'
+                            url = 'https://github.com/jopenlibs/vault-java-driver/blob/master/README.md#license'
                         }
                     }
 
                     developers {
                         [
-                                developer {
-                                    id 'steve-perkins'
-                                    name 'Steve Perkins'
-                                    email 'steve@steveperkins.com'
-                                },
-                                developer {
-                                    id 'steve-perkins-bc'
-                                    name 'Steve Perkins'
-                                    email 'steve.perkins@bettercloud.com'
-                                },
-                                developer {
-                                    id 'jarrodcodes'
-                                    name 'Jarrod Young'
-                                    email 'jarrodsy@gmail.com'
-                                },
-                                developer {
-                                    id 'tledkov'
-                                    name 'Taras Ledkov'
-                                    email 'tledkov@apache.org'
-                                },
-                                developer {
-                                    id 'henryx'
-                                    name 'Enrico Bianchi'
-                                    email 'enrico.bianchi@gmail.com'
-                                }
+                            developer {
+                                id = 'steve-perkins'
+                                name = 'Steve Perkins'
+                                email = 'steve@steveperkins.com'
+                            },
+                            developer {
+                                id = 'steve-perkins-bc'
+                                name = 'Steve Perkins'
+                                email = 'steve.perkins@bettercloud.com'
+                            },
+                            developer {
+                                id = 'jarrodcodes'
+                                name = 'Jarrod Young'
+                                email = 'jarrodsy@gmail.com'
+                            },
+                            developer {
+                                id = 'tledkov'
+                                name = 'Taras Ledkov'
+                                email = 'tledkov@apache.org'
+                            },
+                            developer {
+                                id = 'henryx'
+                                name = 'Enrico Bianchi'
+                                email = 'enrico.bianchi@gmail.com'
+                            }
                         ]
                     }
                 }
             }
+        }
+        repositories {
+            maven {
+                credentials {
+                    username "$ossrhUsername"
+                    password "$ossrhPassword"
+                }
+                def releasesRepoUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+                def snapshotsRepoUrl = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+                url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+            }
+        }
+    }
+
+    signing {
+        sign publishing.publications.mavenJava
+    }
+
+    javadoc {
+        if(JavaVersion.current().isJava9Compatible()) {
+            options.addBooleanOption('html5', true)
         }
     }
 }
