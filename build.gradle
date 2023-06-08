@@ -5,7 +5,7 @@ apply plugin: 'checkstyle'
 
 group 'io.github.jopenlibs'
 archivesBaseName = 'vault-java-driver'
-version '5.4.0'
+version '7.6.1'
 
 // This project is actually limited to Java 8 compatibility.  See below.
 sourceCompatibility = 9
@@ -16,16 +16,16 @@ repositories {
 }
 
 dependencies {
-    testCompile('junit:junit:4.13.2')
-    testCompile('org.mockito:mockito-core:4.8.0')
-    testCompile('org.testcontainers:testcontainers:1.17.5')
-    testCompile('org.eclipse.jetty:jetty-server:11.0.12')
-    testCompile('org.slf4j:slf4j-api:2.0.3')
-    testCompile('org.bouncycastle:bcprov-jdk15on:1.70')
-    testCompile('org.bouncycastle:bcpkix-jdk15on:1.70')
-    testCompile('org.apache.commons:commons-io:1.3.2')
+    testImplementation('junit:junit:4.13.2')
+    testImplementation('org.mockito:mockito-core:4.8.0')
+    testImplementation('org.testcontainers:testcontainers:1.17.5')
+    testImplementation('org.eclipse.jetty:jetty-server:11.0.12')
+    testImplementation('org.slf4j:slf4j-api:2.0.3')
+    testImplementation('org.bouncycastle:bcprov-jdk15on:1.70')
+    testImplementation('org.bouncycastle:bcpkix-jdk15on:1.70')
+    testImplementation('org.apache.commons:commons-io:1.3.2')
 
-    testRuntime('org.slf4j:slf4j-simple:2.0.3')
+    testRuntimeOnly('org.slf4j:slf4j-simple:2.0.3')
 }
 
 // Beginning of Java 9 compatibility config
@@ -46,8 +46,9 @@ compileJava {
     options.compilerArgs = ['--release', '8']
 }
 
-compileJava.options.encoding = 'UTF-8'
-compileTestJava.options.encoding = 'UTF-8'
+tasks.withType(JavaCompile){
+    options.encoding = 'UTF-8'
+}
 
 task compileModuleInfoJava(type: JavaCompile) {
     classpath = files()
@@ -68,26 +69,18 @@ classes.dependsOn compileModuleInfoJava
 // End of Java 9 compatibility config
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
+    archiveClassifier = 'javadoc'
     from javadoc.destinationDir
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
+    archiveClassifier = 'sources'
     from sourceSets.main.allSource
 }
 
 //
 // Separate unit tests from integration tests.  See: `src/test-integration/README.md`
 //
-
-configurations {
-    unitTestsCompile.extendsFrom testCompile
-    unitTestsRuntime.extendsFrom testRuntime
-    integrationTestsCompile.extendsFrom testCompile
-    integrationTestsRuntime.extendsFrom testRuntime
-}
-
 sourceSets {
     unitTests {
         compileClasspath += main.output + test.output
@@ -102,9 +95,19 @@ sourceSets {
     }
 }
 
-task unitTest(type: Test) {
+configurations {
+    unitTestsImplementation.extendsFrom testImplementation
+    unitTestsRuntimeOnly.extendsFrom testRuntimeOnly
+    integrationTestsImplementation.extendsFrom testImplementation
+    integrationTestsRuntimeOnly.extendsFrom testRuntimeOnly
+}
+
+tasks.named('test') {
+    useJUnit()
+
     testClassesDirs = sourceSets.unitTests.output.classesDirs
     classpath = sourceSets.unitTests.runtimeClasspath
+
     testLogging {
         events "passed", "skipped", "failed"
     }
@@ -113,15 +116,22 @@ task unitTest(type: Test) {
     reports.junitXml.enabled = true
 }
 
-task integrationTest(type: Test) {
+def integrationTestTask = tasks.register('integrationTest', Test) {
+    useJUnit()
+
     testClassesDirs = sourceSets.integrationTests.output.classesDirs
     classpath = sourceSets.integrationTests.runtimeClasspath
+
     testLogging {
         events "passed", "skipped", "failed"
     }
 
     reports.html.enabled = false
     reports.junitXml.enabled = true
+}
+
+tasks.named('check') {
+    dependsOn(integrationTestTask)
 }
 
 //
