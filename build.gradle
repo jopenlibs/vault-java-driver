@@ -8,7 +8,7 @@ plugins{
 
 group 'io.github.jopenlibs'
 archivesBaseName = 'vault-java-driver'
-version '7.6.1'
+version '5.4.0'
 
 // This project is actually limited to Java 8 compatibility.  See below.
 sourceCompatibility = 9
