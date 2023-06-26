@@ -29,7 +29,7 @@ import static org.junit.Assume.assumeTrue;
 public class VaultContainer extends GenericContainer<VaultContainer> implements TestConstants,
         TestLifecycleAware {
 
-    public static final String VAULT_DEFAULT_IMAGE = "vault";
+    public static final String VAULT_DEFAULT_IMAGE = "hashicorp/vault";
     public static final String VAULT_DEFAULT_TAG = "latest";
     private static final Logger LOGGER = LoggerFactory.getLogger(VaultContainer.class);
     private String rootToken;
