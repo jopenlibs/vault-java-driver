@@ -1,5 +1,6 @@
 module vault.java.driver {
     requires java.logging;
+    requires java.net.http;
     exports io.github.jopenlibs.vault;
     exports io.github.jopenlibs.vault.api;
     exports io.github.jopenlibs.vault.api.database;

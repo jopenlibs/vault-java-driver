@@ -21,7 +21,7 @@ import static org.testcontainers.utility.MountableFile.forHostPath;
 public class VaultAgentContainer extends GenericContainer<VaultAgentContainer> implements
         TestConstants, TestLifecycleAware {
 
-    public static final String VAULT_DEFAULT_IMAGE = "vault";
+    public static final String VAULT_DEFAULT_IMAGE = "hashicorp/vault";
     public static final String VAULT_DEFAULT_TAG = "latest";
     private static final Logger LOGGER = LoggerFactory.getLogger(VaultAgentContainer.class);
 

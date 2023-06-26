@@ -10,9 +10,8 @@ group 'io.github.jopenlibs'
 archivesBaseName = 'vault-java-driver'
 version '5.4.0'
 
-// This project is actually limited to Java 8 compatibility.  See below.
-sourceCompatibility = 9
-targetCompatibility = 9
+sourceCompatibility = 11
+targetCompatibility = 11
 
 repositories {
     mavenCentral()
@@ -31,45 +30,13 @@ dependencies {
     testRuntimeOnly('org.slf4j:slf4j-simple:2.0.3')
 }
 
-// Beginning of Java 9 compatibility config
-//
-// Allowing a library to support Java 9+ modularity, while also maintaining backwards-compatibility for Java 8 users, is WAY more
-// tricky than expected!  The lines below are adapted from a blog article (https://dzone.com/articles/building-java-6-8-libraries-for-jpms-in-gradle),
-// and cause the built classes to support a Java 8 JRE, while also including a module definition suitable for use with Java 9.  There are a
-// few considerations that come with this:
-//
-// * You now need JDK 9 or higher to BUILD this library.  You can still USE the built artifact as a dependency in a Java 8 project.
-// * Although "sourceCompatibility" and "targetCompatability" above are set for Java 9, the "compileJava" settings below will not
-//   allow you to build with any code changes that are not Java 8 compatible.
-// * Unfortunately, IntelliJ (and perhaps other IDE's?) will show syntax highlighting, code completion tips, etc for Java 9.  Sorry for
-//   the inconvenience.  In any case, you should not commit changes to source control without confirming that the project builds.
 compileJava {
-    exclude 'module-info.java'
-
-    options.compilerArgs = ['--release', '8']
+    options.compilerArgs = ['--release', targetCompatibility.toString()]
 }
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
-
-tasks.register('compileModuleInfoJava', JavaCompile) {
-    classpath = files()
-    source = 'src/main/java/module-info.java'
-    destinationDir = compileJava.destinationDir
-    options.encoding = compileJava.options.encoding
-
-    doFirst {
-        options.compilerArgs = [
-                '--release', '9',
-                '--module-path', compileJava.classpath.asPath,
-        ]
-    }
-}
-
-compileModuleInfoJava.dependsOn compileJava
-classes.dependsOn compileModuleInfoJava
-// End of Java 9 compatibility config
 
 tasks.register('javadocJar', Jar) {
     dependsOn tasks.named("javadoc")
