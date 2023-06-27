@@ -12,6 +12,7 @@ import java.net.http.HttpClient.Version;
 import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.BodyPublisher;
 import java.net.http.HttpRequest.BodyPublishers;
+import java.net.http.HttpRequest.Builder;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
@@ -267,25 +268,8 @@ public class Rest {
      * @throws RestException If an error occurs, or an unexpected response received
      */
     public RestResponse get() throws RestException {
-        Optional.ofNullable(urlString).orElseThrow(() -> new RestException("No URL is set"));
-
         try {
-            var uri = new URI(urlString);
-            var params = parametersToQueryString();
-            var query = uri.getQuery() == null ? params
-                    : !params.isEmpty() ? uri.getQuery() + "&" + params : uri.getQuery();
-            uri = new URI(uri.getScheme(), uri.getUserInfo(), uri.getHost(), uri.getPort(),
-                    uri.getPath(), query, uri.getFragment());
-            // Initialize HTTP(S) connection, and set any header values
-            var request = HttpRequest.newBuilder()
-                    .version(Version.HTTP_1_1)
-                    .uri(uri);
-
-            headers.forEach(request::header);
-
-            if (readTimeoutSeconds != null) {
-                request.timeout(Duration.of(readTimeoutSeconds, ChronoUnit.SECONDS));
-            }
+            var request = buildRequest();
 
             return send(request.GET().build());
         } catch (Exception e) {
@@ -341,27 +325,8 @@ public class Rest {
      * @throws RestException If an error occurs, or an unexpected response received
      */
     public RestResponse delete() throws RestException {
-        Optional.ofNullable(urlString).orElseThrow(() -> new RestException("No URL is set"));
-
         try {
-            var uri = new URI(urlString);
-            var params = parametersToQueryString();
-            var query = uri.getQuery() == null ? params
-                    : !params.isEmpty() ? uri.getQuery() + "&" + params : uri.getQuery();
-            uri = new URI(uri.getScheme(), uri.getUserInfo(), uri.getHost(), uri.getPort(),
-                    uri.getPath(), query, uri.getFragment());
-
-            // Initialize HTTP(S) connection, and set any header values
-            var request = HttpRequest.newBuilder()
-                    .version(Version.HTTP_1_1)
-                    .uri(uri);
-
-            headers.forEach(request::header);
-
-            if (readTimeoutSeconds != null) {
-                request.timeout(Duration.of(readTimeoutSeconds, ChronoUnit.SECONDS));
-            }
-
+            var request = this.buildRequest();
             return send(request.DELETE().build());
         } catch (Exception e) {
             throw new RestException(e);
@@ -379,20 +344,10 @@ public class Rest {
      * @return The result of the HTTP operation
      */
     private RestResponse postOrPutImpl(final boolean doPost) throws RestException {
-        Optional.ofNullable(urlString).orElseThrow(() -> new RestException("No URL is set"));
-
         try {
             // Initialize HTTP(S) connection, and set any header values
-            var request = HttpRequest.newBuilder()
-                    .version(Version.HTTP_1_1)
-                    .uri(new URI(urlString));
-
-            headers.forEach(request::header);
+            var request = this.buildRequest();
             request.header("Accept-Charset", "UTF-8");
-
-            if (readTimeoutSeconds != null) {
-                request.timeout(Duration.of(readTimeoutSeconds, ChronoUnit.SECONDS));
-            }
 
             BodyPublisher payload;
             if (body != null) {
@@ -462,5 +417,38 @@ public class Rest {
         final var body = response.body().getBytes();
 
         return new RestResponse(statusCode, mimeType, body);
+    }
+
+
+    /**
+     * This helper method build an {@link HttpRequest.Builder} object used to send requests to
+     * remote resource
+     *
+     * @return a {@link HttpRequest.Builder} bojnect
+     * @throws URISyntaxException if passed URL isn't valid
+     * @throws RestException if isn't passed an URL
+     */
+    private Builder buildRequest() throws URISyntaxException, RestException {
+        Optional.ofNullable(urlString).orElseThrow(() -> new RestException("No URL is set"));
+
+        var uri = new URI(urlString);
+        var params = parametersToQueryString();
+        var query = uri.getQuery() == null ? params
+                : !params.isEmpty() ? uri.getQuery() + "&" + params : uri.getQuery();
+        uri = new URI(uri.getScheme(), uri.getUserInfo(), uri.getHost(), uri.getPort(),
+                uri.getPath(), query, uri.getFragment());
+
+        // Initialize HTTP(S) connection, and set any header values
+        var request = HttpRequest.newBuilder()
+                .version(Version.HTTP_1_1)
+                .uri(uri);
+
+        headers.forEach(request::header);
+
+        if (readTimeoutSeconds != null) {
+            request.timeout(Duration.of(readTimeoutSeconds, ChronoUnit.SECONDS));
+        }
+
+        return request;
     }
 }
