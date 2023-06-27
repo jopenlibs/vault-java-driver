@@ -192,26 +192,6 @@ public class Rest {
     }
 
     /**
-     * <p>Adds an optional header to be sent with the HTTP request.</p>
-     * *
-     * <p> The value, if null, will skip adding this header to the request.</p>
-     *
-     * <p>This method may be chained together repeatedly, to pass multiple headers with a request.
-     * When the request is ultimately sent, the headers will be sorted by their names.</p>
-     *
-     * @param name The raw header name
-     * @param value The raw header value
-     * @return This object, with a header added, ready for other builder-pattern config methods or
-     * an HTTP verb method
-     * @deprecated use {@link #header(String, String)} instead.
-     */
-    @Deprecated
-    public Rest optionalHeader(final String name, final String value) {
-        header(name, value);
-        return this;
-    }
-
-    /**
      * <p>The number of seconds to wait before giving up on establishing an HTTP(S) connection.</p>
      *
      * @param connectTimeoutSeconds Number of seconds to wait for an HTTP(S) connection to

@@ -439,7 +439,7 @@ public class Auth extends OperationsBase {
                     .toString();
             final RestResponse restResponse = new Rest()//NOPMD
                     .url(config.getAddress() + "/v1/auth/" + path)
-                    .optionalHeader("X-Vault-Namespace", this.nameSpace)
+                    .header("X-Vault-Namespace", this.nameSpace)
                     .body(requestJson.getBytes(StandardCharsets.UTF_8))
                     .connectTimeoutSeconds(config.getOpenTimeout())
                     .readTimeoutSeconds(config.getReadTimeout())
