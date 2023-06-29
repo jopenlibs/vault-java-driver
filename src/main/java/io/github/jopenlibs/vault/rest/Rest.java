@@ -435,8 +435,14 @@ public class Rest {
 
         var uri = new URI(urlString);
         var params = isGetOrDelete ? parametersToQueryString() : "";
-        var query = uri.getQuery() == null ? params
-                : !params.isEmpty() ? uri.getQuery() + "&" + params : uri.getQuery();
+        var query = params;
+
+        if (uri.getQuery() != null) {
+            query = uri.getQuery();
+            if (!params.isEmpty()) {
+                query = uri.getQuery() + "&" + params;
+            }
+        }
         uri = new URI(uri.getScheme(), uri.getUserInfo(), uri.getHost(), uri.getPort(),
                 uri.getPath(), query, uri.getFragment());
 
