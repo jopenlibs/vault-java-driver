@@ -269,7 +269,7 @@ public class Rest {
      */
     public RestResponse get() throws RestException {
         try {
-            var request = buildRequest();
+            var request = buildRequest(true);
 
             return send(request.GET().build());
         } catch (Exception e) {
@@ -326,7 +326,7 @@ public class Rest {
      */
     public RestResponse delete() throws RestException {
         try {
-            var request = this.buildRequest();
+            var request = this.buildRequest(true);
             return send(request.DELETE().build());
         } catch (Exception e) {
             throw new RestException(e);
@@ -346,7 +346,7 @@ public class Rest {
     private RestResponse postOrPutImpl(final boolean doPost) throws RestException {
         try {
             // Initialize HTTP(S) connection, and set any header values
-            var request = this.buildRequest();
+            var request = this.buildRequest(false);
             request.header("Accept-Charset", "UTF-8");
 
             BodyPublisher payload;
@@ -428,11 +428,11 @@ public class Rest {
      * @throws URISyntaxException if passed URL isn't valid
      * @throws RestException if isn't passed an URL
      */
-    private Builder buildRequest() throws URISyntaxException, RestException {
+    private Builder buildRequest(Boolean isGetOrDelete) throws URISyntaxException, RestException {
         Optional.ofNullable(urlString).orElseThrow(() -> new RestException("No URL is set"));
 
         var uri = new URI(urlString);
-        var params = parametersToQueryString();
+        var params = isGetOrDelete ? parametersToQueryString() : "";
         var query = uri.getQuery() == null ? params
                 : !params.isEmpty() ? uri.getQuery() + "&" + params : uri.getQuery();
         uri = new URI(uri.getScheme(), uri.getUserInfo(), uri.getHost(), uri.getPort(),
