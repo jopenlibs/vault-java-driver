@@ -424,6 +424,8 @@ public class Rest {
      * This helper method build an {@link HttpRequest.Builder} object used to send requests to
      * remote resource
      *
+     * @param isGetOrDelete sets if request is called for a GET or DELETE request instead of POST or
+     * PUT request
      * @return a {@link HttpRequest.Builder} bojnect
      * @throws URISyntaxException if passed URL isn't valid
      * @throws RestException if isn't passed an URL
