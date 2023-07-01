@@ -82,8 +82,14 @@ tasks.named('test') {
         events "passed", "skipped", "failed"
     }
 
-    reports.html.enabled = false
-    reports.junitXml.enabled = true
+    reports {
+        html {
+            required = false
+        }
+        junitXml {
+            required = true
+        }
+    }
 }
 
 def integrationTestTask = tasks.register('integrationTest', Test) {
@@ -94,8 +100,14 @@ def integrationTestTask = tasks.register('integrationTest', Test) {
         events "passed", "skipped", "failed"
     }
 
-    reports.html.enabled = false
-    reports.junitXml.enabled = true
+    reports {
+        html {
+            required = false
+        }
+        junitXml {
+            required = true
+        }
+    }
 }
 
 //
