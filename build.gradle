@@ -130,6 +130,11 @@ artifacts {
     archives javadocJar, sourcesJar
 }
 
+java {
+    withSourcesJar()
+    withJavadocJar()
+}
+
 if (hasProperty("publish")) {
 
     publishing {
