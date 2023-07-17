@@ -474,7 +474,7 @@ public class Auth extends OperationsBase {
      *
      * <blockquote>
      * <pre>{@code
-     * final AuthResponse response = vault.auth().loginByAppRole(9e1aede8-dcc6-a293-8223-f0d824a467ed", "9ff4b26e-6460-834c-b925-a940eddb6880");
+     * final AuthResponse response = vault.auth().loginByAppRole("9e1aede8-dcc6-a293-8223-f0d824a467ed", "9ff4b26e-6460-834c-b925-a940eddb6880");
      *
      * final String token = response.getAuthClientToken();
      * }</pre>
