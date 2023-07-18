@@ -6,7 +6,6 @@ import io.github.jopenlibs.vault.api.OperationsBase;
 import io.github.jopenlibs.vault.json.Json;
 import io.github.jopenlibs.vault.json.JsonObject;
 import io.github.jopenlibs.vault.response.DatabaseResponse;
-import io.github.jopenlibs.vault.rest.Rest;
 import io.github.jopenlibs.vault.rest.RestResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -91,7 +90,7 @@ public class Database extends OperationsBase {
         return retry(attempt -> {
             final String requestJson = roleOptionsToJson(options);
 
-            final RestResponse restResponse = new Rest()//NOPMD
+            final RestResponse restResponse = getRest()//NOPMD
                     .url(String.format("%s/v1/%s/roles/%s", config.getAddress(), this.mountPath,
                             roleName))
                     .header("X-Vault-Token", config.getToken())
@@ -137,7 +136,7 @@ public class Database extends OperationsBase {
      */
     public DatabaseResponse getRole(final String roleName) throws VaultException {
         return retry(attempt -> {
-            final RestResponse restResponse = new Rest()//NOPMD
+            final RestResponse restResponse = getRest()//NOPMD
                     .url(String.format("%s/v1/%s/roles/%s", config.getAddress(), this.mountPath,
                             roleName))
                     .header("X-Vault-Token", config.getToken())
@@ -190,7 +189,7 @@ public class Database extends OperationsBase {
             }
             final String requestJson = jsonObject.toString();
 
-            final RestResponse restResponse = new Rest()//NOPMD
+            final RestResponse restResponse = getRest()//NOPMD
                     .url(String.format("%s/v1/%s/revoke", config.getAddress(), this.mountPath))
                     .header("X-Vault-Token", config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)
@@ -235,7 +234,7 @@ public class Database extends OperationsBase {
      */
     public DatabaseResponse deleteRole(final String roleName) throws VaultException {
         return retry(attempt -> {
-            final RestResponse restResponse = new Rest()//NOPMD
+            final RestResponse restResponse = getRest()//NOPMD
                     .url(String.format("%s/v1/%s/roles/%s", config.getAddress(), this.mountPath,
                             roleName))
                     .header("X-Vault-Token", config.getToken())
@@ -282,7 +281,7 @@ public class Database extends OperationsBase {
      */
     public DatabaseResponse creds(final String roleName) throws VaultException {
         return retry(attempt -> {
-            final RestResponse restResponse = new Rest()//NOPMD
+            final RestResponse restResponse = getRest()//NOPMD
                     .url(String.format("%s/v1/%s/creds/%s", config.getAddress(), this.mountPath,
                             roleName))
                     .header("X-Vault-Token", config.getToken())

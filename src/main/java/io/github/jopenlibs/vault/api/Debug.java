@@ -94,7 +94,7 @@ public class Debug extends OperationsBase {
 
         return retry(attempt -> {
             // Build an HTTP request for Vault
-            final Rest rest = new Rest()//NOPMD
+            final Rest rest = getRest()//NOPMD
                     .url(config.getAddress() + "/v1/" + path)
                     .header("X-Vault-Token", config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)

@@ -11,7 +11,6 @@ import io.github.jopenlibs.vault.response.LogicalResponse;
 import io.github.jopenlibs.vault.response.LookupResponse;
 import io.github.jopenlibs.vault.response.UnwrapResponse;
 import io.github.jopenlibs.vault.response.WrapResponse;
-import io.github.jopenlibs.vault.rest.Rest;
 import io.github.jopenlibs.vault.rest.RestResponse;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
@@ -376,7 +375,7 @@ public class Auth extends OperationsBase {
             final String url = urlBuilder.toString();
 
             // HTTP request to Vault
-            final RestResponse restResponse = new Rest()//NOPMD
+            final RestResponse restResponse = getRest()//NOPMD
                     .url(url)
                     .header("X-Vault-Token", config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)
@@ -437,7 +436,7 @@ public class Auth extends OperationsBase {
             // HTTP request to Vault
             final String requestJson = Json.object().add("app_id", appId).add("user_id", userId)
                     .toString();
-            final RestResponse restResponse = new Rest()//NOPMD
+            final RestResponse restResponse = getRest()//NOPMD
                     .url(config.getAddress() + "/v1/auth/" + path)
                     .header("X-Vault-Namespace", this.nameSpace)
                     .body(requestJson.getBytes(StandardCharsets.UTF_8))
@@ -525,7 +524,7 @@ public class Auth extends OperationsBase {
             // HTTP request to Vault
             final String requestJson = Json.object().add("role_id", roleId)
                     .add("secret_id", secretId).toString();
-            final RestResponse restResponse = new Rest()//NOPMD
+            final RestResponse restResponse = getRest()//NOPMD
                     .url(config.getAddress() + "/v1/auth/" + path + "/login")
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
@@ -602,7 +601,7 @@ public class Auth extends OperationsBase {
         return retry(attempt -> {
             // HTTP request to Vault
             final String requestJson = Json.object().add("password", password).toString();
-            final RestResponse restResponse = new Rest()//NOPMD
+            final RestResponse restResponse = getRest()//NOPMD
                     .url(config.getAddress() + "/v1/auth/" + mount + "/login/" + username)
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
@@ -721,7 +720,7 @@ public class Auth extends OperationsBase {
             }
             final String requestJson = request.toString();
 
-            final RestResponse restResponse = new Rest()//NOPMD
+            final RestResponse restResponse = getRest()//NOPMD
                     .url(config.getAddress() + "/v1/auth/" + mount + "/login")
                     .body(requestJson.getBytes(StandardCharsets.UTF_8))
                     .header("X-Vault-Namespace", this.nameSpace)
@@ -789,7 +788,7 @@ public class Auth extends OperationsBase {
                 request.add("nonce", nonce);
             }
             final String requestJson = request.toString();
-            final RestResponse restResponse = new Rest()//NOPMD
+            final RestResponse restResponse = getRest()//NOPMD
                     .url(config.getAddress() + "/v1/auth/" + mount + "/login")
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
@@ -866,7 +865,7 @@ public class Auth extends OperationsBase {
                 request.add("role", role);
             }
             final String requestJson = request.toString();
-            final RestResponse restResponse = new Rest()//NOPMD
+            final RestResponse restResponse = getRest()//NOPMD
                     .url(config.getAddress() + "/v1/auth/" + mount + "/login")
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
@@ -939,7 +938,7 @@ public class Auth extends OperationsBase {
         return retry(attempt -> {
             // HTTP request to Vault
             final String requestJson = Json.object().add("token", githubToken).toString();
-            final RestResponse restResponse = new Rest()//NOPMD
+            final RestResponse restResponse = getRest()//NOPMD
                     .url(config.getAddress() + "/v1/auth/" + mount + "/login")
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
@@ -1020,7 +1019,7 @@ public class Auth extends OperationsBase {
             // HTTP request to Vault
             final String requestJson = Json.object().add("role", role).add("jwt", jwt)
                     .toString();
-            final RestResponse restResponse = new Rest()
+            final RestResponse restResponse = getRest()
                     .url(config.getAddress() + "/v1/" + authPath + "/login")
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
@@ -1179,7 +1178,7 @@ public class Auth extends OperationsBase {
         final String mount = certAuthMount != null ? certAuthMount : "cert";
 
         return retry(attempt -> {
-            final RestResponse restResponse = new Rest()//NOPMD
+            final RestResponse restResponse = getRest()//NOPMD
                     .url(config.getAddress() + "/v1/auth/" + mount + "/login")
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
@@ -1251,7 +1250,7 @@ public class Auth extends OperationsBase {
         return retry(attempt -> {
             // HTTP request to Vault
             final String requestJson = Json.object().add("increment", increment).toString();
-            final RestResponse restResponse = new Rest()//NOPMD
+            final RestResponse restResponse = getRest()//NOPMD
                     .url(config.getAddress() + "/v1/auth/" + mount + "/renew-self")
                     .header("X-Vault-Token", config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)
@@ -1307,7 +1306,7 @@ public class Auth extends OperationsBase {
 
         return retry(attempt -> {
             // HTTP request to Vault
-            final RestResponse restResponse = new Rest()//NOPMD
+            final RestResponse restResponse = getRest()//NOPMD
                     .url(config.getAddress() + "/v1/auth/" + mount + "/lookup-self")
                     .header("X-Vault-Token", config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)
@@ -1384,7 +1383,7 @@ public class Auth extends OperationsBase {
 
         retry(attempt -> {
             // HTTP request to Vault
-            final RestResponse restResponse = new Rest()//NOPMD
+            final RestResponse restResponse = getRest()//NOPMD
                     .url(config.getAddress() + "/v1/auth/" + mount + "/revoke-self")
                     .header("X-Vault-Token", config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)

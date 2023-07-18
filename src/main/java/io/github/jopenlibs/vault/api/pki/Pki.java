@@ -6,7 +6,6 @@ import io.github.jopenlibs.vault.api.OperationsBase;
 import io.github.jopenlibs.vault.json.Json;
 import io.github.jopenlibs.vault.json.JsonObject;
 import io.github.jopenlibs.vault.response.PkiResponse;
-import io.github.jopenlibs.vault.rest.Rest;
 import io.github.jopenlibs.vault.rest.RestResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -117,7 +116,7 @@ public class Pki extends OperationsBase {
         return retry(attempt -> {
             final String requestJson = roleOptionsToJson(options);
 
-            final RestResponse restResponse = new Rest()//NOPMD
+            final RestResponse restResponse = getRest()//NOPMD
                     .url(String.format("%s/v1/%s/roles/%s", config.getAddress(), this.mountPath,
                             roleName))
                     .header("X-Vault-Token", config.getToken())
@@ -165,7 +164,7 @@ public class Pki extends OperationsBase {
      */
     public PkiResponse getRole(final String roleName) throws VaultException {
         return retry(attempt -> {
-            final RestResponse restResponse = new Rest()//NOPMD
+            final RestResponse restResponse = getRest()//NOPMD
                     .url(String.format("%s/v1/%s/roles/%s", config.getAddress(), this.mountPath,
                             roleName))
                     .header("X-Vault-Token", config.getToken())
@@ -217,7 +216,7 @@ public class Pki extends OperationsBase {
                 jsonObject.add("serial_number", serialNumber);
             }
             final String requestJson = jsonObject.toString();
-            final RestResponse restResponse = new Rest()//NOPMD
+            final RestResponse restResponse = getRest()//NOPMD
                     .url(String.format("%s/v1/%s/revoke", config.getAddress(), this.mountPath))
                     .header("X-Vault-Token", config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)
@@ -262,7 +261,7 @@ public class Pki extends OperationsBase {
      */
     public PkiResponse deleteRole(final String roleName) throws VaultException {
         return retry(attempt -> {
-            final RestResponse restResponse = new Rest()//NOPMD
+            final RestResponse restResponse = getRest()//NOPMD
                     .url(String.format("%s/v1/%s/roles/%s", config.getAddress(), this.mountPath,
                             roleName))
                     .header("X-Vault-Token", config.getToken())
@@ -428,7 +427,7 @@ public class Pki extends OperationsBase {
             String endpoint =
                     (csr == null || csr.isEmpty()) ? "%s/v1/%s/issue/%s" : "%s/v1/%s/sign/%s";
 
-            final RestResponse restResponse = new Rest()//NOPMD
+            final RestResponse restResponse = getRest()//NOPMD
                     .url(String.format(endpoint, config.getAddress(), this.mountPath, roleName))
                     .header("X-Vault-Token", config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)

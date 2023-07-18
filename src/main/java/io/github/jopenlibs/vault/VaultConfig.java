@@ -1,6 +1,7 @@
 package io.github.jopenlibs.vault;
 
 import java.io.Serializable;
+import java.net.http.HttpClient;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -43,6 +44,7 @@ public class VaultConfig implements Serializable {
     private Integer globalEngineVersion;
     private String nameSpace;
     private EnvironmentLoader environmentLoader;
+    private HttpClient httpClient;
 
     /**
      * <p>The code used to load environment variables is encapsulated here, so that a mock version
@@ -279,6 +281,19 @@ public class VaultConfig implements Serializable {
     }
 
     /**
+     * <p>Set a preconfigured HttpClient instance to use by REST API calls. This allows to reuse
+     * http resources (connections, worker threads) between calls. If a preconfigured HttpClient is specified, then
+     * sslConfig and openTimeout values passed to VaultConfig are ignored.
+     *
+     * @param httpClient preconfigured http client instance
+     * @return VaultConfig
+     */
+    public VaultConfig httpClient(HttpClient httpClient) {
+        this.httpClient = httpClient;
+        return this;
+    }
+
+    /**
      * <p>Sets the maximum number of times that an API operation will retry upon failure.</p>
      *
      * <p>This method is not meant to be called from application-level code outside of this package
@@ -317,7 +332,6 @@ public class VaultConfig implements Serializable {
     void setEngineVersion(final Integer engineVersion) {
         this.globalEngineVersion = engineVersion;
     }
-
 
     /**
      * <p>This is the terminating method in the builder pattern.  The method that validates all of
@@ -413,5 +427,9 @@ public class VaultConfig implements Serializable {
 
     public int getPrefixPathDepth() {
         return prefixPathDepth;
+    }
+
+    public HttpClient getHttpClient() {
+        return httpClient;
     }
 }
