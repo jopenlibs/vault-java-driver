@@ -423,7 +423,10 @@ public class Rest {
         if (configuredClient != null) {
             return configuredClient;
         }
-        final var client = HttpClient.newBuilder();
+        final var client = HttpClient.newBuilder()
+                //Stick to HTTP/1.1 by default, coz Vault Agent fails proxying h2c request to https
+                .version(Version.HTTP_1_1);
+
         if (connectTimeoutSeconds != null) {
             client.connectTimeout(Duration.of(connectTimeoutSeconds, ChronoUnit.SECONDS));
         }
@@ -465,7 +468,6 @@ public class Rest {
 
         // Initialize HTTP(S) connection, and set any header values
         var request = HttpRequest.newBuilder()
-                .version(Version.HTTP_1_1)
                 .uri(uri);
 
         headers.forEach(request::header);
