@@ -6,7 +6,6 @@ import io.github.jopenlibs.vault.json.Json;
 import io.github.jopenlibs.vault.json.JsonObject;
 import io.github.jopenlibs.vault.json.JsonValue;
 import io.github.jopenlibs.vault.response.LogicalResponse;
-import io.github.jopenlibs.vault.rest.Rest;
 import io.github.jopenlibs.vault.rest.RestResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -85,7 +84,7 @@ public class Logical extends OperationsBase {
             throws VaultException {
         return retry(attempt -> {
             // Make an HTTP request to Vault
-            final RestResponse restResponse = new Rest()//NOPMD
+            final RestResponse restResponse = getRest()//NOPMD
                     .url(config.getAddress() + "/v1/" + adjustPathForReadOrWrite(path,
                             config.getPrefixPathDepth(), operation))
                     .header("X-Vault-Token", config.getToken())
@@ -142,7 +141,7 @@ public class Logical extends OperationsBase {
                 attempt -> {
                     // Make an HTTP request to Vault
                     final RestResponse restResponse =
-                            new Rest() //NOPMD
+                            getRest() //NOPMD
                                     .url(config.getAddress() + "/v1/" + adjustPathForReadOrWrite(
                                             path,
                                             config.getPrefixPathDepth(), logicalOperations.readV2))
@@ -275,7 +274,7 @@ public class Logical extends OperationsBase {
                 }
             }
             // Make an HTTP request to Vault
-            final RestResponse restResponse = new Rest()//NOPMD
+            final RestResponse restResponse = getRest()//NOPMD
                     .url(config.getAddress() + "/v1/" + adjustPathForReadOrWrite(path,
                             config.getPrefixPathDepth(), operation))
                     .body(jsonObjectToWriteFromEngineVersion(operation, requestJson).toString()
@@ -368,7 +367,7 @@ public class Logical extends OperationsBase {
             throws VaultException {
         return retry(attempt -> {
             // Make an HTTP request to Vault
-            final RestResponse restResponse = new Rest()//NOPMD
+            final RestResponse restResponse = getRest()//NOPMD
                     .url(config.getAddress() + "/v1/" + adjustPathForDelete(path,
                             config.getPrefixPathDepth(), operation))
                     .header("X-Vault-Token", config.getToken())
@@ -418,7 +417,7 @@ public class Logical extends OperationsBase {
         return retry(attempt -> {
             // Make an HTTP request to Vault
             JsonObject versionsToDelete = new JsonObject().add("versions", versions);
-            final RestResponse restResponse = new Rest()//NOPMD
+            final RestResponse restResponse = getRest()//NOPMD
                     .url(config.getAddress() + "/v1/" + adjustPathForVersionDelete(path,
                             config.getPrefixPathDepth()))
                     .header("X-Vault-Token", config.getToken())
@@ -478,7 +477,7 @@ public class Logical extends OperationsBase {
         return retry(attempt -> {
             // Make an HTTP request to Vault
             JsonObject versionsToUnDelete = new JsonObject().add("versions", versions);
-            final RestResponse restResponse = new Rest() //NOPMD
+            final RestResponse restResponse = getRest() //NOPMD
                     .url(config.getAddress() + "/v1/" + adjustPathForVersionUnDelete(path,
                             config.getPrefixPathDepth()))
                     .header("X-Vault-Token", config.getToken())
@@ -525,7 +524,7 @@ public class Logical extends OperationsBase {
         return retry(attempt -> {
             // Make an HTTP request to Vault
             JsonObject versionsToDestroy = new JsonObject().add("versions", versions);
-            final RestResponse restResponse = new Rest()//NOPMD
+            final RestResponse restResponse = getRest()//NOPMD
                     .url(config.getAddress() + "/v1/" + adjustPathForVersionDestroy(path,
                             config.getPrefixPathDepth()))
                     .header("X-Vault-Token", config.getToken())
@@ -562,7 +561,7 @@ public class Logical extends OperationsBase {
             // Make an HTTP request to Vault
             JsonObject kvToUpgrade = new JsonObject().add("options",
                     new JsonObject().add("version", 2));
-            final RestResponse restResponse = new Rest()//NOPMD
+            final RestResponse restResponse = getRest()//NOPMD
                     .url(config.getAddress() + "/v1/sys/mounts/" + (kvPath.replaceAll("/", "")
                             + "/tune"))
                     .header("X-Vault-Token", config.getToken())

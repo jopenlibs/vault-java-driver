@@ -107,6 +107,15 @@ public class Rest {
     private Integer readTimeoutSeconds;
     private Boolean sslVerification;
     private SSLContext sslContext;
+    private final HttpClient configuredClient;
+
+    public Rest(HttpClient configuredClient) {
+        this.configuredClient = configuredClient;
+    }
+
+    public Rest() {
+        this(null);
+    }
 
     /**
      * <p>Sets the base URL to which the HTTP request will be sent.  The URL may or may not include
@@ -396,6 +405,24 @@ public class Rest {
      * @throws InterruptedException if connection is interrupted
      */
     private RestResponse send(HttpRequest req) throws IOException, InterruptedException {
+        final HttpClient client = getClient();
+
+        var response = client.send(req, BodyHandlers.ofString());
+
+        // Get the resulting status code
+        final var statusCode = response.statusCode();
+
+        // Download and parse response
+        final var mimeType = response.headers().firstValue("Content-Type").orElse("");
+        final var body = response.body().getBytes();
+
+        return new RestResponse(statusCode, mimeType, body);
+    }
+
+    private HttpClient getClient() {
+        if (configuredClient != null) {
+            return configuredClient;
+        }
         final var client = HttpClient.newBuilder();
         if (connectTimeoutSeconds != null) {
             client.connectTimeout(Duration.of(connectTimeoutSeconds, ChronoUnit.SECONDS));
@@ -406,17 +433,7 @@ public class Rest {
         } else if (sslContext != null) {
             client.sslContext(sslContext);
         }
-
-        var response = client.build().send(req, BodyHandlers.ofString());
-
-        // Get the resulting status code
-        final var statusCode = response.statusCode();
-
-        // Download and parse response
-        final var mimeType = response.headers().firstValue("Content-Type").orElse("");
-        final var body = response.body().getBytes();
-
-        return new RestResponse(statusCode, mimeType, body);
+        return client.build();
     }
 
 

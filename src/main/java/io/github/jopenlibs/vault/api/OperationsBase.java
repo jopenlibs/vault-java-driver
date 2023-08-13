@@ -2,6 +2,7 @@ package io.github.jopenlibs.vault.api;
 
 import io.github.jopenlibs.vault.VaultConfig;
 import io.github.jopenlibs.vault.VaultException;
+import io.github.jopenlibs.vault.rest.Rest;
 
 
 /**
@@ -45,6 +46,10 @@ public abstract class OperationsBase {
         }
     }
 
+    protected Rest getRest() {
+        return new Rest(config.getHttpClient());
+    }
+
     public interface EndpointOperation<T> {
 
         /**
@@ -64,4 +69,5 @@ public abstract class OperationsBase {
             e.printStackTrace();
         }
     }
+
 }
