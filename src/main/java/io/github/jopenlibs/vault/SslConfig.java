@@ -578,7 +578,7 @@ public class SslConfig implements Serializable {
         }
 
         try {
-            final SSLContext sslContext = SSLContext.getInstance("TLS");
+            final SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
             sslContext.init(keyManagers, trustManagers, null);
             return sslContext;
         } catch (NoSuchAlgorithmException | KeyManagementException e) {
@@ -643,7 +643,7 @@ public class SslConfig implements Serializable {
                 keyManagers = keyManagerFactory.getKeyManagers();
             }
 
-            final SSLContext sslContext = SSLContext.getInstance("TLS");
+            final SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
             sslContext.init(keyManagers, trustManagers, null);
             return sslContext;
         } catch (CertificateException | IOException | NoSuchAlgorithmException | KeyStoreException |
