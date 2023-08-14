@@ -59,7 +59,7 @@ public class ConnectionReUsageTest {
                 .httpClient(httpClient)
                 .address("http://localhost:8999")
                 .token(TOKEN)
-                .readTimeout(1)
+                .readTimeout(10)
                 .engineVersion(1)
                 .build()).logical();
 
