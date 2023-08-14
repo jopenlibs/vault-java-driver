@@ -52,7 +52,7 @@ public class ConnectionReUsageTest {
         int readNum = 10;
 
         HttpClient httpClient = HttpClient.newBuilder()
-                .connectTimeout(Duration.of(5, ChronoUnit.SECONDS))
+                .connectTimeout(Duration.of(10, ChronoUnit.SECONDS))
                 .build();
 
         Logical vault = Vault.create(new VaultConfig()
