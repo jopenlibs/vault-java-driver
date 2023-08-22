@@ -67,10 +67,6 @@ public class LogicalResponse extends VaultResponse {
         return wrapResponse;
     }
 
-    public Map<String, String> getMetadata() {
-        return metadata;
-    }
-    
     public DataMetadata getDataMetadata() {
         return new DataMetadata(dataMetadata);
     }

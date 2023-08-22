@@ -220,5 +220,4 @@ public class LogicalUtilities {
             return jsonObject;
         }
     }
-
 }

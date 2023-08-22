@@ -1,4 +1,4 @@
-package com.bettercloud.vault.api;
+package io.github.jopenlibs.vault.api;
 
 import java.util.Collections;
 import java.util.HashMap;

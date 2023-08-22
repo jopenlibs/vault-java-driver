@@ -1,4 +1,4 @@
-package com.bettercloud.vault.response;
+package io.github.jopenlibs.vault.response;
 
 import java.util.Collections;
 import java.util.Map;
