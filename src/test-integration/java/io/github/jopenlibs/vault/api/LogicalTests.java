@@ -81,7 +81,7 @@ public class LogicalTests {
         testData.put("value", value);
 
         WriteOptions writeOptions = new WriteOptions().checkAndSet(0L).build();
-        vault.logical().write(secretPath, testData, writeOptions);
+        vault.logical().write(secretPath, testData, null, writeOptions);
 
         final LogicalResponse readResponse = vault.logical().read(secretPath);
         final String valueRead = readResponse.getData().get("value");
@@ -105,7 +105,8 @@ public class LogicalTests {
         testData.put("value", value);
 
         WriteOptions writeOptions = new WriteOptions().checkAndSet(1L).build();
-        LogicalResponse writeResponse = vault.logical().write(secretPath, testData, writeOptions);
+        LogicalResponse writeResponse =
+                vault.logical().write(secretPath, testData, null, writeOptions);
         assertEquals(400, writeResponse.getRestResponse().getStatus());
     }
 
@@ -127,7 +128,8 @@ public class LogicalTests {
         testDataUpdate.put("value", updateValue);
 
         WriteOptions updateOptions = new WriteOptions().checkAndSet(1L).build();
-        LogicalResponse updateResponse = vault.logical().write(secretPath, testDataUpdate, updateOptions);
+        LogicalResponse updateResponse =
+                vault.logical().write(secretPath, testDataUpdate, null, updateOptions);
         assertEquals(200, updateResponse.getRestResponse().getStatus());
 
         final LogicalResponse readResponse = vault.logical().read(secretPath);
@@ -159,7 +161,8 @@ public class LogicalTests {
         testDataUpdate.put("value", updateValue);
 
         WriteOptions updateOptions = new WriteOptions().checkAndSet(2L).build();
-        LogicalResponse updateResponse = vault.logical().write(secretPath, testDataUpdate, updateOptions);
+        LogicalResponse updateResponse =
+                vault.logical().write(secretPath, testDataUpdate, null, updateOptions);
         assertEquals(400, updateResponse.getRestResponse().getStatus());
     }
 

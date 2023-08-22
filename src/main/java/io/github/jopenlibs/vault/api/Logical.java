@@ -246,29 +246,42 @@ public class Logical extends OperationsBase {
         }
     }
 
+    /**
+     * <p>Basic operation to store secrets with write options</p>
+     *
+     * @see #write(String, Map, Integer)
+     * @param path The Vault key value to which to write (e.g. <code>secret/hello</code>)
+     * @param nameValuePairs Secret name and value pairs to store under this Vault key (can be
+     * @param wrapTTL Time (in seconds) which secret is wrapped
+     * @param writeOptions Additional options to be used for the write operation
+     * @return The response information received from Vault
+     * @throws VaultException If any errors occurs with the REST request, and the maximum number of
+     * retries is exceeded.
+     */
     public LogicalResponse write(final String path, final Map<String, Object> nameValuePairs,
-            final WriteOptions writeOptions)
+            final Integer wrapTTL, final WriteOptions writeOptions)
             throws VaultException {
-        if (this.engineVersionForSecretPath(path) != 2) {
+        if (!this.engineVersionForSecretPath(path).equals(2)) {
             throw new VaultException("Write options are only supported in KV Engine version 2.");
         }
-        // TODO handle wrapTTL
-        return write(path, nameValuePairs, logicalOperations.writeV2, null, writeOptions);
+        return write(path, nameValuePairs, logicalOperations.writeV2, wrapTTL, writeOptions);
     }
 
     private LogicalResponse write(final String path, final Map<String, Object> nameValuePairs,
-             final logicalOperations operation, final Integer wrapTTL, final WriteOptions writeOptions)
-             throws VaultException {
+            final logicalOperations operation, final Integer wrapTTL,
+            final WriteOptions writeOptions)
+            throws VaultException {
 
         return retry(attempt -> {
             JsonObject dataJson = buildJsonFromMap(nameValuePairs);
-            JsonObject optionsJson = writeOptions.isEmpty() ? null : buildJsonFromMap(writeOptions.getOptionsMap());
+            JsonObject optionsJson =
+                    writeOptions.isEmpty() ? null : buildJsonFromMap(writeOptions.getOptionsMap());
              // Make an HTTP request to Vault
             final RestResponse restResponse = getRest()//NOPMD
                     .url(config.getAddress() + "/v1/" + adjustPathForReadOrWrite(path,
                             config.getPrefixPathDepth(), operation))
-                    .body(jsonObjectToWriteFromEngineVersion(operation, dataJson, optionsJson).toString()
-                            .getBytes(StandardCharsets.UTF_8))
+                    .body(jsonObjectToWriteFromEngineVersion(operation, dataJson, optionsJson)
+                            .toString().getBytes(StandardCharsets.UTF_8))
                     .header("X-Vault-Token", config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
