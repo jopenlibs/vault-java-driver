@@ -247,9 +247,10 @@ public class Logical extends OperationsBase {
     }
 
     /**
-     * <p>Basic operation to store secrets with write options</p>
+     * <p>Basic operation to store secrets with the ability to specify additional write options
+     * See {@link #write(String, Map, Integer) write} for base behavior
+     * </p>
      *
-     * @see #write(String, Map, Integer)
      * @param path The Vault key value to which to write (e.g. <code>secret/hello</code>)
      * @param nameValuePairs Secret name and value pairs to store under this Vault key (can be
      * @param wrapTTL Time (in seconds) which secret is wrapped

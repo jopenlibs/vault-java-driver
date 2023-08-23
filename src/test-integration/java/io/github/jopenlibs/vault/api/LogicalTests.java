@@ -89,6 +89,8 @@ public class LogicalTests {
         final DataMetadata dataMetadata = readResponse.getDataMetadata();
         assertNotNull(dataMetadata);
         assertFalse(dataMetadata.isEmpty());
+        assertFalse(dataMetadata.getMetadataMap().isEmpty());
+        assertTrue(dataMetadata.getMetadataMap().containsKey(DataMetadata.VERSION_KEY));
         final Long secretVersion = dataMetadata.getVersion();
         assertNotNull(secretVersion);
         assertEquals(1L, secretVersion.longValue());

@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Options that may be set as part of K/V V2 write operation.
+ * Additional options that may be set as part of K/V V2 write operation.
  * Construct instances of this class using a builder pattern, calling setter methods for each
  * value and then terminating with a call to build().
  */
