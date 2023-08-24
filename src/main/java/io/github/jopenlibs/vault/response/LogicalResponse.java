@@ -93,7 +93,6 @@ public class LogicalResponse extends VaultResponse {
             JsonObject jsonObject = Json.parse(jsonString).asObject();
             if (operation.equals(Logical.logicalOperations.readV2)) {
                 jsonObject = jsonObject.get("data").asObject();
-
                 JsonValue metadataValue = jsonObject.get("metadata");
                 if (null != metadataValue) {
                     parseJsonIntoMap(metadataValue.asObject(), dataMetadata);
@@ -122,7 +121,7 @@ public class LogicalResponse extends VaultResponse {
         }
     }
 
-    private void parseJsonIntoMap(JsonObject jsonObject, Map<String, String> map) {
+    private void parseJsonIntoMap(final JsonObject jsonObject, final Map<String, String> map) {
         for (final JsonObject.Member member : jsonObject) {
             final JsonValue jsonValue = member.getValue();
             if (jsonValue == null || jsonValue.isNull()) {

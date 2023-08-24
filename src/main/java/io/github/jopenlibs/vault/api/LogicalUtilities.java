@@ -212,7 +212,7 @@ public class LogicalUtilities {
         if (operation.equals(Logical.logicalOperations.writeV2)) {
             final JsonObject wrappedJson = new JsonObject();
             wrappedJson.add("data", jsonObject);
-            if (null != optionsJsonObject) {
+            if (!optionsJsonObject.isEmpty()) {
                 wrappedJson.add("options", optionsJsonObject);
             }
             return wrappedJson;

@@ -203,9 +203,11 @@ public class Logical extends OperationsBase {
     public LogicalResponse write(final String path, final Map<String, Object> nameValuePairs)
             throws VaultException {
         if (engineVersionForSecretPath(path).equals(2)) {
-            return write(path, nameValuePairs, logicalOperations.writeV2, null, EMPTY_WRITE_OPTIONS);
+            return write(path, nameValuePairs, logicalOperations.writeV2, null,
+                    EMPTY_WRITE_OPTIONS);
         } else {
-            return write(path, nameValuePairs, logicalOperations.writeV1, null, EMPTY_WRITE_OPTIONS);
+            return write(path, nameValuePairs, logicalOperations.writeV1, null,
+                    EMPTY_WRITE_OPTIONS);
         }
     }
 
@@ -240,15 +242,17 @@ public class Logical extends OperationsBase {
             final Integer wrapTTL)
             throws VaultException {
         if (engineVersionForSecretPath(path).equals(2)) {
-            return write(path, nameValuePairs, logicalOperations.writeV2, wrapTTL, EMPTY_WRITE_OPTIONS);
+            return write(path, nameValuePairs, logicalOperations.writeV2, wrapTTL,
+                    EMPTY_WRITE_OPTIONS);
         } else {
-            return write(path, nameValuePairs, logicalOperations.writeV1, wrapTTL, EMPTY_WRITE_OPTIONS);
+            return write(path, nameValuePairs, logicalOperations.writeV1, wrapTTL,
+                    EMPTY_WRITE_OPTIONS);
         }
     }
 
     /**
-     * <p>Basic operation to store secrets with the ability to specify additional write options
-     * See {@link #write(String, Map, Integer) write} for base behavior
+     * <p>Operation to store secrets with the ability to specify additional write options
+     * See {@link #write(String, Map, Integer) write} for common behavior
      * </p>
      *
      * @param path The Vault key value to which to write (e.g. <code>secret/hello</code>)
@@ -256,8 +260,8 @@ public class Logical extends OperationsBase {
      * @param wrapTTL Time (in seconds) which secret is wrapped
      * @param writeOptions Additional options to be used for the write operation
      * @return The response information received from Vault
-     * @throws VaultException If any errors occurs with the REST request, and the maximum number of
-     * retries is exceeded.
+     * @throws VaultException If invalid engine version or if errors occurs with the REST request,
+     *  and the maximum number of retries is exceeded.
      */
     public LogicalResponse write(final String path, final Map<String, Object> nameValuePairs,
             final Integer wrapTTL, final WriteOptions writeOptions)
@@ -275,8 +279,7 @@ public class Logical extends OperationsBase {
 
         return retry(attempt -> {
             JsonObject dataJson = buildJsonFromMap(nameValuePairs);
-            JsonObject optionsJson =
-                    writeOptions.isEmpty() ? null : buildJsonFromMap(writeOptions.getOptionsMap());
+            JsonObject optionsJson = buildJsonFromMap(writeOptions.getOptionsMap());
              // Make an HTTP request to Vault
             final RestResponse restResponse = getRest()//NOPMD
                     .url(config.getAddress() + "/v1/" + adjustPathForReadOrWrite(path,
