@@ -29,7 +29,7 @@ import static io.github.jopenlibs.vault.api.LogicalUtilities.jsonObjectToWriteFr
  */
 public class Logical extends OperationsBase {
 
-    private static final WriteOptions EMPTY_WRITE_OPTIONS = new WriteOptions().build();
+    private static final WriteOptions DEFAULT_WRITE_OPTIONS = new WriteOptions().build();
 
     private String nameSpace;
 
@@ -204,10 +204,10 @@ public class Logical extends OperationsBase {
             throws VaultException {
         if (engineVersionForSecretPath(path).equals(2)) {
             return write(path, nameValuePairs, logicalOperations.writeV2, null,
-                    EMPTY_WRITE_OPTIONS);
+                    DEFAULT_WRITE_OPTIONS);
         } else {
             return write(path, nameValuePairs, logicalOperations.writeV1, null,
-                    EMPTY_WRITE_OPTIONS);
+                    DEFAULT_WRITE_OPTIONS);
         }
     }
 
@@ -243,10 +243,10 @@ public class Logical extends OperationsBase {
             throws VaultException {
         if (engineVersionForSecretPath(path).equals(2)) {
             return write(path, nameValuePairs, logicalOperations.writeV2, wrapTTL,
-                    EMPTY_WRITE_OPTIONS);
+                    DEFAULT_WRITE_OPTIONS);
         } else {
             return write(path, nameValuePairs, logicalOperations.writeV1, wrapTTL,
-                    EMPTY_WRITE_OPTIONS);
+                    DEFAULT_WRITE_OPTIONS);
         }
     }
 
