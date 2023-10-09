@@ -58,7 +58,7 @@ public class Debug extends OperationsBase {
      * </blockquote>
      */
     public HealthResponse health() throws VaultException {
-        return health(null, null, null, null);
+        return health(null, null, null, null, null);
     }
 
     /**
@@ -81,6 +81,8 @@ public class Debug extends OperationsBase {
      * node instead of the default of 429
      * @param sealedCode (optional) Indicates the status code that should be returned for a sealed
      * node instead of the default of 500
+     * @param performanceStandbyCode  (optional) Indicates the status code that should be
+     *      returned for a performanceStandbyCode node instead of the default of 473
      * @return The response information returned from Vault
      * @throws VaultException If an error occurs or unexpected response received from Vault
      */
@@ -88,7 +90,8 @@ public class Debug extends OperationsBase {
             final Boolean standbyOk,
             final Integer activeCode,
             final Integer standbyCode,
-            final Integer sealedCode
+            final Integer sealedCode,
+            final Integer performanceStandbyCode
     ) throws VaultException {
         final String path = "sys/health";
 
@@ -116,6 +119,8 @@ public class Debug extends OperationsBase {
             if (sealedCode != null) {
                 rest.parameter("sealedcode", sealedCode.toString());
             }
+            if (performanceStandbyCode != null) rest.parameter("performancestandbycode",
+                    performanceStandbyCode.toString());
             // Execute request
             final RestResponse restResponse = rest.get();
 
@@ -124,6 +129,7 @@ public class Debug extends OperationsBase {
             validCodes.add(200);
             validCodes.add(429);
             validCodes.add(500);
+            validCodes.add(473);
             if (activeCode != null) {
                 validCodes.add(activeCode);
             }
@@ -132,6 +138,9 @@ public class Debug extends OperationsBase {
             }
             if (sealedCode != null) {
                 validCodes.add(sealedCode);
+            }
+            if (performanceStandbyCode != null) {
+                validCodes.add(performanceStandbyCode);
             }
 
             if (!validCodes.contains(restResponse.getStatus())) {

@@ -49,7 +49,7 @@ public class DebugTests {
 
     @Test
     public void testHealth_WithParams() throws VaultException {
-        final HealthResponse response = vault.debug().health(null, 212, null, null);
+        final HealthResponse response = vault.debug().health(null, 212, null, null, null);
         assertTrue(response.getInitialized());
         assertFalse(response.getSealed());
         assertFalse(response.getStandby());
@@ -67,7 +67,7 @@ public class DebugTests {
     @Test
     public void testHealth_WonkyActiveCode() throws VaultException {
         final HealthResponse response = vault.debug().health(null, 204, null,
-                null);
+                null, null);
         assertNull(response.getInitialized());
         assertNull(response.getSealed());
         assertNull(response.getStandby());
