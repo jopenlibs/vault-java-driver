@@ -31,7 +31,7 @@ public class HealthResponse implements Serializable {
      * <code>standby</code>, and <code>serverTimeUTC</code> set to <code>null</code>.  This
      * typically happens when you use optional parameters in the health call, to designate
      * non-standard HTTP status codes.  See docs for
-     * {@link Debug#health(Boolean, Integer, Integer, Integer)}.</p>
+     * {@link Debug#health(Boolean, Integer, Integer, Integer, Integer)}.</p>
      *
      * @param restResponse The raw HTTP response from Vault
      * @param retries The number of retry attempts that occurred during the API call (can be zero)
