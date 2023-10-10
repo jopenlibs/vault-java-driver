@@ -20,6 +20,9 @@ public class HealthResponse implements Serializable {
     private Boolean initialized;
     private Boolean sealed;
     private Boolean standby;
+    private Boolean drsecondary;
+    private Boolean perfstandby;
+    private Boolean uninit;
     private Long serverTimeUTC;
 
     /**
@@ -31,8 +34,7 @@ public class HealthResponse implements Serializable {
      * <code>standby</code>, and <code>serverTimeUTC</code> set to <code>null</code>.  This
      * typically happens when you use optional parameters in the health call, to designate
      * non-standard HTTP status codes.  See docs for
-     * {@link Debug#health(Boolean, Integer, Integer, Integer)}.</p>
-     *
+     * {@link Debug#health(Boolean, Boolean, Integer, Integer, Integer,Integer, Integer, Integer)}.</p>
      * @param restResponse The raw HTTP response from Vault
      * @param retries The number of retry attempts that occurred during the API call (can be zero)
      * @throws VaultException If any error occurs or unexpected response is received from Vault
@@ -65,6 +67,12 @@ public class HealthResponse implements Serializable {
                         : jsonObject.get("sealed").asBoolean();
                 this.standby = jsonObject.get("standby") == null ? null
                         : jsonObject.get("standby").asBoolean();
+                this.drsecondary = jsonObject.get("drsecondary") == null ? null
+                        : jsonObject.get("drsecondary").asBoolean();
+                this.perfstandby = jsonObject.get("perfstandby") == null ? null
+                        : jsonObject.get("perfstandby").asBoolean();
+                this.uninit = jsonObject.get("uninit") == null ? null
+                        : jsonObject.get("uninit").asBoolean();
                 this.serverTimeUTC = jsonObject.get("server_time_utc") == null ? null
                         : jsonObject.get("server_time_utc").asLong();
             } catch (final Exception e) {
@@ -92,6 +100,18 @@ public class HealthResponse implements Serializable {
 
     public Boolean getStandby() {
         return standby;
+    }
+
+    public Boolean getDrsecondary() {
+        return drsecondary;
+    }
+
+    public Boolean getPerfstandby() {
+        return perfstandby;
+    }
+
+    public Boolean getuninit() {
+        return uninit;
     }
 
     /**
