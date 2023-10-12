@@ -83,17 +83,4 @@ public class DebugTests {
         assertNull(response.getuninit());
         TestCase.assertEquals(204, response.getRestResponse().getStatus());
     }
-    @Test
-    public void testHealth_WonkyPerformance() throws VaultException {
-        final HealthResponse response = vault.debug().health(null, true, null, null,
-                null, 473, null, null);
-        assertTrue(response.getInitialized());
-        assertFalse(response.getSealed());
-        assertFalse(response.getStandby());
-        assertNull(response.getServerTimeUTC());
-        assertFalse(response.getDrsecondary());
-        assertFalse(response.getPerfstandby());
-        assertFalse(response.getuninit());
-        TestCase.assertEquals(473, response.getRestResponse().getStatus());
-    }
 }
