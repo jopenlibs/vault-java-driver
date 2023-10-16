@@ -75,32 +75,32 @@ public class Debug extends OperationsBase {
      *
      * @param standbyOk (optional) Indicates that being a standby should still return the active
      * status code instead of the standby code
-     * @param perfstandbyok (optional) Indicates that being a performance standby should still
+     * @param perfstandbyOk (optional) Indicates that being a performance standby should still
      * return the active status code instead of the performance standby code.
      * @param activeCode (optional) Indicates the status code that should be returned for an active
      * node instead of the default of 200
      * @param standbyCode (optional) Indicates the status code that should be returned for a standby
      * node instead of the default of 429
-     * @param drsecondarycode (optional) Indicates the status code that should be returned for a DR
+     * @param drsecondaryCode (optional) Indicates the status code that should be returned for a DR
      * secondary node instead of the default of 472
      * @param performanceStandbyCode (optional) Indicates the status code that should be returned
      * for a performance standby node instead of the default of 473
      * @param sealedCode (optional) Indicates the status code that should be returned for a sealed
      * node instead of the default of 500
-     * @param uninitcode (optional) Indicates the status code that should be returned for a
+     * @param uninitCode (optional) Indicates the status code that should be returned for a
      * uninitialized node instead of the default of 500
      * @return The response information returned from Vault
      * @throws VaultException If an error occurs or unexpected response received from Vault
      */
     public HealthResponse health(
             final Boolean standbyOk,
-            final Boolean perfstandbyok,
+            final Boolean perfstandbyOk,
             final Integer activeCode,
             final Integer standbyCode,
-            final Integer drsecondarycode,
+            final Integer drsecondaryCode,
             final Integer performanceStandbyCode,
             final Integer sealedCode,
-            final Integer uninitcode
+            final Integer uninitCode
     ) throws VaultException {
         final String path = "sys/health";
 
@@ -119,8 +119,8 @@ public class Debug extends OperationsBase {
             if (standbyOk != null) {
                 rest.parameter("standbyok", standbyOk.toString());
             }
-            if (perfstandbyok != null) {
-                rest.parameter("perfstandbyok", perfstandbyok.toString());
+            if (perfstandbyOk != null) {
+                rest.parameter("perfstandbyok", perfstandbyOk.toString());
             }
             if (activeCode != null) {
                 rest.parameter("activecode", activeCode.toString());
@@ -128,8 +128,8 @@ public class Debug extends OperationsBase {
             if (standbyCode != null) {
                 rest.parameter("standbycode", standbyCode.toString());
             }
-            if (drsecondarycode != null) {
-                rest.parameter("drsecondarycode", drsecondarycode.toString());
+            if (drsecondaryCode != null) {
+                rest.parameter("drsecondarycode", drsecondaryCode.toString());
             }
             if (performanceStandbyCode != null) {
                 rest.parameter("performancestandbycode", performanceStandbyCode.toString());
@@ -137,8 +137,8 @@ public class Debug extends OperationsBase {
             if (sealedCode != null) {
                 rest.parameter("sealedcode", sealedCode.toString());
             }
-            if (uninitcode != null) {
-                rest.parameter("uninitcode", uninitcode.toString());
+            if (uninitCode != null) {
+                rest.parameter("uninitcode", uninitCode.toString());
             }
             // Execute request
             final RestResponse restResponse = rest.get();
@@ -158,8 +158,8 @@ public class Debug extends OperationsBase {
             if (standbyCode != null) {
                 validCodes.add(standbyCode);
             }
-            if (drsecondarycode != null) {
-                validCodes.add(drsecondarycode);
+            if (drsecondaryCode != null) {
+                validCodes.add(drsecondaryCode);
             }
             if (sealedCode != null) {
                 validCodes.add(sealedCode);
@@ -167,8 +167,8 @@ public class Debug extends OperationsBase {
             if (performanceStandbyCode != null) {
                 validCodes.add(performanceStandbyCode);
             }
-            if (uninitcode != null) {
-                validCodes.add(uninitcode);
+            if (uninitCode != null) {
+                validCodes.add(uninitCode);
             }
 
             if (!validCodes.contains(restResponse.getStatus())) {
