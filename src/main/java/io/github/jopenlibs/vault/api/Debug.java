@@ -93,6 +93,7 @@ public class Debug extends OperationsBase {
      * @throws VaultException If an error occurs or unexpected response received from Vault
      */
     public HealthResponse health(
+    public HealthResponse health(
             final Boolean standbyOk,
             final Boolean perfstandbyOk,
             final Integer activeCode,
@@ -152,6 +153,7 @@ public class Debug extends OperationsBase {
             validCodes.add(500);
             validCodes.add(501);
             validCodes.add(503);
+
             if (activeCode != null) {
                 validCodes.add(activeCode);
             }

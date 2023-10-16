@@ -13,6 +13,7 @@ import java.util.List;
  * final Credential options = new Credential()
  *                              .certificate(...)
  *                              .issuingCa(...)
+ *                              .caChain(...)
  *                              .privateKey(...)
  *                              .privateKeyType(...)
  *                              .serialNumber(...);
@@ -23,6 +24,7 @@ public class Credential implements Serializable {
 
     private String certificate;
     private String issuingCa;
+    private List<String> caChain;
     private String privateKey;
     private String privateKeyType;
     private String serialNumber;
@@ -44,6 +46,17 @@ public class Credential implements Serializable {
      */
     public Credential issuingCa(final String issuingCa) {
         this.issuingCa = issuingCa;
+        return this;
+    }
+
+    /**
+     * @param caChain The list of intermediate and root certificates, in PEM format.
+     * It is only included if there is in fact a chain outside of a built-in Vault CA cert being used for the issuing/signing.
+     * @return This object, with the CA chain populated, ready for other builder
+     * methods or immediate use.
+     */
+    public Credential caChain(final List<String> caChain) {
+        this.caChain = caChain;
         return this;
     }
 
@@ -83,6 +96,10 @@ public class Credential implements Serializable {
 
     public String getIssuingCa() {
         return issuingCa;
+    }
+
+    public List<String> getCaChain() {
+        return caChain;
     }
 
     public String getPrivateKey() {

@@ -3,11 +3,14 @@ package io.github.jopenlibs.vault.response;
 import io.github.jopenlibs.vault.api.Logical;
 import io.github.jopenlibs.vault.api.pki.Credential;
 import io.github.jopenlibs.vault.api.pki.RoleOptions;
+import io.github.jopenlibs.vault.json.JsonObject;
+import io.github.jopenlibs.vault.json.JsonValue;
 import io.github.jopenlibs.vault.rest.RestResponse;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.stream.Collectors;
 
 /**
  * This class is a container for the information returned by Vault in PKI backend API operations
@@ -25,7 +28,7 @@ public class PkiResponse extends LogicalResponse {
     public PkiResponse(final RestResponse restResponse, final int retries) {
         super(restResponse, retries, Logical.logicalOperations.authentication);
         roleOptions = buildRoleOptionsFromData(this.getData());
-        credential = buildCredentialFromData(this.getData());
+        credential = buildCredentialFromData(this.getData(), this.getDataObject());
     }
 
     public RoleOptions getRoleOptions() {
@@ -104,14 +107,21 @@ public class PkiResponse extends LogicalResponse {
      *
      * @param data The <code>"data"</code> object from a Vault JSON response, converted into Java
      * key-value pairs.
+     * @param dataObject The <code>"data"</code> object from a Vault JSON response.
      * @return A container for credential data
      */
-    private Credential buildCredentialFromData(final Map<String, String> data) {
+    private Credential buildCredentialFromData(final Map<String, String> data, final JsonObject dataObject) {
         if (data == null) {
             return null;
         }
         final String certificate = data.get("certificate");
         final String issuingCa = data.get("issuing_ca");
+        final JsonValue caChainJsonValue = dataObject != null ? dataObject.get("ca_chain") : null;
+        final List<String> caChain = caChainJsonValue != null
+                ? caChainJsonValue.asArray().values().stream()
+                .map(JsonValue::asString)
+                .collect(Collectors.toList())
+                : null;
         final String privateKey = data.get("private_key");
         final String privateKeyType = data.get("private_key_type");
         final String serialNumber = data.get("serial_number");
@@ -123,6 +133,7 @@ public class PkiResponse extends LogicalResponse {
         return new Credential()
                 .certificate(certificate)
                 .issuingCa(issuingCa)
+                .caChain(caChain)
                 .privateKey(privateKey)
                 .privateKeyType(privateKeyType)
                 .serialNumber(serialNumber);

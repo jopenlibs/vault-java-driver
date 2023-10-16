@@ -52,7 +52,8 @@ public class DebugTests {
 
     @Test
     public void testHealth_WithParams() throws VaultException {
-        final HealthResponse response = vault.debug().health(null, null,212, null, null, null, null, null);
+        final HealthResponse response = vault.debug().health(null, null, 212, null, null, null, null, null);
+
         assertTrue(response.getInitialized());
         assertFalse(response.getSealed());
         assertFalse(response.getStandby());
