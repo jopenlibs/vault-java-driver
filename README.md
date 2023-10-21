@@ -305,6 +305,12 @@ and may require modifications in your code to migrate. Changes to the minor vers
 number) should represent non-breaking changes. The third number represents any very minor bugfix
 patches.
 
+* **6.2.0**: This release contains the following updates:
+    * Updated test dependencies [(issue #50)](https://github.com/jopenlibs/vault-java-driver/issues/50)
+    * Expose CAS option on secret write and version on secret read (K/V 2) [(issue #52)](https://github.com/jopenlibs/vault-java-driver/issues/52)
+    * Read ca_chain from PKI response and store it in Credential [(issue #56)](https://github.com/jopenlibs/vault-java-driver/issues/56)
+    * Adds performanceStandByCode ([issue #54](https://github.com/jopenlibs/vault-java-driver/issues/54) and [issue #59](https://github.com/jopenlibs/vault-java-driver/issues/59))
+    * Change Default SSL Context [(issue #58)](https://github.com/jopenlibs/vault-java-driver/issues/58)
 * **6.1.0**: This release contains the following updates:
     * Fixed missed quotes in documentation (#43)
     * Add possibility to pass preconfigured http client to reuse http/tls resources for consequent requests **(#44)**
