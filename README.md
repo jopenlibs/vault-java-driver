@@ -43,7 +43,7 @@ Gradle:
 
 ```
 dependencies {
-    implementation 'io.github.jopenlibs:vault-java-driver:6.1.0'
+    implementation 'io.github.jopenlibs:vault-java-driver:6.2.0'
 }
 ```
 
@@ -53,7 +53,7 @@ Maven:
 <dependency>
     <groupId>io.github.jopenlibs</groupId>
     <artifactId>vault-java-driver</artifactId>
-    <version>6.1.0</version>
+    <version>6.2.0</version>
 </dependency>
 ```
 
