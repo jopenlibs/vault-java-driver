@@ -3,6 +3,8 @@ package io.github.jopenlibs.vault.api;
 import io.github.jopenlibs.vault.Vault;
 import io.github.jopenlibs.vault.VaultException;
 import io.github.jopenlibs.vault.api.pki.CredentialFormat;
+import io.github.jopenlibs.vault.api.pki.Pki;
+import io.github.jopenlibs.vault.api.pki.PrivateKeyFormat;
 import io.github.jopenlibs.vault.api.pki.RoleOptions;
 import io.github.jopenlibs.vault.response.PkiResponse;
 import io.github.jopenlibs.vault.rest.RestResponse;
@@ -16,6 +18,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.ArrayList;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -82,8 +86,7 @@ public class AuthBackendPkiTests {
         TestCase.assertEquals(404, getResponse.getRestResponse().getStatus());
     }
 
-    @Test
-    public void testIssueCredential() throws VaultException, InterruptedException {
+    void issueCredentialTemplate(Function<Pki, PkiResponse> pkiResponseFunction) throws VaultException, InterruptedException {
         final Vault vault = container.getRootVault();
 
         // Create a role
@@ -101,8 +104,7 @@ public class AuthBackendPkiTests {
         Thread.sleep(3000);
 
         // Issue cert
-        final PkiResponse issueResponse = vault.pki()
-                .issue("testRole", "test.myvault.com", null, null, "1h", CredentialFormat.PEM);
+        final PkiResponse issueResponse = pkiResponseFunction.apply(vault.pki());
         TestCase.assertNotNull(issueResponse.getCredential().getCertificate());
         TestCase.assertNotNull(issueResponse.getCredential().getPrivateKey());
         TestCase.assertNotNull(issueResponse.getCredential().getSerialNumber());
@@ -111,8 +113,31 @@ public class AuthBackendPkiTests {
     }
 
     @Test
-    public void testIssueCredentialWithCsr()
-            throws VaultException, InterruptedException, NoSuchAlgorithmException {
+    public void testIssueCredential() throws VaultException, InterruptedException {
+        issueCredentialTemplate(pki -> {
+            try {
+                return pki.issue("testRole", "test.myvault.com", null, null, "1h", CredentialFormat.PEM);
+            } catch (VaultException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+    }
+
+    @Test
+    public void testIssueCredentialWithPrivateKeyFormat() throws VaultException, InterruptedException {
+        issueCredentialTemplate(pki -> {
+            try {
+                return pki.issue("testRole", "test.myvault.com", null, null, "1h", CredentialFormat.PEM, PrivateKeyFormat.PKCS8);
+            } catch (VaultException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+    }
+
+    void issueCredentialWithCsrTemplate(BiFunction<Pki, String, PkiResponse> pkiResponseFunction)
+            throws VaultException, InterruptedException, NoSuchAlgorithmException  {
 
         KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
         kpg.initialize(2048);
@@ -142,13 +167,39 @@ public class AuthBackendPkiTests {
         Thread.sleep(3000);
 
         // Issue cert
-        final PkiResponse issueResponse = vault.pki()
-                .issue("testRole", "test.myvault.com", null, null, "1h", CredentialFormat.PEM, csr);
+        final PkiResponse issueResponse = pkiResponseFunction.apply(vault.pki(), csr);
         TestCase.assertNotNull(issueResponse.getCredential().getCertificate());
         TestCase.assertNotNull(issueResponse.getCredential().getCaChain());
         TestCase.assertNull(issueResponse.getCredential().getPrivateKey());
         TestCase.assertNotNull(issueResponse.getCredential().getSerialNumber());
         TestCase.assertNotNull(issueResponse.getCredential().getIssuingCa());
+    }
+    @Test
+    public void testIssueCredentialWithCsr()
+            throws VaultException, InterruptedException, NoSuchAlgorithmException {
+
+        issueCredentialWithCsrTemplate((pki, csr) -> {
+            try {
+                return pki.issue("testRole", "test.myvault.com", null, null, "1h", CredentialFormat.PEM, csr);
+            } catch (VaultException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+    }
+
+    @Test
+    public void testIssueCredentialWithCsrAndPrivateKeyFormat()
+            throws VaultException, InterruptedException, NoSuchAlgorithmException {
+
+        issueCredentialWithCsrTemplate((pki, csr) -> {
+            try {
+                return pki.issue("testRole", "test.myvault.com", null, null, "1h", CredentialFormat.PEM, csr, PrivateKeyFormat.PKCS8);
+            } catch (VaultException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
     }
 
     @Test
