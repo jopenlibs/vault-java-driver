@@ -15,7 +15,7 @@ import org.eclipse.jetty.server.Request;
  *
  * <ol>
  *     <li>
- *         <code>RetriesMockVault</code> responds with HTTP 500 status codes to a designated number of requests (which
+ *         <code>RetriesMockVault</code> responds with a specified HTTP status code to a designated number of requests (which
  *         can be zero).  This can be used to test retry logic.
  *     </li>
  *     <li>
@@ -46,11 +46,18 @@ public class RetriesMockVault extends MockVault {
 
     private final int mockStatus;
     private final String mockResponse;
+    private final int failureStatus;
     private int failureCount;
 
     public RetriesMockVault(final int failureCount, final int mockStatus,
             final String mockResponse) {
+        this(failureCount, 500, mockStatus, mockResponse);
+    }
+
+    public RetriesMockVault(final int failureCount, final int failureStatus,
+            final int mockStatus, final String mockResponse) {
         this.failureCount = failureCount;
+        this.failureStatus = failureStatus;
         this.mockStatus = mockStatus;
         this.mockResponse = mockResponse;
     }
@@ -66,8 +73,8 @@ public class RetriesMockVault extends MockVault {
         baseRequest.setHandled(true);
         if (failureCount > 0) {
             failureCount = failureCount - 1;
-            response.setStatus(500);
-            System.out.println("RetriesMockVault is sending an HTTP 500 code, to cause a retry...");
+            response.setStatus(failureStatus);
+            System.out.println("RetriesMockVault is sending an HTTP " + failureStatus + " code, to trigger retry logic...");
         } else {
             System.out.println("RetriesMockVault is sending an HTTP " + mockStatus
                     + " code, with expected success payload...");
