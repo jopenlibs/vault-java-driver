@@ -98,9 +98,10 @@ public class Logical extends OperationsBase {
                     .sslContext(config.getSslConfig().getSslContext())
                     .get();
 
-            // Validate response - don't treat 4xx class errors as exceptions, we want to return an error as the response
+            // Validate response - don't treat 4xx class errors as exceptions (except 412), we want to return an error as the response
+            // 412 (Precondition Failed) should be retried
             if (restResponse.getStatus() != 200 && !(restResponse.getStatus() >= 400
-                    && restResponse.getStatus() < 500)) {
+                    && restResponse.getStatus() < 500 && restResponse.getStatus() != 412)) {
                 throw new VaultException(
                         "Vault responded with HTTP status code: " + restResponse.getStatus()
                                 + "\nResponse body: " + new String(restResponse.getBody(),
@@ -157,9 +158,10 @@ public class Logical extends OperationsBase {
                                     .sslContext(config.getSslConfig().getSslContext())
                                     .get();
 
-                    // Validate response - don't treat 4xx class errors as exceptions, we want to return an error as the response
+                    // Validate response - don't treat 4xx class errors as exceptions (except 412), we want to return an error as the response
+                    // 412 (Precondition Failed) should be retried
                     if (restResponse.getStatus() != 200 && !(restResponse.getStatus() >= 400
-                            && restResponse.getStatus() < 500)) {
+                            && restResponse.getStatus() < 500 && restResponse.getStatus() != 412)) {
                         throw new VaultException(
                                 "Vault responded with HTTP status code: " + restResponse.getStatus()
                                         + "\nResponse body: " + new String(restResponse.getBody(),
@@ -297,9 +299,10 @@ public class Logical extends OperationsBase {
                     .post();
 
             // HTTP Status should be either 200 (with content - e.g. PKI write) or 204 (no content)
+            // 412 (Precondition Failed) should be retried, so exclude it from the 4xx pass-through
             final int restStatus = restResponse.getStatus();
             if (restStatus == 200 || restStatus == 204 || (restResponse.getStatus() >= 400
-                    && restResponse.getStatus() < 500)) {
+                    && restResponse.getStatus() < 500 && restResponse.getStatus() != 412)) {
                 return new LogicalResponse(restResponse, attempt, operation);
             } else {
                 throw new VaultException(
