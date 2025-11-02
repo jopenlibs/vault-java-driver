@@ -66,5 +66,6 @@ jobs:
       - uses: actions/upload-artifact@v4  # upload test results
         if: success() || failure()        # run this step even if previous step failed
         with:
-          name: test-results-${{ matrix.vault }}
+          overwrite: true
+          name: test-results-${{ matrix.os }}-${{ matrix.vault }}
           path: build/test-results/
