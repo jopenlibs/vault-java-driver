@@ -37,6 +37,10 @@ jobs:
         os:
         - ubuntu-latest
         - windows-latest
+        include:
+          # TODO(casz) remove once https://github.com/testcontainers/testcontainers-java/pull/1780 is available
+          - os: 'ubuntu-latest'
+            tasks: 'verify'
 
     steps:
       - name: Checkout code
@@ -47,7 +51,6 @@ jobs:
         with:
           java-version: ${{ matrix.java }}
           distribution: temurin
-          cache: maven
 
       - name: Build with Maven
         run: mvn --batch-mode --update-snapshots verify
