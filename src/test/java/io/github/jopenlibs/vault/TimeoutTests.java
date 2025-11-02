@@ -1,9 +1,8 @@
 package io.github.jopenlibs.vault;
 
 import io.github.jopenlibs.vault.response.LogicalResponse;
-import io.github.jopenlibs.vault.vault.VaultTestUtils;
-import io.github.jopenlibs.vault.vault.mock.OpenTimeoutsMockVault;
-import io.github.jopenlibs.vault.vault.mock.ReadTimeoutsMockVault;
+import io.github.jopenlibs.vault.mock.OpenTimeoutsMockVault;
+import io.github.jopenlibs.vault.mock.ReadTimeoutsMockVault;
 import org.eclipse.jetty.server.Server;
 import org.junit.Test;
 

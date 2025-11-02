@@ -1,8 +1,7 @@
 package io.github.jopenlibs.vault;
 
 import io.github.jopenlibs.vault.response.LogicalResponse;
-import io.github.jopenlibs.vault.vault.VaultTestUtils;
-import io.github.jopenlibs.vault.vault.mock.MockVault;
+import io.github.jopenlibs.vault.mock.MockVault;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.jetty.server.Server;

@@ -2,8 +2,8 @@ package io.github.jopenlibs.vault.rest;
 
 import io.github.jopenlibs.vault.json.Json;
 import io.github.jopenlibs.vault.json.JsonObject;
-import io.github.jopenlibs.vault.vault.VaultTestUtils;
-import io.github.jopenlibs.vault.vault.mock.EchoInputMockVault;
+import io.github.jopenlibs.vault.VaultTestUtils;
+import io.github.jopenlibs.vault.mock.EchoInputMockVault;
 import java.nio.charset.StandardCharsets;
 import org.eclipse.jetty.server.Server;
 import org.junit.After;
