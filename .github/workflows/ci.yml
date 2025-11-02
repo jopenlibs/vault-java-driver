@@ -37,10 +37,6 @@ jobs:
         os:
         - ubuntu-latest
         - windows-latest
-        include:
-          # TODO(casz) remove once https://github.com/testcontainers/testcontainers-java/pull/1780 is available
-          - os: 'ubuntu-latest'
-            tasks: 'integrationTest'
 
     steps:
       - name: Checkout code
@@ -52,14 +48,8 @@ jobs:
           java-version: ${{ matrix.java }}
           distribution: temurin
 
-      - name: Build with Gradle
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: |
-            build
-            ${{ matrix.tasks }}
-            -s
-            --info
+      - name: Build with Maven
+        run: mvn --batch-mode --update-snapshots verify
         env:
           VAULT_VERSION: ${{ matrix.vault }}
 
