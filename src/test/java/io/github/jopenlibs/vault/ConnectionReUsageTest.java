@@ -2,8 +2,7 @@ package io.github.jopenlibs.vault;
 
 import io.github.jopenlibs.vault.api.Logical;
 import io.github.jopenlibs.vault.response.LogicalResponse;
-import io.github.jopenlibs.vault.vault.VaultTestUtils;
-import io.github.jopenlibs.vault.vault.mock.MockVault;
+import io.github.jopenlibs.vault.mock.MockVault;
 import java.net.Socket;
 import java.net.http.HttpClient;
 import java.nio.ByteBuffer;
