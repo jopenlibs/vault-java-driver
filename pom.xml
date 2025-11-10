@@ -5,7 +5,7 @@
 
   <groupId>io.github.jopenlibs</groupId>
   <artifactId>vault-java-driver</artifactId>
-  <version>6.2.0</version>
+  <version>6.2.1</version>
   <packaging>jar</packaging>
   <name>vault-java-driver</name>
   <description>Zero-dependency Java client for HashiCorp's Vault</description>

@@ -305,6 +305,9 @@ and may require modifications in your code to migrate. Changes to the minor vers
 number) should represent non-breaking changes. The third number represents any very minor bugfix
 patches.
 
+* **6.2.1**: This release contains the following updates:
+    * Fix: Retry HTTP 412 errors to support eventual consistency on standbys [(pull request #68)](https://github.com/jopenlibs/vault-java-driver/pull/68)
+    * Switch from Gradle to Maven [(pull request #69)](https://github.com/jopenlibs/vault-java-driver/pull/69)
 * **6.2.0**: This release contains the following updates:
     * Updated test dependencies [(issue #50)](https://github.com/jopenlibs/vault-java-driver/issues/50)
     * Expose CAS option on secret write and version on secret read (K/V 2) [(issue #52)](https://github.com/jopenlibs/vault-java-driver/issues/52)
