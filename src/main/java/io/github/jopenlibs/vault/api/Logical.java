@@ -596,11 +596,39 @@ public class Logical extends OperationsBase {
         });
     }
 
+    /**
+     * <p>Searches the secrets engine path map for the specified path.</p>
+     *
+     * For example, if the path map contains:
+     * <pre>
+     *   "cubbyhole/" -> "unknown"
+     *   "identity/" -> "unknown"
+     *   "sys/" -> "unknown"
+     *   "secret/" -> "2"
+     * </pre>
+     *
+     * and the secret path is "secret/myapp/config", this method will check, in order:
+     * <ul>
+     *     <li>"secret/myapp/config/" - not found</li>
+     *     <li>"secret/myapp/" - not found</li>
+     *     <li>"secret/" - found, engine version 2</li>
+     * </ul>
+     *
+     * @param secretPath The Vault secret path to check (e.g. <code>secret/hello</code>).
+     * @return the detected engine version (1 or 2), or the global default if not found
+     */
     private Integer engineVersionForSecretPath(final String secretPath) {
-        if (!this.config.getSecretsEnginePathMap().isEmpty()) {
-            return this.config.getSecretsEnginePathMap().containsKey(secretPath + "/") ?
-                    Integer.valueOf(this.config.getSecretsEnginePathMap().get(secretPath + "/"))
-                    : this.config.getGlobalEngineVersion();
+        final Map<String, String> pathMap = this.config.getSecretsEnginePathMap();
+        if (!pathMap.isEmpty()) {
+            int idx = secretPath.length();
+            do {
+                final String prefix = secretPath.substring(0, idx);
+                final String version = pathMap.get(prefix + '/');
+                if (version != null && !version.equals("unknown")) {
+                    return Integer.parseInt(version);
+                }
+                idx = prefix.lastIndexOf('/');
+            } while (idx != -1);
         }
         return this.config.getGlobalEngineVersion();
     }
