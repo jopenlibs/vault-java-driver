@@ -71,6 +71,17 @@ public class VaultTests {
     }
 
     @Test
+    public void testVaultWithUnknownKVEnginePathMap() throws VaultException {
+        Map<String, String> engineKVMap = new HashMap<>();
+        engineKVMap.put("secret/", "unknown");
+        VaultConfig vaultConfig = new VaultConfig().secretsEnginePathMap(engineKVMap);
+        Vault vault = Vault.create(vaultConfig, true, 1);
+        Assert.assertNotNull(vault);
+        Assert.assertEquals(String.valueOf(1),
+                vault.logical().getEngineVersionForSecretPath("secret").toString());
+    }
+
+    @Test
     public void testVaultWithoutKVEnginePathMap() throws VaultException {
         Map<String, String> engineKVMap = new HashMap<>();
         engineKVMap.put("/hello", "2");
@@ -94,6 +105,24 @@ public class VaultTests {
         Assert.assertEquals(String.valueOf(1),
                 vault.logical().getEngineVersionForSecretPath("kv-v1").toString());
         Assert.assertEquals(String.valueOf(2),
+                vault.logical().getEngineVersionForSecretPath("notInMap").toString());
+    }
+
+    @Test
+    public void testVaultWithPrefixedKVEnginePathMap() throws VaultException {
+        Map<String, String> engineKVMap = new HashMap<>();
+        engineKVMap.put("secret/", "2");
+        engineKVMap.put("other/mount/", "2");
+        VaultConfig vaultConfig = new VaultConfig().secretsEnginePathMap(engineKVMap);
+        Vault vault = Vault.create(vaultConfig, true, 1);
+        Assert.assertNotNull(vault);
+        Assert.assertEquals(String.valueOf(2),
+                vault.logical().getEngineVersionForSecretPath("secret/path/to/credential").toString());
+        Assert.assertEquals(String.valueOf(2),
+                vault.logical().getEngineVersionForSecretPath("other/mount/path/to/credential").toString());
+        Assert.assertEquals(String.valueOf(1),
+                vault.logical().getEngineVersionForSecretPath("other").toString());
+        Assert.assertEquals(String.valueOf(1),
                 vault.logical().getEngineVersionForSecretPath("notInMap").toString());
     }
 
