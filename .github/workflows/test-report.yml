@@ -12,7 +12,7 @@ jobs:
         with:
           artifact: test-results
           name: Tests Report
-          path: '**/*.xml'
+          path: '**/reports/*.*'
           reporter: java-junit
           list-suites: 'all'
           list-tests: 'all'
