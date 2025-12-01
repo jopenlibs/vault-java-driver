@@ -64,6 +64,26 @@ public class VaultVersion implements Comparable<VaultVersion> {
         }
     }
 
+    public static boolean greatThan(String version) {
+        VaultVersion accepted = new VaultVersion(version);
+        try {
+            VaultVersion current = new VaultVersion(
+                    Optional.ofNullable(System.getenv("VAULT_VERSION")).orElse("latest"));
+
+            if (current.getLiteral().equals("latest")) {
+                return false;
+            }
+
+            if (current.compareTo(accepted) <= 0) {
+                return false;
+            }
+
+            return true;
+        } catch (NumberFormatException ignored) {
+            return false;
+        }
+    }
+
     @Override
     public String toString() {
         return this.getLiteral();
