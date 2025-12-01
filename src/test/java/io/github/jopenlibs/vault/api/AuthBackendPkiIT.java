@@ -28,9 +28,10 @@ import org.junit.Test;
 
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assume.assumeTrue;
 
 /**
- * Integration tests for for operations on Vault's <code>/v1/pki/*</code> REST endpoints.
+ * Integration tests for operations on Vault's <code>/v1/pki/*</code> REST endpoints.
  */
 public class AuthBackendPkiIT {
 
@@ -178,6 +179,9 @@ public class AuthBackendPkiIT {
     public void testIssueCredentialWithCsr()
             throws VaultException, InterruptedException, NoSuchAlgorithmException {
 
+        // Test not work in Vault versions less than 1.11.0
+        assumeTrue(VaultVersion.greatThan("1.11.0"));
+
         issueCredentialWithCsrTemplate((pki, csr) -> {
             try {
                 return pki.issue("testRole", "test.myvault.com", null, null, "1h", CredentialFormat.PEM, csr);
@@ -191,6 +195,9 @@ public class AuthBackendPkiIT {
     @Test
     public void testIssueCredentialWithCsrAndPrivateKeyFormat()
             throws VaultException, InterruptedException, NoSuchAlgorithmException {
+
+        // Test not works in Vault versions less than 1.11.0
+        assumeTrue(VaultVersion.greatThan("1.11.0"));
 
         issueCredentialWithCsrTemplate((pki, csr) -> {
             try {
