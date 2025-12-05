@@ -47,7 +47,7 @@ public class Seal extends OperationsBase {
             // HTTP request to Vault
             final RestResponse restResponse = new Rest()//NOPMD
                     .url(config.getAddress() + "/v1/sys/seal")
-                    .header("X-Vault-Token", config.getToken())
+                    .token(config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
                     .connectTimeoutSeconds(config.getOpenTimeout())

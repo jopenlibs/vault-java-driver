@@ -206,6 +206,22 @@ public class Rest {
     }
 
     /**
+     * <p>Adds the "X-Vault-Token" header to be sent with the HTTP request.</p>
+     * *
+     * <p>This method may be chained together repeatedly</p>
+     *
+     * @param value The vault token value as a {@code char[]}
+     * @return This object, with a vault token added, ready for other builder-pattern config methods or
+     * an HTTP verb method
+     */
+    public Rest token(final char[] value) {
+        if (value != null && value.length > 0) {
+            return header("X-Vault-Token", new String(value));
+        }
+        return this;
+    }
+
+    /**
      * <p>Adds a header to be sent with the HTTP request.</p>
      * *
      * <p>This method may be chained together repeatedly, to pass multiple headers with a request.

@@ -377,7 +377,7 @@ public class Auth extends OperationsBase {
             // HTTP request to Vault
             final RestResponse restResponse = getRest()//NOPMD
                     .url(url)
-                    .header("X-Vault-Token", config.getToken())
+                    .token(config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
                     .body(requestJson.getBytes(StandardCharsets.UTF_8))
@@ -1252,7 +1252,7 @@ public class Auth extends OperationsBase {
             final String requestJson = Json.object().add("increment", increment).toString();
             final RestResponse restResponse = getRest()//NOPMD
                     .url(config.getAddress() + "/v1/auth/" + mount + "/renew-self")
-                    .header("X-Vault-Token", config.getToken())
+                    .token(config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
                     .body(increment < 0 ? null : requestJson.getBytes(StandardCharsets.UTF_8))
@@ -1308,7 +1308,7 @@ public class Auth extends OperationsBase {
             // HTTP request to Vault
             final RestResponse restResponse = getRest()//NOPMD
                     .url(config.getAddress() + "/v1/auth/" + mount + "/lookup-self")
-                    .header("X-Vault-Token", config.getToken())
+                    .token(config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
                     .connectTimeoutSeconds(config.getOpenTimeout())
@@ -1347,7 +1347,7 @@ public class Auth extends OperationsBase {
      * @see io.github.jopenlibs.vault.api.sys.Wrapping#lookupWrap(String)
      * @deprecated This method is deprecated and in future it will be removed
      */
-    public LogicalResponse lookupWrap(final String wrappedToken) throws VaultException {
+    public LogicalResponse lookupWrap(final char[] wrappedToken) throws VaultException {
         Sys sys = new Sys(this.config);
         return sys.wrapping().lookupWrap(wrappedToken, true);
     }
@@ -1356,7 +1356,7 @@ public class Auth extends OperationsBase {
      * @see io.github.jopenlibs.vault.api.sys.Wrapping#lookupWrap(String, boolean)
      * @deprecated This method is deprecated and in future it will be removed
      */
-    public LogicalResponse lookupWrap(final String wrappedToken, boolean inBody)
+    public LogicalResponse lookupWrap(final char[] wrappedToken, boolean inBody)
             throws VaultException {
         Sys sys = new Sys(this.config);
         return sys.wrapping().lookupWrap(wrappedToken, inBody);
@@ -1385,7 +1385,7 @@ public class Auth extends OperationsBase {
             // HTTP request to Vault
             final RestResponse restResponse = getRest()//NOPMD
                     .url(config.getAddress() + "/v1/auth/" + mount + "/revoke-self")
-                    .header("X-Vault-Token", config.getToken())
+                    .token(config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
                     .connectTimeoutSeconds(config.getOpenTimeout())
@@ -1420,7 +1420,7 @@ public class Auth extends OperationsBase {
      * @see io.github.jopenlibs.vault.api.sys.Wrapping#unwrap(String)
      * @deprecated This method is deprecated and in future it will be removed
      */
-    public UnwrapResponse unwrap(final String wrappedToken) throws VaultException {
+    public UnwrapResponse unwrap(final char[] wrappedToken) throws VaultException {
         Sys sys = new Sys(this.config);
         return sys.wrapping().unwrap(wrappedToken, true);
     }
@@ -1429,7 +1429,7 @@ public class Auth extends OperationsBase {
      * @see io.github.jopenlibs.vault.api.sys.Wrapping#unwrap(String, boolean)
      * @deprecated This method is deprecated and in future it will be removed
      */
-    public UnwrapResponse unwrap(final String wrappedToken, boolean inBody) throws VaultException {
+    public UnwrapResponse unwrap(final char[] wrappedToken, boolean inBody) throws VaultException {
         Sys sys = new Sys(this.config);
         return sys.wrapping().unwrap(wrappedToken, inBody);
     }
@@ -1447,7 +1447,7 @@ public class Auth extends OperationsBase {
      * @see io.github.jopenlibs.vault.api.sys.Wrapping#rewrap(String)
      * @deprecated This method is deprecated and in future it will be removed
      */
-    public WrapResponse rewrap(final String wrappedToken) throws VaultException {
+    public WrapResponse rewrap(final char[] wrappedToken) throws VaultException {
         Sys sys = new Sys(this.config);
         return sys.wrapping().rewrap(wrappedToken);
     }

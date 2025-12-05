@@ -93,7 +93,7 @@ public class Database extends OperationsBase {
             final RestResponse restResponse = getRest()//NOPMD
                     .url(String.format("%s/v1/%s/roles/%s", config.getAddress(), this.mountPath,
                             roleName))
-                    .header("X-Vault-Token", config.getToken())
+                    .token(config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
                     .body(requestJson.getBytes(StandardCharsets.UTF_8))
@@ -139,7 +139,7 @@ public class Database extends OperationsBase {
             final RestResponse restResponse = getRest()//NOPMD
                     .url(String.format("%s/v1/%s/roles/%s", config.getAddress(), this.mountPath,
                             roleName))
-                    .header("X-Vault-Token", config.getToken())
+                    .token(config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
                     .connectTimeoutSeconds(config.getOpenTimeout())
@@ -191,7 +191,7 @@ public class Database extends OperationsBase {
 
             final RestResponse restResponse = getRest()//NOPMD
                     .url(String.format("%s/v1/%s/revoke", config.getAddress(), this.mountPath))
-                    .header("X-Vault-Token", config.getToken())
+                    .token(config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
                     .connectTimeoutSeconds(config.getOpenTimeout())
@@ -237,7 +237,7 @@ public class Database extends OperationsBase {
             final RestResponse restResponse = getRest()//NOPMD
                     .url(String.format("%s/v1/%s/roles/%s", config.getAddress(), this.mountPath,
                             roleName))
-                    .header("X-Vault-Token", config.getToken())
+                    .token(config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
                     .connectTimeoutSeconds(config.getOpenTimeout())
@@ -284,7 +284,7 @@ public class Database extends OperationsBase {
             final RestResponse restResponse = getRest()//NOPMD
                     .url(String.format("%s/v1/%s/creds/%s", config.getAddress(), this.mountPath,
                             roleName))
-                    .header("X-Vault-Token", config.getToken())
+                    .token(config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
                     .connectTimeoutSeconds(config.getOpenTimeout())

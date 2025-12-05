@@ -34,7 +34,7 @@ public class VaultConfig implements Serializable {
 
     private Map<String, String> secretsEnginePathMap = new ConcurrentHashMap<>();
     private String address;
-    private String token;
+    private char[] token;
     private SslConfig sslConfig;
     private Integer openTimeout;
     private Integer readTimeout;
@@ -143,8 +143,16 @@ public class VaultConfig implements Serializable {
      * @return This object, with token populated, ready for additional builder-pattern method calls
      * or else finalization with the build() method
      */
-    public VaultConfig token(final String token) {
-        this.token = token;
+    public VaultConfig token(final CharSequence token) {
+        if (token != null) {
+            char[] arr = new char[token.length()];
+            for (int i = 0; i < arr.length; i++) {
+                arr[i] = token.charAt(i);
+            }
+            this.token = arr;
+        } else {
+            this.token = null;
+        }
         return this;
     }
 
@@ -354,8 +362,9 @@ public class VaultConfig implements Serializable {
                 throw new VaultException("No address is set");
             }
         }
-        if (this.token == null && environmentLoader.loadVariable(VAULT_TOKEN) != null) {
-            this.token = environmentLoader.loadVariable(VAULT_TOKEN);
+        String envVaultToken = environmentLoader.loadVariable(VAULT_TOKEN);
+        if (this.token == null && envVaultToken != null) {
+            this.token = envVaultToken.toCharArray();
         }
         if (this.openTimeout == null
                 && environmentLoader.loadVariable(VAULT_OPEN_TIMEOUT) != null) {
@@ -393,7 +402,7 @@ public class VaultConfig implements Serializable {
         return address;
     }
 
-    public String getToken() {
+    public char[] getToken() {
         return token;
     }
 

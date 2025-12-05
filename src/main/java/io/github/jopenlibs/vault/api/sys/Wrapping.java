@@ -77,7 +77,7 @@ public class Wrapping extends OperationsBase {
      * @return The response information returned from Vault
      * @throws VaultException If any error occurs, or unexpected response received from Vault
      */
-    public LogicalResponse lookupWrap(final String wrappedToken) throws VaultException {
+    public LogicalResponse lookupWrap(final char[] wrappedToken) throws VaultException {
         return lookupWrap(wrappedToken, true);
     }
 
@@ -104,10 +104,10 @@ public class Wrapping extends OperationsBase {
      * @return The response information returned from Vault
      * @throws VaultException If any error occurs, or unexpected response received from Vault
      */
-    public LogicalResponse lookupWrap(final String wrappedToken, boolean inBody)
+    public LogicalResponse lookupWrap(final char[] wrappedToken, boolean inBody)
             throws VaultException {
         final String requestJson =
-                inBody ? Json.object().add("token", wrappedToken).toString() : null;
+                inBody ? Json.object().add("token", new String(wrappedToken)).toString() : null;
 
         return retry(attempt -> {
             // HTTP request to Vault
@@ -122,10 +122,10 @@ public class Wrapping extends OperationsBase {
 
             if (inBody) {
                 rest = rest
-                        .header("X-Vault-Token", config.getToken())
+                        .token(config.getToken())
                         .body(requestJson.getBytes(StandardCharsets.UTF_8));
             } else {
-                rest = rest.header("X-Vault-Token", wrappedToken);
+                rest = rest.token(wrappedToken);
             }
 
             final RestResponse restResponse = rest.post();
@@ -214,7 +214,7 @@ public class Wrapping extends OperationsBase {
             // HTTP request to Vault
             final RestResponse restResponse = new Rest()
                     .url(url)
-                    .header("X-Vault-Token", config.getToken())
+                    .token(config.getToken())
                     .header("X-Vault-Wrap-TTL", Integer.toString(ttlInSec))
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
@@ -321,7 +321,7 @@ public class Wrapping extends OperationsBase {
      * @see #wrap(JsonObject, int)
      * @see #unwrap()
      */
-    public UnwrapResponse unwrap(final String wrappedToken) throws VaultException {
+    public UnwrapResponse unwrap(final char[] wrappedToken) throws VaultException {
         return unwrap(wrappedToken, true);
     }
 
@@ -377,7 +377,7 @@ public class Wrapping extends OperationsBase {
      * @see #wrap(JsonObject, int)
      * @see #unwrap()
      */
-    public UnwrapResponse unwrap(final String wrappedToken, boolean inBody) throws VaultException {
+    public UnwrapResponse unwrap(final char[] wrappedToken, boolean inBody) throws VaultException {
         Objects.requireNonNull(wrappedToken, "Wrapped token is null");
 
         return retry(attempt -> {
@@ -394,13 +394,13 @@ public class Wrapping extends OperationsBase {
                     .sslContext(config.getSslConfig().getSslContext());
 
             if (inBody) {
-                final String requestJson = Json.object().add("token", wrappedToken).toString();
+                final String requestJson = Json.object().add("token", new String(wrappedToken)).toString();
                 rest = rest
-                        .header("X-Vault-Token", config.getToken())
+                        .token(config.getToken())
                         .body(requestJson.getBytes(StandardCharsets.UTF_8));
             } else {
                 rest = rest
-                        .header("X-Vault-Token", wrappedToken);
+                        .token(wrappedToken);
             }
 
             RestResponse restResponse = rest.post();
@@ -462,18 +462,18 @@ public class Wrapping extends OperationsBase {
      * @throws VaultException If any error occurs, or unexpected response received from Vault
      * @see #wrap(JsonObject, int)
      */
-    public WrapResponse rewrap(final String wrappedToken) throws VaultException {
+    public WrapResponse rewrap(final char[] wrappedToken) throws VaultException {
         Objects.requireNonNull(wrappedToken);
 
         return retry(attempt -> {
             // Parse parameters to JSON
-            final String requestJson = Json.object().add("token", wrappedToken).toString();
+            final String requestJson = Json.object().add("token", new String(wrappedToken)).toString();
             final String url = config.getAddress() + "/v1/sys/wrapping/rewrap";
 
             // HTTP request to Vault
             final RestResponse restResponse = new Rest()
                     .url(url)
-                    .header("X-Vault-Token", config.getToken())
+                    .token(config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
                     .body(requestJson.getBytes(StandardCharsets.UTF_8))

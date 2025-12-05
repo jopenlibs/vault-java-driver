@@ -56,7 +56,7 @@ public class Leases extends OperationsBase {
             final String requestJson = Json.object().add("lease_id", leaseId).toString();
             final RestResponse restResponse = new Rest()//NOPMD
                     .url(config.getAddress() + "/v1/sys/leases/revoke")
-                    .header("X-Vault-Token", config.getToken())
+                    .token(config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
                     .body(requestJson.getBytes(StandardCharsets.UTF_8))
@@ -97,7 +97,7 @@ public class Leases extends OperationsBase {
         return retry(attempt -> {
             final RestResponse restResponse = new Rest()//NOPMD
                     .url(config.getAddress() + "/v1/sys/leases/revoke-prefix/" + prefix)
-                    .header("X-Vault-Token", config.getToken())
+                    .token(config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
                     .connectTimeoutSeconds(config.getOpenTimeout())
@@ -139,7 +139,7 @@ public class Leases extends OperationsBase {
         return retry(attempt -> {
             final RestResponse restResponse = new Rest()//NOPMD
                     .url(config.getAddress() + "/v1/sys/leases/revoke-force/" + prefix)
-                    .header("X-Vault-Token", config.getToken())
+                    .token(config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
                     .connectTimeoutSeconds(config.getOpenTimeout())
@@ -187,7 +187,7 @@ public class Leases extends OperationsBase {
             final String requestJson = Json.object().add("increment", increment).toString();
             final RestResponse restResponse = new Rest()//NOPMD
                     .url(config.getAddress() + "/v1/sys/leases/renew/" + leaseId)
-                    .header("X-Vault-Token", config.getToken())
+                    .token(config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
                     .body(increment < 0 ? null : requestJson.getBytes(StandardCharsets.UTF_8))

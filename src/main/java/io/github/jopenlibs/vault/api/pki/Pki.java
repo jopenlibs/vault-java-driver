@@ -119,7 +119,7 @@ public class Pki extends OperationsBase {
             final RestResponse restResponse = getRest()//NOPMD
                     .url(String.format("%s/v1/%s/roles/%s", config.getAddress(), this.mountPath,
                             roleName))
-                    .header("X-Vault-Token", config.getToken())
+                    .token(config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
                     .body(requestJson.getBytes(StandardCharsets.UTF_8))
@@ -167,7 +167,7 @@ public class Pki extends OperationsBase {
             final RestResponse restResponse = getRest()//NOPMD
                     .url(String.format("%s/v1/%s/roles/%s", config.getAddress(), this.mountPath,
                             roleName))
-                    .header("X-Vault-Token", config.getToken())
+                    .token(config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
                     .connectTimeoutSeconds(config.getOpenTimeout())
@@ -187,7 +187,7 @@ public class Pki extends OperationsBase {
     }
 
     /**
-     * <p>Operation to revike  a certificate in the vault using the PKI backend.
+     * <p>Operation to revoke a certificate in the vault using the PKI backend.
      * Relies on an authentication token being present in the <code>VaultConfig</code>
      * instance.</p>
      *
@@ -218,7 +218,7 @@ public class Pki extends OperationsBase {
             final String requestJson = jsonObject.toString();
             final RestResponse restResponse = getRest()//NOPMD
                     .url(String.format("%s/v1/%s/revoke", config.getAddress(), this.mountPath))
-                    .header("X-Vault-Token", config.getToken())
+                    .token(config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
                     .connectTimeoutSeconds(config.getOpenTimeout())
@@ -264,7 +264,7 @@ public class Pki extends OperationsBase {
             final RestResponse restResponse = getRest()//NOPMD
                     .url(String.format("%s/v1/%s/roles/%s", config.getAddress(), this.mountPath,
                             roleName))
-                    .header("X-Vault-Token", config.getToken())
+                    .token(config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
                     .connectTimeoutSeconds(config.getOpenTimeout())
@@ -541,7 +541,7 @@ public class Pki extends OperationsBase {
 
             final RestResponse restResponse = getRest()//NOPMD
                     .url(String.format(endpoint, config.getAddress(), this.mountPath, roleName))
-                    .header("X-Vault-Token", config.getToken())
+                    .token(config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
                     .body(requestJson.getBytes(StandardCharsets.UTF_8))
