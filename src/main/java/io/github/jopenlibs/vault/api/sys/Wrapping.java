@@ -201,7 +201,7 @@ public class Wrapping extends OperationsBase {
      * @param ttlInSec Wrap TTL in seconds
      * @return The response information returned from Vault
      * @throws VaultException If any error occurs, or unexpected response received from Vault
-     * @see #unwrap(String)
+     * @see #unwrap(char[])
      */
     public WrapResponse wrap(final JsonObject jsonObject, int ttlInSec) throws VaultException {
         Objects.requireNonNull(jsonObject);
@@ -247,7 +247,7 @@ public class Wrapping extends OperationsBase {
 
     /**
      * <p>Returns the original response inside the wrapped auth token. This method is useful if you
-     * need to unwrap a token without being authenticated. See {@link #unwrap(String)} if you need
+     * need to unwrap a token without being authenticated. See {@link #unwrap(char[])} if you need
      * to do that authenticated.</p>
      *
      * <p>In the example below, you cannot use twice the {@code VaultConfig}, since
@@ -266,7 +266,7 @@ public class Wrapping extends OperationsBase {
      *
      * @return The response information returned from Vault
      * @throws VaultException If any error occurs, or unexpected response received from Vault
-     * @see #unwrap(String)
+     * @see #unwrap(char[])
      */
     public UnwrapResponse unwrap() throws VaultException {
         return unwrap(config.getToken(), false);

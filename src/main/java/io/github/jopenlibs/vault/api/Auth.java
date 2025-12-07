@@ -1344,7 +1344,7 @@ public class Auth extends OperationsBase {
     }
 
     /**
-     * @see io.github.jopenlibs.vault.api.sys.Wrapping#lookupWrap(String)
+     * @see io.github.jopenlibs.vault.api.sys.Wrapping#lookupWrap(char[])
      * @deprecated This method is deprecated and in future it will be removed
      */
     public LogicalResponse lookupWrap(final char[] wrappedToken) throws VaultException {
@@ -1353,7 +1353,7 @@ public class Auth extends OperationsBase {
     }
 
     /**
-     * @see io.github.jopenlibs.vault.api.sys.Wrapping#lookupWrap(String, boolean)
+     * @see io.github.jopenlibs.vault.api.sys.Wrapping#lookupWrap(char[], boolean)
      * @deprecated This method is deprecated and in future it will be removed
      */
     public LogicalResponse lookupWrap(final char[] wrappedToken, boolean inBody)
@@ -1417,7 +1417,7 @@ public class Auth extends OperationsBase {
     }
 
     /**
-     * @see io.github.jopenlibs.vault.api.sys.Wrapping#unwrap(String)
+     * @see io.github.jopenlibs.vault.api.sys.Wrapping#unwrap(char[])
      * @deprecated This method is deprecated and in future it will be removed
      */
     public UnwrapResponse unwrap(final char[] wrappedToken) throws VaultException {
@@ -1426,7 +1426,7 @@ public class Auth extends OperationsBase {
     }
 
     /**
-     * @see io.github.jopenlibs.vault.api.sys.Wrapping#unwrap(String, boolean)
+     * @see io.github.jopenlibs.vault.api.sys.Wrapping#unwrap(char[], boolean)
      * @deprecated This method is deprecated and in future it will be removed
      */
     public UnwrapResponse unwrap(final char[] wrappedToken, boolean inBody) throws VaultException {
@@ -1444,7 +1444,7 @@ public class Auth extends OperationsBase {
     }
 
     /**
-     * @see io.github.jopenlibs.vault.api.sys.Wrapping#rewrap(String)
+     * @see io.github.jopenlibs.vault.api.sys.Wrapping#rewrap(char[])
      * @deprecated This method is deprecated and in future it will be removed
      */
     public WrapResponse rewrap(final char[] wrappedToken) throws VaultException {
