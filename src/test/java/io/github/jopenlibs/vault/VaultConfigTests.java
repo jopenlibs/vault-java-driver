@@ -94,7 +94,7 @@ public class VaultConfigTests {
     public void testConfigConstructor() throws VaultException {
         final VaultConfig config = new VaultConfig().address("address").token("token").build();
         assertEquals("address", config.getAddress());
-        assertEquals("token", config.getToken());
+        assertEquals("token", new String(config.getToken()));
     }
 
     /**
@@ -133,7 +133,7 @@ public class VaultConfigTests {
                         .secretsEnginePathMap(testMap)
                         .build();
         assertEquals("address", config.getAddress());
-        assertEquals("token", config.getToken());
+        assertEquals("token", new String(config.getToken()));
         assertEquals("1", config.getGlobalEngineVersion().toString());
         assertEquals("bar", config.getSecretsEnginePathMap().get("foo"));
     }
@@ -159,7 +159,7 @@ public class VaultConfigTests {
                 .environmentLoader(mock)
                 .build();
         assertEquals("http://127.0.0.1:8200", config.getAddress());
-        assertEquals("c24e2469-298a-6c64-6a71-5b47c9ba459a", config.getToken());
+        assertEquals("c24e2469-298a-6c64-6a71-5b47c9ba459a", new String(config.getToken()));
         assertTrue(config.getSslConfig().isVerify());
         assertTrue(30 == config.getOpenTimeout());
         assertTrue(30 == config.getReadTimeout());
@@ -240,7 +240,7 @@ public class VaultConfigTests {
                 .environmentLoader(mock)
                 .build();
         assertEquals("http://127.0.0.1:8200", config.getAddress());
-        assertEquals("d24e2469-298a-6c64-6a71-5b47c9ba459a", config.getToken());
+        assertEquals("d24e2469-298a-6c64-6a71-5b47c9ba459a", new String(config.getToken()));
         assertTrue(config.getSslConfig().isVerify());
         assertEquals(30, (int) config.getOpenTimeout());
         assertEquals(30, (int) config.getReadTimeout());

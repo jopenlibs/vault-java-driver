@@ -89,7 +89,7 @@ public class Logical extends OperationsBase {
             final RestResponse restResponse = getRest()//NOPMD
                     .url(config.getAddress() + "/v1/" + adjustPathForReadOrWrite(path,
                             config.getPrefixPathDepth(), operation))
-                    .header("X-Vault-Token", config.getToken())
+                    .token(config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
                     .connectTimeoutSeconds(config.getOpenTimeout())
@@ -148,7 +148,7 @@ public class Logical extends OperationsBase {
                                     .url(config.getAddress() + "/v1/" + adjustPathForReadOrWrite(
                                             path,
                                             config.getPrefixPathDepth(), logicalOperations.readV2))
-                                    .header("X-Vault-Token", config.getToken())
+                                    .token(config.getToken())
                                     .header("X-Vault-Namespace", this.nameSpace)
                                     .header("X-Vault-Request", "true")
                                     .parameter("version", version.toString())
@@ -288,7 +288,7 @@ public class Logical extends OperationsBase {
                             config.getPrefixPathDepth(), operation))
                     .body(jsonObjectToWriteFromEngineVersion(operation, dataJson, optionsJson)
                             .toString().getBytes(StandardCharsets.UTF_8))
-                    .header("X-Vault-Token", config.getToken())
+                    .token(config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
                     .header("X-Vault-Wrap-TTL", wrapTTL != null ? wrapTTL.toString() : null)
@@ -380,7 +380,7 @@ public class Logical extends OperationsBase {
             final RestResponse restResponse = getRest()//NOPMD
                     .url(config.getAddress() + "/v1/" + adjustPathForDelete(path,
                             config.getPrefixPathDepth(), operation))
-                    .header("X-Vault-Token", config.getToken())
+                    .token(config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
                     .connectTimeoutSeconds(config.getOpenTimeout())
@@ -430,7 +430,7 @@ public class Logical extends OperationsBase {
             final RestResponse restResponse = getRest()//NOPMD
                     .url(config.getAddress() + "/v1/" + adjustPathForVersionDelete(path,
                             config.getPrefixPathDepth()))
-                    .header("X-Vault-Token", config.getToken())
+                    .token(config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
                     .connectTimeoutSeconds(config.getOpenTimeout())
@@ -490,7 +490,7 @@ public class Logical extends OperationsBase {
             final RestResponse restResponse = getRest() //NOPMD
                     .url(config.getAddress() + "/v1/" + adjustPathForVersionUnDelete(path,
                             config.getPrefixPathDepth()))
-                    .header("X-Vault-Token", config.getToken())
+                    .token(config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
                     .connectTimeoutSeconds(config.getOpenTimeout())
@@ -537,7 +537,7 @@ public class Logical extends OperationsBase {
             final RestResponse restResponse = getRest()//NOPMD
                     .url(config.getAddress() + "/v1/" + adjustPathForVersionDestroy(path,
                             config.getPrefixPathDepth()))
-                    .header("X-Vault-Token", config.getToken())
+                    .token(config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
                     .connectTimeoutSeconds(config.getOpenTimeout())
@@ -574,7 +574,7 @@ public class Logical extends OperationsBase {
             final RestResponse restResponse = getRest()//NOPMD
                     .url(config.getAddress() + "/v1/sys/mounts/" + (kvPath.replaceAll("/", "")
                             + "/tune"))
-                    .header("X-Vault-Token", config.getToken())
+                    .token(config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
                     .connectTimeoutSeconds(config.getOpenTimeout())

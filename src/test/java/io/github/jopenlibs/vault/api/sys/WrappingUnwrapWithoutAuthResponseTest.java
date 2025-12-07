@@ -38,7 +38,7 @@ public class WrappingUnwrapWithoutAuthResponseTest {
         VaultConfig vaultConfig = new VaultConfig().address("http://127.0.0.1:8999")
                 .token("wrappedToken").build();
         Vault vault = Vault.create(vaultConfig);
-        UnwrapResponse response = vault.sys().wrapping().unwrap("wrappedToken");
+        UnwrapResponse response = vault.sys().wrapping().unwrap("wrappedToken".toCharArray());
 
         assertEquals(200, response.getRestResponse().getStatus());
 
@@ -64,7 +64,7 @@ public class WrappingUnwrapWithoutAuthResponseTest {
         VaultConfig vaultConfig = new VaultConfig().address("http://127.0.0.1:8999")
                 .token("wrappedToken").build();
         Vault vault = Vault.create(vaultConfig);
-        UnwrapResponse response = vault.sys().wrapping().unwrap("wrappedToken");
+        UnwrapResponse response = vault.sys().wrapping().unwrap("wrappedToken".toCharArray());
 
         assertEquals(200, response.getRestResponse().getStatus());
 

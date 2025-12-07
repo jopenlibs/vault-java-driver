@@ -309,7 +309,7 @@ public class VaultImpl implements Vault {
         try {
             final RestResponse restResponse = new Rest()//NOPMD
                     .url(vaultConfig.getAddress() + "/v1/sys/mounts")
-                    .header("X-Vault-Token", vaultConfig.getToken())
+                    .token(vaultConfig.getToken())
                     .header("X-Vault-Namespace", this.vaultConfig.getNameSpace())
                     .header("X-Vault-Request", "true")
                     .connectTimeoutSeconds(vaultConfig.getOpenTimeout())

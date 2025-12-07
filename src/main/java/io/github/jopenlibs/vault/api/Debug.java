@@ -108,7 +108,7 @@ public class Debug extends OperationsBase {
             // Build an HTTP request for Vault
             final Rest rest = getRest()//NOPMD
                     .url(config.getAddress() + "/v1/" + path)
-                    .header("X-Vault-Token", config.getToken())
+                    .token(config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
                     .connectTimeoutSeconds(config.getOpenTimeout())

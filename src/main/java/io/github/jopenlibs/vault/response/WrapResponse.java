@@ -14,7 +14,7 @@ import java.nio.charset.StandardCharsets;
 public class WrapResponse extends VaultResponse {
 
     private Boolean renewable;
-    private String token;
+    private char[] token;
     private String accessor;
     private int ttl;
     private String creationTime;
@@ -35,7 +35,7 @@ public class WrapResponse extends VaultResponse {
             JsonValue wrapInfoJsonVal = jsonResponse.get("wrap_info");
             if (wrapInfoJsonVal != null && !wrapInfoJsonVal.isNull()) {
                 final JsonObject wrapInfoJsonObject = wrapInfoJsonVal.asObject();
-                token = wrapInfoJsonObject.getString("token", null);
+                token = wrapInfoJsonObject.getString("token", null).toCharArray();
                 accessor = wrapInfoJsonObject.getString("accessor", null);
                 ttl = wrapInfoJsonObject.getInt("ttl", 0);
                 creationTime = wrapInfoJsonObject.getString("creation_time", null);
@@ -57,7 +57,7 @@ public class WrapResponse extends VaultResponse {
      *
      * @return response-wrapped token.
      */
-    public String getToken() {
+    public char[] getToken() {
         return token;
     }
 

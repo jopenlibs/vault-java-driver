@@ -60,7 +60,7 @@ public class WrappingWrapTest {
         assertEquals("wrappedToken", vaultServer.getRequestHeaders().get("X-Vault-Token"));
 
         // Assert response should have the unwrapped token in the client_token key
-        assertEquals("wrappedToken", response.getToken());
+        assertEquals("wrappedToken", new String(response.getToken()));
         assertEquals("accessor_value", response.getAccessor());
         assertEquals(60, response.getTtl());
         assertEquals("2022-10-09T12:38:27.217414477Z", response.getCreationTime());
