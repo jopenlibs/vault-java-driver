@@ -3,6 +3,7 @@ package io.github.jopenlibs.vault.api;
 import io.github.jopenlibs.vault.Vault;
 import io.github.jopenlibs.vault.VaultConfig;
 import io.github.jopenlibs.vault.VaultException;
+import io.github.jopenlibs.vault.api.Logical.logicalOperations;
 import io.github.jopenlibs.vault.response.AuthResponse;
 import io.github.jopenlibs.vault.response.DataMetadata;
 import io.github.jopenlibs.vault.response.LogicalResponse;
@@ -305,6 +306,43 @@ public class LogicalIT {
         final List<String> keys = vault.logical().list("secret").getListData();
         assertTrue(keys.contains("hello"));
     }
+
+    /**
+     * Write a secret, and then verify that its key shows up in the list, returning their subkeys
+     * when we use KV Engine version 2.
+     *
+     * @throws VaultException On error.
+     */
+    @Test
+    public void testListSubKeys() throws VaultException {
+        final Vault vault = container.getRootVault();
+        final Map<String, Object> testMap = Map.of("value", "world", "test", "done");
+
+        vault.logical().write("secret/hello", testMap);
+        final List<String> keys = vault.logical()
+                .list("secret/hello", logicalOperations.listSubKeys).getListSubkeys();
+        assertTrue(keys.contains("test"));
+        assertTrue(keys.contains("value"));
+    }
+
+    /**
+     * Write a secret, and then verify that its key shows up in the list, returning their subkeys
+     * when we use KV Engine version 2.
+     *
+     * @throws VaultException On error.
+     */
+    @Test
+    public void testListSubKeysV1() throws VaultException {
+        final Vault vault = container.getRootVaultWithCustomVaultConfig(
+                new VaultConfig().engineVersion(1));
+        final Map<String, Object> testMap = Map.of("value", "world");
+
+        vault.logical().write("secret/hello", testMap);
+        final List<String> keys = vault.logical()
+                .list("secret/hello", logicalOperations.listSubKeys).getListSubkeys();
+        assertTrue(keys.contains("value"));
+    }
+
 
     /**
      * Write a secret, and then verify that its key shows up in the list, using KV Engine version
