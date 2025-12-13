@@ -1,6 +1,7 @@
 package io.github.jopenlibs.vault.response;
 
 import io.github.jopenlibs.vault.api.Logical;
+import io.github.jopenlibs.vault.api.Logical.logicalOperations;
 import io.github.jopenlibs.vault.json.Json;
 import io.github.jopenlibs.vault.json.JsonArray;
 import io.github.jopenlibs.vault.json.JsonObject;
@@ -26,6 +27,7 @@ public class LogicalResponse extends VaultResponse {
     private Boolean renewable;
     private Long leaseDuration;
     private final Map<String, String> dataMetadata = new HashMap<>();
+    private List<String> subkeys;
 
     /**
      * @param restResponse The raw HTTP response from Vault.
@@ -71,6 +73,10 @@ public class LogicalResponse extends VaultResponse {
         return new DataMetadata(dataMetadata);
     }
 
+    public List<String> getListSubkeys() {
+        return subkeys;
+    }
+
     private void parseMetadataFields() {
         try {
             final String jsonString = new String(getRestResponse().getBody(),
@@ -105,10 +111,7 @@ public class LogicalResponse extends VaultResponse {
             // For list operations convert the array of keys to a list of values
             if (operation.equals(Logical.logicalOperations.listV1) || operation.equals(
                     Logical.logicalOperations.listV2)) {
-                if (
-                        getRestResponse().getStatus() != 404
-                                && data.get("keys") != null
-                ) {
+                if (getRestResponse().getStatus() != 404 && data.get("keys") != null) {
 
                     final JsonArray keys = Json.parse(data.get("keys")).asArray();
                     for (int index = 0; index < keys.size(); index++) {
@@ -116,6 +119,13 @@ public class LogicalResponse extends VaultResponse {
                     }
                 }
 
+            }
+
+            if (operation.equals(logicalOperations.listSubKeys)) {
+                if (data.containsKey("subkeys")) {
+                    final var keys = Json.parse(data.get("subkeys")).asObject();
+                    this.subkeys = keys.names();
+                }
             }
         } catch (Exception ignored) {
         }
