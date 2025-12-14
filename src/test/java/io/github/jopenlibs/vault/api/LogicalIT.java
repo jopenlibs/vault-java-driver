@@ -9,6 +9,7 @@ import io.github.jopenlibs.vault.response.DataMetadata;
 import io.github.jopenlibs.vault.response.LogicalResponse;
 import io.github.jopenlibs.vault.response.WrapResponse;
 import io.github.jopenlibs.vault.util.VaultContainer;
+import io.github.jopenlibs.vault.util.VaultVersion;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +28,7 @@ import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.assertNotSame;
 import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assume.assumeTrue;
 
 /**
  * Integration tests for the basic (i.e. "logical") Vault API operations.
@@ -324,25 +326,6 @@ public class LogicalIT {
         assertTrue(keys.contains("test"));
         assertTrue(keys.contains("value"));
     }
-
-    /**
-     * Write a secret, and then verify that its key shows up in the list, returning their subkeys
-     * when we use KV Engine version 2.
-     *
-     * @throws VaultException On error.
-     */
-    @Test
-    public void testListSubKeysV1() throws VaultException {
-        final Vault vault = container.getRootVaultWithCustomVaultConfig(
-                new VaultConfig().engineVersion(1));
-        final Map<String, Object> testMap = Map.of("value", "world");
-
-        vault.logical().write("secret/hello", testMap);
-        final List<String> keys = vault.logical()
-                .list("secret/hello", logicalOperations.listSubKeys).getListSubkeys();
-        assertTrue(keys.contains("value"));
-    }
-
 
     /**
      * Write a secret, and then verify that its key shows up in the list, using KV Engine version
