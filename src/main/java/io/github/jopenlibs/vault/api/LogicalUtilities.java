@@ -102,17 +102,24 @@ public class LogicalUtilities {
             final Logical.logicalOperations operation) {
         final List<String> pathSegments = getPathSegments(path);
         final StringBuilder adjustedPath = new StringBuilder();
-        if (operation.equals(Logical.logicalOperations.listV2)) {
-            // Version 2
-            adjustedPath.append(addQualifierToPath(pathSegments, prefixPathDepth, "metadata"));
-            if (path.endsWith("/")) {
-                adjustedPath.append("/");
-            }
-        } else {
-            // Version 1
-            adjustedPath.append(path);
+        switch (operation) {
+            case listV1:
+                // Version 1
+                adjustedPath.append(path).append("?list=true");
+                break;
+            case listV2:
+                // Version 2
+                adjustedPath.append(addQualifierToPath(pathSegments, prefixPathDepth, "metadata"));
+                if (path.endsWith("/")) {
+                    adjustedPath.append("/");
+                }
+                adjustedPath.append("?list=true");
+                break;
+            case listSubKeys:
+                // Subkeys in version 2
+                adjustedPath.append(addQualifierToPath(pathSegments, prefixPathDepth, "subkeys"));
+                break;
         }
-        adjustedPath.append("?list=true");
         return adjustedPath.toString();
     }
 

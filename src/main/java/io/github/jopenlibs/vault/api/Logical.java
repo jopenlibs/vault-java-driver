@@ -33,7 +33,7 @@ public class Logical extends OperationsBase {
 
     private String nameSpace;
 
-    public enum logicalOperations {authentication, deleteV1, deleteV2, destroy, listV1, listV2, readV1, readV2, writeV1, writeV2, unDelete, mount}
+    public enum logicalOperations {authentication, deleteV1, deleteV2, destroy, listV1, listV2, listSubKeys, readV1, readV2, writeV1, writeV2, unDelete, mount}
 
     public Logical(final VaultConfig config) {
         super(config);
@@ -338,7 +338,25 @@ public class Logical extends OperationsBase {
         }
     }
 
-    private LogicalResponse list(final String path, final logicalOperations operation)
+    /**
+     * <p>Retrieve a list of keys corresponding to key/value pairs at a given Vault path.</p>
+     *
+     * <p>Key values ending with a trailing-slash characters are sub-paths.  Running a subsequent
+     * <code>list()</code>
+     * call, using the original path appended with this key, will retrieve all secret keys stored at
+     * that sub-path.</p>
+     *
+     * <p>This method returns only the secret keys, not values.  To retrieve the actual stored
+     * value for a key, use <code>read()</code> with the key appended onto the original base
+     * path.</p>
+     *
+     * @param path The Vault key value at which to look for secrets (e.g. <code>secret</code>)
+     * @param operation The Vault operation involved to retrieve list
+     * @return A list of keys corresponding to key/value pairs at a given Vault path, or an empty
+     * list if there are none
+     * @throws VaultException If any errors occur, or unexpected response received from Vault
+     */
+    public LogicalResponse list(final String path, final logicalOperations operation)
             throws VaultException {
         LogicalResponse response = null;
         try {
