@@ -10,6 +10,7 @@ import io.github.jopenlibs.vault.json.JsonObject;
 import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.time.Duration;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,6 +71,7 @@ public class VaultContainer extends GenericContainer<VaultContainer> implements 
                                 .forPort(8280)
                                 .forPath("/v1/sys/seal-status")
                                 .forStatusCode(HttpURLConnection.HTTP_OK)
+                                .withStartupTimeout(Duration.ofMinutes(5))
                         // The expected response when "vault init" has not yet run
                 );
     }
