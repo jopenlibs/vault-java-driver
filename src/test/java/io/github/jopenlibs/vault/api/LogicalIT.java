@@ -312,11 +312,14 @@ public class LogicalIT {
     /**
      * Write a secret, and then verify that its key shows up in the list, returning their subkeys
      * when we use KV Engine version 2.
+     * This test works from Vault 1.10.0 and onward
      *
      * @throws VaultException On error.
      */
     @Test
     public void testListSubKeys() throws VaultException {
+        assumeTrue(VaultVersion.greatThan("1.9.10"));
+
         final Vault vault = container.getRootVault();
         final Map<String, Object> testMap = Map.of("value", "world", "test", "done");
 
