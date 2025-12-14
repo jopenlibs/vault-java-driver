@@ -19,15 +19,15 @@ import java.util.Map;
  */
 public class LogicalResponse extends VaultResponse {
 
-    private Map<String, String> data = new HashMap<>();
-    private List<String> listData = new ArrayList<>();
+    private final Map<String, String> data = new HashMap<>();
+    private final List<String> listData = new ArrayList<>();
+    private final List<String> subkeys = new ArrayList<>();
+    private final Map<String, String> dataMetadata = new HashMap<>();
     private JsonObject dataObject = null;
     private String leaseId;
     private WrapResponse wrapResponse;
     private Boolean renewable;
     private Long leaseDuration;
-    private final Map<String, String> dataMetadata = new HashMap<>();
-    private List<String> subkeys;
 
     /**
      * @param restResponse The raw HTTP response from Vault.
@@ -104,7 +104,7 @@ public class LogicalResponse extends VaultResponse {
                     parseJsonIntoMap(metadataValue.asObject(), dataMetadata);
                 }
             }
-            data = new HashMap<>();
+
             dataObject = jsonObject.get("data").asObject();
             parseJsonIntoMap(dataObject, data);
 
@@ -124,7 +124,7 @@ public class LogicalResponse extends VaultResponse {
             if (operation.equals(logicalOperations.listSubKeys)) {
                 if (data.containsKey("subkeys")) {
                     final var keys = Json.parse(data.get("subkeys")).asObject();
-                    this.subkeys = keys.names();
+                    this.subkeys.addAll(keys.names());
                 }
             }
         } catch (Exception ignored) {
