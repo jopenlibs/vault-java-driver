@@ -12,7 +12,10 @@ import java.util.HashMap;
 import org.eclipse.jetty.server.Server;
 import org.junit.Test;
 
+import java.util.Arrays;
+import javax.net.ssl.SSLContext;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Unit tests for the Vault driver, having no dependency on an actual Vault server instance being
@@ -278,5 +281,16 @@ public class SSLTests {
 
         VaultTestUtils.shutdownMockVault(server);
     }
+
+    @Test
+    public void testSslContextFromPemSupportsTls13() throws Exception {
+        final SslConfig sslConfig = new SslConfig().pemResource("/cert.pem").build();
+        final SSLContext sslContext = sslConfig.getSslContext();
+        final java.util.List<String> supported = Arrays.asList(
+                sslContext.getSupportedSSLParameters().getProtocols());
+        assertTrue("SSLContext from PEM must support TLSv1.3", supported.contains("TLSv1.3"));
+        assertTrue("SSLContext from PEM must support TLSv1.2", supported.contains("TLSv1.2"));
+    }
+
 
 }

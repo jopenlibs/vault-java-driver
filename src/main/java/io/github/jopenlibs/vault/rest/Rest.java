@@ -78,7 +78,7 @@ public class Rest {
 
     static {
         try {
-            DISABLED_SSL_CONTEXT = SSLContext.getInstance("TLSv1.2");
+            DISABLED_SSL_CONTEXT = SSLContext.getInstance("TLSv1.3");
             DISABLED_SSL_CONTEXT.init(null, new TrustManager[]{new X509ExtendedTrustManager() {
                 @Override
                 public void checkClientTrusted(X509Certificate[] chain, String authType,
