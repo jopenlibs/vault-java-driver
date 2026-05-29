@@ -6,6 +6,9 @@ import io.github.jopenlibs.vault.VaultConfig;
 import io.github.jopenlibs.vault.VaultException;
 import java.nio.file.Path;
 import java.util.Optional;
+import org.junit.rules.TestRule;
+import org.junit.runner.Description;
+import org.junit.runners.model.Statement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.BindMode;
@@ -19,7 +22,7 @@ import static org.junit.Assume.assumeTrue;
 import static org.testcontainers.utility.MountableFile.forHostPath;
 
 public class VaultAgentContainer extends GenericContainer<VaultAgentContainer> implements
-        TestConstants, TestLifecycleAware {
+        TestConstants, TestLifecycleAware, TestRule {
 
     public static final String VAULT_DEFAULT_IMAGE = "hashicorp/vault";
     public static final String VAULT_DEFAULT_TAG = "latest";
@@ -73,11 +76,26 @@ public class VaultAgentContainer extends GenericContainer<VaultAgentContainer> i
      * @return The URL of the Vault instance
      */
     public String getAddress() {
-        return String.format("http://%s:%d", getContainerIpAddress(), getMappedPort(8100));
+        return String.format("http://%s:%d", getHost(), getMappedPort(8100));
     }
 
     @Override
     public void beforeTest(TestDescription description) {
         assumeTrue(DOCKER_AVAILABLE);
+    }
+
+    @Override
+    public Statement apply(Statement base, Description description) {
+        return new Statement() {
+            @Override
+            public void evaluate() throws Throwable {
+                start();
+                try {
+                    base.evaluate();
+                } finally {
+                    stop();
+                }
+            }
+        };
     }
 }
