@@ -28,11 +28,6 @@ jobs:
           - 1.16.3
           - 1.17.6
           - 1.18.5
-          - 1.19.0
-          - 1.19.1
-          - 1.19.2
-          - 1.19.3
-          - 1.19.4
           - 1.19.5
           - 1.20.0
           - 1.20.1
@@ -41,7 +36,9 @@ jobs:
           - 1.20.4
           - 1.21.0
           - 1.21.1
-          - latest
+          - 1.21.2
+          - 1.21.3
+          - 1.21.4
         os:
           - ubuntu-latest
         # TODO: We disable Windows because testcontainers doesn't support runs in containers
