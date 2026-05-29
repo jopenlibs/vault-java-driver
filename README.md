@@ -43,7 +43,7 @@ Gradle:
 
 ```
 dependencies {
-    implementation 'io.github.jopenlibs:vault-java-driver:6.2.0'
+    implementation 'io.github.jopenlibs:vault-java-driver:6.2.2'
 }
 ```
 
@@ -53,7 +53,7 @@ Maven:
 <dependency>
     <groupId>io.github.jopenlibs</groupId>
     <artifactId>vault-java-driver</artifactId>
-    <version>6.2.0</version>
+    <version>6.2.2</version>
 </dependency>
 ```
 
@@ -305,6 +305,10 @@ and may require modifications in your code to migrate. Changes to the minor vers
 number) should represent non-breaking changes. The third number represents any very minor bugfix
 patches.
 
+* **6.2.2**: This release contains the following updates:
+  * Fix: use TLS protocol alias to enable TLS 1.3 initialization [(pull request #77)](https://github.com/jopenlibs/vault-java-driver/pull/77)
+  * Read subkeys in KV element [(pull request #74)](https://github.com/jopenlibs/vault-java-driver/pull/74)
+  * Improve engine version detection [(pull request #70)](https://github.com/jopenlibs/vault-java-driver/pull/70)
 * **6.2.1**: This release contains the following updates:
     * Fix: Retry HTTP 412 errors to support eventual consistency on standbys [(pull request #68)](https://github.com/jopenlibs/vault-java-driver/pull/68)
     * Switch from Gradle to Maven [(pull request #69)](https://github.com/jopenlibs/vault-java-driver/pull/69)
