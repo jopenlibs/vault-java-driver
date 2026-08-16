@@ -36,7 +36,7 @@ public class DatabaseResponse extends LogicalResponse {
 
     private DatabaseRoleOptions buildRoleOptionsFromData(final Map<String, String> data,
             final JsonObject jsonObject) {
-        if (data == null || data.size() == 0) {
+        if (data == null || data.isEmpty()) {
             return null;
         }
 

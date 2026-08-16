@@ -554,7 +554,8 @@ public class Pki extends OperationsBase {
             // Validate response
             if (restResponse.getStatus() != 200 && restResponse.getStatus() != 404) {
                 String body =
-                        restResponse.getBody() != null ? new String(restResponse.getBody())
+                        restResponse.getBody() != null ? new String(restResponse.getBody(),
+                                StandardCharsets.UTF_8)
                                 : "(no body)";
                 throw new VaultException(
                         "Vault responded with HTTP status code: " + restResponse.getStatus()

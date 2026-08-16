@@ -3,7 +3,6 @@ package io.github.jopenlibs.vault.rest;
 import io.github.jopenlibs.vault.SslConfig;
 import io.github.jopenlibs.vault.VaultConfig;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -21,10 +20,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Map;
-import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.TreeMap;
 import javax.net.ssl.SSLContext;
@@ -74,7 +71,7 @@ public class Rest {
      * A dummy SSLContext, for use when SSL verification is disabled.  Overwrites Java's default
      * server certificate verification process, to always trust any certificates.
      */
-    private static SSLContext DISABLED_SSL_CONTEXT;
+    private static final SSLContext DISABLED_SSL_CONTEXT;
 
     static {
         try {
@@ -116,7 +113,7 @@ public class Rest {
                 }
             }}, new java.security.SecureRandom());
         } catch (NoSuchAlgorithmException | KeyManagementException e) {
-            e.printStackTrace();
+            throw new ExceptionInInitializerError(e);
         }
     }
 
@@ -194,14 +191,9 @@ public class Rest {
      * or an HTTP verb method
      * @throws RestException If any error occurs, or unexpected response received from Vault
      */
-    @SuppressWarnings("CharsetObjectCanBeUsed") // Using Charset constant requires Java and above
     public Rest parameter(final String name, final String value) throws RestException {
-        try {
-            this.parameters.put(URLEncoder.encode(name, "UTF-8"),
-                    URLEncoder.encode(value, "UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-            throw new RestException(e);
-        }
+        this.parameters.put(URLEncoder.encode(name, StandardCharsets.UTF_8),
+                URLEncoder.encode(value, StandardCharsets.UTF_8));
         return this;
     }
 
@@ -316,10 +308,13 @@ public class Rest {
      */
     public RestResponse get() throws RestException {
         try {
-            var request = buildRequest(true);
+            final var request = buildRequest(true);
 
             return send(request.GET().build());
-        } catch (Exception e) {
+        } catch (IOException | InterruptedException | URISyntaxException | RestException e) {
+            if (e instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
             throw new RestException(e);
         }
     }
@@ -373,9 +368,12 @@ public class Rest {
      */
     public RestResponse delete() throws RestException {
         try {
-            var request = this.buildRequest(true);
+            final var request = this.buildRequest(true);
             return send(request.DELETE().build());
-        } catch (Exception e) {
+        } catch (IOException | InterruptedException | URISyntaxException | RestException e) {
+            if (e instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
             throw new RestException(e);
         }
     }
@@ -393,7 +391,7 @@ public class Rest {
     private RestResponse postOrPutImpl(final boolean doPost) throws RestException {
         try {
             // Initialize HTTP(S) connection, and set any header values
-            var request = this.buildRequest(false);
+            final var request = this.buildRequest(false);
             request.header("Accept-Charset", "UTF-8");
 
             BodyPublisher payload;
@@ -414,7 +412,10 @@ public class Rest {
                 return send(request.PUT(payload).build());
             }
 
-        } catch (IOException | InterruptedException | URISyntaxException e) {
+        } catch (IOException | InterruptedException | URISyntaxException | RestException e) {
+            if (e instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
             throw new RestException(e);
         }
     }
@@ -442,17 +443,16 @@ public class Rest {
      * @throws IOException if connection fails
      * @throws InterruptedException if connection is interrupted
      */
-    private RestResponse send(HttpRequest req) throws IOException, InterruptedException {
-        final HttpClient client = getClient();
-
-        var response = client.send(req, BodyHandlers.ofString());
+    private RestResponse send(final HttpRequest req) throws IOException, InterruptedException {
+        final var client = getClient();
+        final var response = client.send(req, BodyHandlers.ofString());
 
         // Get the resulting status code
         final var statusCode = response.statusCode();
 
         // Download and parse response
         final var mimeType = response.headers().firstValue("Content-Type").orElse("");
-        final var body = response.body().getBytes();
+        final var body = response.body().getBytes(StandardCharsets.UTF_8);
 
         return new RestResponse(statusCode, mimeType, body);
     }
@@ -466,10 +466,10 @@ public class Rest {
                 .version(Version.HTTP_1_1);
 
         if (connectTimeoutSeconds != null) {
-            client.connectTimeout(Duration.of(connectTimeoutSeconds, ChronoUnit.SECONDS));
+            client.connectTimeout(Duration.ofSeconds(connectTimeoutSeconds));
         }
 
-        if (sslVerification != null && !sslVerification) {
+        if (Boolean.FALSE.equals(sslVerification)) {
             client.sslContext(DISABLED_SSL_CONTEXT);
         } else if (sslContext != null) {
             client.sslContext(sslContext);
@@ -488,30 +488,33 @@ public class Rest {
      * @throws URISyntaxException if passed URL isn't valid
      * @throws RestException if isn't passed an URL
      */
-    private Builder buildRequest(Boolean isGetOrDelete) throws URISyntaxException, RestException {
-        Optional.ofNullable(urlString).orElseThrow(() -> new RestException("No URL is set"));
+    private Builder buildRequest(final boolean isGetOrDelete)
+            throws URISyntaxException, RestException {
+        if (urlString == null) {
+            throw new RestException("No URL is set");
+        }
 
-        var uri = new URI(urlString);
-        var params = isGetOrDelete ? parametersToQueryString() : "";
+        final var baseUri = new URI(urlString);
+        final var params = isGetOrDelete ? parametersToQueryString() : "";
         var query = params;
 
-        if (uri.getQuery() != null) {
-            query = uri.getQuery();
+        if (baseUri.getQuery() != null) {
+            query = baseUri.getQuery();
             if (!params.isEmpty()) {
-                query = uri.getQuery() + "&" + params;
+                query = baseUri.getQuery() + "&" + params;
             }
         }
-        uri = new URI(uri.getScheme(), uri.getUserInfo(), uri.getHost(), uri.getPort(),
-                uri.getPath(), query, uri.getFragment());
+        final var uri = new URI(baseUri.getScheme(), baseUri.getUserInfo(), baseUri.getHost(),
+                baseUri.getPort(), baseUri.getPath(), query, baseUri.getFragment());
 
         // Initialize HTTP(S) connection, and set any header values
-        var request = HttpRequest.newBuilder()
+        final var request = HttpRequest.newBuilder()
                 .uri(uri);
 
         headers.forEach(request::header);
 
         if (readTimeoutSeconds != null) {
-            request.timeout(Duration.of(readTimeoutSeconds, ChronoUnit.SECONDS));
+            request.timeout(Duration.ofSeconds(readTimeoutSeconds));
         }
 
         return request;
