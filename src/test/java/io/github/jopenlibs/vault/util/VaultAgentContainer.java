@@ -42,6 +42,7 @@ public class VaultAgentContainer extends GenericContainer<VaultAgentContainer> i
                 .withFileSystemBind(SSL_DIRECTORY, CONTAINER_SSL_DIRECTORY, BindMode.READ_ONLY)
                 .withCreateContainerCmdModifier(command -> command.withCapAdd(Capability.IPC_LOCK)
                         .withUser("root"))
+                .withEnv("SKIP_SETCAP", "true")
                 .withCopyFileToContainer(forHostPath(roleId), "/home/vault/role_id")
                 .withCopyFileToContainer(forHostPath(secretId), "/home/vault/secret_id")
                 .withExposedPorts(8100)
