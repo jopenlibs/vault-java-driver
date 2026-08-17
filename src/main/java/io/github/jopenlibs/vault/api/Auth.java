@@ -386,20 +386,7 @@ public class Auth extends OperationsBase {
                     .post();
 
             // Validate restResponse
-            if (restResponse.getStatus() != 200) {
-                throw new VaultException(
-                        "Vault responded with HTTP status code: " + restResponse.getStatus()
-                                + "\nResponse body: " + new String(restResponse.getBody(),
-                                StandardCharsets.UTF_8),
-                        restResponse.getStatus());
-            }
-
-            final var mimeType =
-                    restResponse.getMimeType() == null ? "null" : restResponse.getMimeType();
-            if (!mimeType.equals("application/json")) {
-                throw new VaultException("Vault responded with MIME type: " + mimeType,
-                        restResponse.getStatus());
-            }
+            validateJsonResponse(restResponse);
 
             return new AuthResponse(restResponse, attempt);
         });
@@ -445,20 +432,7 @@ public class Auth extends OperationsBase {
                     .post();
 
             // Validate restResponse
-            if (restResponse.getStatus() != 200) {
-                throw new VaultException(
-                        "Vault responded with HTTP status code: " + restResponse.getStatus()
-                                + "\nResponse body: " + new String(restResponse.getBody(),
-                                StandardCharsets.UTF_8),
-                        restResponse.getStatus());
-            }
-
-            final var mimeType =
-                    restResponse.getMimeType() == null ? "null" : restResponse.getMimeType();
-            if (!mimeType.equals("application/json")) {
-                throw new VaultException("Vault responded with MIME type: " + mimeType,
-                        restResponse.getStatus());
-            }
+            validateJsonResponse(restResponse);
 
             return new AuthResponse(restResponse, attempt);
         });
@@ -534,19 +508,7 @@ public class Auth extends OperationsBase {
                     .post();
 
             // Validate restResponse
-            if (restResponse.getStatus() != 200) {
-                throw new VaultException(
-                        "Vault responded with HTTP status code: " + restResponse.getStatus()
-                                + "\nResponse body: " + new String(restResponse.getBody(),
-                                StandardCharsets.UTF_8),
-                        restResponse.getStatus());
-            }
-            final var mimeType =
-                    restResponse.getMimeType() == null ? "null" : restResponse.getMimeType();
-            if (!mimeType.equals("application/json")) {
-                throw new VaultException("Vault responded with MIME type: " + mimeType,
-                        restResponse.getStatus());
-            }
+            validateJsonResponse(restResponse);
             return new AuthResponse(restResponse, attempt);
         });
     }
@@ -611,19 +573,7 @@ public class Auth extends OperationsBase {
                     .post();
 
             // Validate restResponse
-            if (restResponse.getStatus() != 200) {
-                throw new VaultException(
-                        "Vault responded with HTTP status code: " + restResponse.getStatus()
-                                + "\nResponse body: " + new String(restResponse.getBody(),
-                                StandardCharsets.UTF_8),
-                        restResponse.getStatus());
-            }
-            final var mimeType =
-                    restResponse.getMimeType() == null ? "null" : restResponse.getMimeType();
-            if (!mimeType.equals("application/json")) {
-                throw new VaultException("Vault responded with MIME type: " + mimeType,
-                        restResponse.getStatus());
-            }
+            validateJsonResponse(restResponse);
             return new AuthResponse(restResponse, attempt);
         });
     }
@@ -730,19 +680,7 @@ public class Auth extends OperationsBase {
                     .post();
 
             // Validate restResponse
-            if (restResponse.getStatus() != 200) {
-                throw new VaultException(
-                        "Vault responded with HTTP status code: " + restResponse.getStatus()
-                                + "\nResponse body: " + new String(restResponse.getBody(),
-                                StandardCharsets.UTF_8),
-                        restResponse.getStatus());
-            }
-            final var mimeType =
-                    restResponse.getMimeType() == null ? "null" : restResponse.getMimeType();
-            if (!mimeType.equals("application/json")) {
-                throw new VaultException("Vault responded with MIME type: " + mimeType,
-                        restResponse.getStatus());
-            }
+            validateJsonResponse(restResponse);
             return new AuthResponse(restResponse, attempt);
         });
     }
@@ -798,21 +736,7 @@ public class Auth extends OperationsBase {
                     .post();
 
             // Validate restResponse
-            if (restResponse.getStatus() != 200) {
-                throw new VaultException(
-                        "Vault responded with HTTP status code: " + restResponse.getStatus()
-                                + "\nResponse body: " + new String(restResponse.getBody(),
-                                StandardCharsets.UTF_8),
-                        restResponse.getStatus());
-            }
-
-            final var mimeType =
-                    restResponse.getMimeType() == null ? "null" : restResponse.getMimeType();
-
-            if (!mimeType.equals("application/json")) {
-                throw new VaultException("Vault responded with MIME type: " + mimeType,
-                        restResponse.getStatus());
-            }
+            validateJsonResponse(restResponse);
 
             return new AuthResponse(restResponse, attempt);
         });
@@ -875,19 +799,7 @@ public class Auth extends OperationsBase {
                     .post();
 
             // Validate restResponse
-            if (restResponse.getStatus() != 200) {
-                throw new VaultException(
-                        "Vault responded with HTTP status code: " + restResponse.getStatus()
-                                + "\nResponse body: " + new String(restResponse.getBody(),
-                                StandardCharsets.UTF_8),
-                        restResponse.getStatus());
-            }
-            final var mimeType =
-                    restResponse.getMimeType() == null ? "null" : restResponse.getMimeType();
-            if (!mimeType.equals("application/json")) {
-                throw new VaultException("Vault responded with MIME type: " + mimeType,
-                        restResponse.getStatus());
-            }
+            validateJsonResponse(restResponse);
             return new AuthResponse(restResponse, attempt);
         });
     }
@@ -948,19 +860,7 @@ public class Auth extends OperationsBase {
                     .post();
 
             // Validate restResponse
-            if (restResponse.getStatus() != 200) {
-                throw new VaultException(
-                        "Vault responded with HTTP status code: " + restResponse.getStatus()
-                                + "\nResponse body: " + new String(restResponse.getBody(),
-                                StandardCharsets.UTF_8),
-                        restResponse.getStatus());
-            }
-            final var mimeType =
-                    restResponse.getMimeType() == null ? "null" : restResponse.getMimeType();
-            if (!mimeType.equals("application/json")) {
-                throw new VaultException("Vault responded with MIME type: " + mimeType,
-                        restResponse.getStatus());
-            }
+            validateJsonResponse(restResponse);
             return new AuthResponse(restResponse, attempt);
         });
     }
@@ -1029,19 +929,7 @@ public class Auth extends OperationsBase {
                     .post();
 
             // Validate restResponse
-            if (restResponse.getStatus() != 200) {
-                throw new VaultException(
-                        "Vault responded with HTTP status code: " + restResponse.getStatus()
-                                + "\nResponse body: " + new String(restResponse.getBody(),
-                                StandardCharsets.UTF_8),
-                        restResponse.getStatus());
-            }
-            final var mimeType =
-                    restResponse.getMimeType() == null ? "null" : restResponse.getMimeType();
-            if (!mimeType.equals("application/json")) {
-                throw new VaultException("Vault responded with MIME type: " + mimeType,
-                        restResponse.getStatus());
-            }
+            validateJsonResponse(restResponse);
             return new AuthResponse(restResponse, attempt);
         });
     }
@@ -1187,20 +1075,7 @@ public class Auth extends OperationsBase {
                     .post();
 
             // Validate restResponse
-            if (restResponse.getStatus() != 200) {
-                throw new VaultException(
-                        "Vault responded with HTTP status code: " + restResponse.getStatus()
-                                + "\nResponse body: " + new String(restResponse.getBody(),
-                                StandardCharsets.UTF_8),
-                        restResponse.getStatus());
-            }
-
-            final var mimeType =
-                    restResponse.getMimeType() == null ? "null" : restResponse.getMimeType();
-            if (!mimeType.equals("application/json")) {
-                throw new VaultException("Vault responded with MIME type: " + mimeType,
-                        restResponse.getStatus());
-            }
+            validateJsonResponse(restResponse);
 
             return new AuthResponse(restResponse, attempt);
         });
@@ -1261,21 +1136,7 @@ public class Auth extends OperationsBase {
                     .post();
 
             // Validate restResponse
-            if (restResponse.getStatus() != 200) {
-                throw new VaultException(
-                        "Vault responded with HTTP status code: " + restResponse.getStatus()
-                                + "\nResponse body: " + new String(restResponse.getBody(),
-                                StandardCharsets.UTF_8),
-                        restResponse.getStatus());
-            }
-
-            final var mimeType =
-                    restResponse.getMimeType() == null ? "null" : restResponse.getMimeType();
-
-            if (!mimeType.equals("application/json")) {
-                throw new VaultException("Vault responded with MIME type: " + mimeType,
-                        restResponse.getStatus());
-            }
+            validateJsonResponse(restResponse);
 
             return new AuthResponse(restResponse, attempt);
         });
@@ -1316,18 +1177,7 @@ public class Auth extends OperationsBase {
                     .get();
 
             // Validate restResponse
-            if (restResponse.getStatus() != 200) {
-                throw new VaultException(
-                        "Vault responded with HTTP status code: " + restResponse.getStatus()
-                                + "\nResponse body: " + new String(restResponse.getBody(),
-                                StandardCharsets.UTF_8),
-                        restResponse.getStatus());
-            }
-            final var mimeType = restResponse.getMimeType();
-            if (!"application/json".equals(mimeType)) {
-                throw new VaultException("Vault responded with MIME type: " + mimeType,
-                        restResponse.getStatus());
-            }
+            validateJsonResponse(restResponse);
             return new LookupResponse(restResponse, attempt);
         });
     }
@@ -1393,13 +1243,7 @@ public class Auth extends OperationsBase {
                     .post();
 
             // Validate restResponse
-            if (restResponse.getStatus() != 204) {
-                throw new VaultException(
-                        "Vault responded with HTTP status code: " + restResponse.getStatus()
-                                + "\nResponse body: " + new String(restResponse.getBody(),
-                                StandardCharsets.UTF_8),
-                        restResponse.getStatus());
-            }
+            validateResponse(restResponse, 204);
 
             return null;
         });
@@ -1448,5 +1292,42 @@ public class Auth extends OperationsBase {
     public WrapResponse rewrap(final char[] wrappedToken) throws VaultException {
         final var sys = new Sys(this.config);
         return sys.wrapping().rewrap(wrappedToken);
+    }
+
+    /**
+     * Verifies that a Vault response has the expected HTTP status code.
+     *
+     * @param restResponse The response received from Vault
+     * @param expectedStatus The HTTP status code that indicates success for this operation
+     * @throws VaultException If the response's status code does not match expectedStatus
+     */
+    private static void validateResponse(final RestResponse restResponse,
+            final int expectedStatus) throws VaultException {
+        if (restResponse.getStatus() != expectedStatus) {
+            throw new VaultException(
+                    "Vault responded with HTTP status code: " + restResponse.getStatus()
+                            + "\nResponse body: " + new String(restResponse.getBody(),
+                            StandardCharsets.UTF_8),
+                    restResponse.getStatus());
+        }
+    }
+
+    /**
+     * Verifies that a Vault response indicates success (HTTP 200) and carries a JSON body, as
+     * expected of every auth endpoint used in this class.
+     *
+     * @param restResponse The response received from Vault
+     * @throws VaultException If the response's status code isn't 200, or its MIME type isn't
+     * "application/json"
+     */
+    private static void validateJsonResponse(final RestResponse restResponse)
+            throws VaultException {
+        validateResponse(restResponse, 200);
+
+        final var mimeType = restResponse.getMimeType();
+        if (!"application/json".equals(mimeType)) {
+            throw new VaultException("Vault responded with MIME type: " + mimeType,
+                    restResponse.getStatus());
+        }
     }
 }
