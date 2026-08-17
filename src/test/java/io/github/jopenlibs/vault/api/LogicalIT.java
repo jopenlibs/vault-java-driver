@@ -26,8 +26,8 @@ import org.junit.rules.ExpectedException;
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertNotNull;
-import static junit.framework.TestCase.assertNotSame;
 import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assume.assumeTrue;
 
 /**
@@ -81,7 +81,7 @@ public class LogicalIT {
         final String value = "firstWorld";
         final Map<String, Object> testData = Map.of("value", value);
 
-        WriteOptions writeOptions = new WriteOptions().checkAndSet(0L).build();
+        var writeOptions = new WriteOptions().checkAndSet(0L).build();
         vault.logical().write(secretPath, testData, null, writeOptions);
 
         final LogicalResponse readResponse = vault.logical().read(secretPath);
@@ -106,7 +106,7 @@ public class LogicalIT {
         final String value = "firstWorld";
         final Map<String, Object> testData = Map.of("value", value);
 
-        WriteOptions writeOptions = new WriteOptions().checkAndSet(1L).build();
+        var writeOptions = new WriteOptions().checkAndSet(1L).build();
         LogicalResponse writeResponse =
                 vault.logical().write(secretPath, testData, null, writeOptions);
         assertEquals(400, writeResponse.getRestResponse().getStatus());
@@ -127,7 +127,7 @@ public class LogicalIT {
         final String updateValue = "secondWorld";
         final Map<String, Object> testDataUpdate = Map.of("value", updateValue);
 
-        WriteOptions updateOptions = new WriteOptions().checkAndSet(1L).build();
+        var updateOptions = new WriteOptions().checkAndSet(1L).build();
         LogicalResponse updateResponse =
                 vault.logical().write(secretPath, testDataUpdate, null, updateOptions);
         assertEquals(200, updateResponse.getRestResponse().getStatus());
@@ -158,7 +158,7 @@ public class LogicalIT {
         final String updateValue = "secondWorld";
         final Map<String, Object> testDataUpdate = Map.of("value", updateValue);
 
-        WriteOptions updateOptions = new WriteOptions().checkAndSet(2L).build();
+        var updateOptions = new WriteOptions().checkAndSet(2L).build();
         LogicalResponse updateResponse =
                 vault.logical().write(secretPath, testDataUpdate, null, updateOptions);
         assertEquals(400, updateResponse.getRestResponse().getStatus());
@@ -186,7 +186,7 @@ public class LogicalIT {
         WrapResponse wrapResponse = response.getWrapResponse();
         assertNotNull(response.getWrapResponse());
 
-        assertNotSame("", wrapResponse.getToken());
+        assertNotEquals("", wrapResponse.getToken());
         assertEquals(wrapTTL, wrapResponse.getTtl());
         assertEquals(value, valueRead);
     }

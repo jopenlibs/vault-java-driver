@@ -10,7 +10,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assume.assumeTrue;
 
 /**
@@ -45,7 +45,7 @@ public class AuthBackendAppIdIT {
                 .getAuthClientToken();
 
         assertNotNull(token);
-        assertNotSame("", token.trim());
+        assertNotEquals("", token.trim());
     }
 
 }

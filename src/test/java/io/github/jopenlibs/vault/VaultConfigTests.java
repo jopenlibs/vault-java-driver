@@ -75,7 +75,7 @@ public class VaultConfigTests {
                         final byte[] bytes = Files.readAllBytes(
                                 Paths.get(mockHomeDirectory).resolve(".vault-token"));
                         value = new String(bytes, StandardCharsets.UTF_8).trim();
-                    } catch (IOException e) {
+                    } catch (IOException ignored) {
                     }
                 }
             } else {
@@ -92,7 +92,7 @@ public class VaultConfigTests {
      */
     @Test
     public void testConfigConstructor() throws VaultException {
-        final VaultConfig config = new VaultConfig().address("address").token("token").build();
+        final var config = new VaultConfig().address("address").token("token").build();
         assertEquals("address", config.getAddress());
         assertEquals("token", new String(config.getToken()));
     }
@@ -103,7 +103,7 @@ public class VaultConfigTests {
      */
     @Test
     public void testConfigConstructor_NormalizesAddress() throws VaultException {
-        final VaultConfig config = new VaultConfig().address("https://localhost:8200/").build();
+        final var config = new VaultConfig().address("https://localhost:8200/").build();
         assertEquals("https://localhost:8200", config.getAddress());
     }
 
@@ -123,8 +123,7 @@ public class VaultConfigTests {
      */
     @Test
     public void testConfigBuilder() throws VaultException {
-        Map<String, String> testMap = new HashMap<>();
-        testMap.put("foo", "bar");
+        Map<String, String> testMap = Map.of("foo", "bar");
         final VaultConfig config =
                 new VaultConfig()
                         .address("address")
@@ -144,7 +143,7 @@ public class VaultConfigTests {
      */
     @Test
     public void testConfigBuilder_LoadFromEnv() throws VaultException {
-        final MockEnvironmentLoader mock = new MockEnvironmentLoader();
+        final var mock = new MockEnvironmentLoader();
         mock.override("VAULT_ADDR", "http://127.0.0.1:8200");
         mock.override("VAULT_TOKEN", "c24e2469-298a-6c64-6a71-5b47c9ba459a");
         mock.override("VAULT_PROXY_ADDRESS", "localhost");
@@ -155,7 +154,7 @@ public class VaultConfigTests {
         mock.override("VAULT_OPEN_TIMEOUT", "30");
         mock.override("VAULT_READ_TIMEOUT", "30");
 
-        final VaultConfig config = new VaultConfig()
+        final var config = new VaultConfig()
                 .environmentLoader(mock)
                 .build();
         assertEquals("http://127.0.0.1:8200", config.getAddress());
@@ -171,7 +170,7 @@ public class VaultConfigTests {
         final String pemPath = tempDirectoryPath + File.separator + "cert.pem";
         try (
                 final InputStream input = this.getClass().getResourceAsStream("/cert.pem");
-                final FileOutputStream output = new FileOutputStream(pemPath)
+                final var output = new FileOutputStream(pemPath)
         ) {
             int nextChar;
             while ((nextChar = input.read()) != -1) {
@@ -179,10 +178,10 @@ public class VaultConfigTests {
             }
         }
 
-        final MockEnvironmentLoader mock = new MockEnvironmentLoader();
+        final var mock = new MockEnvironmentLoader();
         mock.override("VAULT_ADDR", "http://127.0.0.1:8200");
         mock.override("VAULT_SSL_CERT", pemPath);
-        final VaultConfig config = new VaultConfig()
+        final var config = new VaultConfig()
                 .environmentLoader(mock)
                 .build();
 
@@ -194,7 +193,7 @@ public class VaultConfigTests {
 
     @Test(expected = VaultException.class)
     public void testConfigBuilder_LoadFromEnv_SslCert_NotFound() throws VaultException {
-        final MockEnvironmentLoader mock = new MockEnvironmentLoader();
+        final var mock = new MockEnvironmentLoader();
         mock.override("VAULT_ADDR", "http://127.0.0.1:8200");
         mock.override("VAULT_SSL_CERT", "doesnt-exist.pem");
         new VaultConfig()
@@ -219,14 +218,14 @@ public class VaultConfigTests {
                 System.getProperty("java.io.tmpdir") + File.separatorChar + UUID.randomUUID()
                         .toString();
         assertTrue(new File(mockHomeDirectory).mkdirs());
-        final File mockTokenFile = new File(
+        final var mockTokenFile = new File(
                 mockHomeDirectory + File.separatorChar + ".vault-token");
         assertTrue(mockTokenFile.createNewFile());
         try (final PrintWriter out = new PrintWriter(mockTokenFile, StandardCharsets.UTF_8)) {
             out.println("d24e2469-298a-6c64-6a71-5b47c9ba459a");
         }
 
-        final MockEnvironmentLoader mock = new MockEnvironmentLoader(mockHomeDirectory);
+        final var mock = new MockEnvironmentLoader(mockHomeDirectory);
         mock.override("VAULT_ADDR", "http://127.0.0.1:8200");
         mock.override("VAULT_PROXY_ADDRESS", "localhost");
         mock.override("VAULT_PROXY_PORT", "80");
@@ -236,7 +235,7 @@ public class VaultConfigTests {
         mock.override("VAULT_OPEN_TIMEOUT", "30");
         mock.override("VAULT_READ_TIMEOUT", "30");
 
-        final VaultConfig config = new VaultConfig()
+        final var config = new VaultConfig()
                 .environmentLoader(mock)
                 .build();
         assertEquals("http://127.0.0.1:8200", config.getAddress());
@@ -251,7 +250,7 @@ public class VaultConfigTests {
 
     @Test
     public void testConfigBuilder_WithNamespace() throws VaultException {
-        VaultConfig vaultConfig = new VaultConfig().nameSpace("namespace").address("address")
+        var vaultConfig = new VaultConfig().nameSpace("namespace").address("address")
                 .build();
         Assert.assertEquals(vaultConfig.getNameSpace(), "namespace");
     }

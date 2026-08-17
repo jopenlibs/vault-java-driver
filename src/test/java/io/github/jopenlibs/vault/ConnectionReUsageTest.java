@@ -7,7 +7,6 @@ import java.net.Socket;
 import java.net.http.HttpClient;
 import java.nio.ByteBuffer;
 import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.eclipse.jetty.io.NetworkTrafficListener;
 import org.eclipse.jetty.server.Connector;
@@ -32,7 +31,7 @@ public class ConnectionReUsageTest {
 
     @Before
     public void setUp() throws Exception {
-        final MockVault mockVault = new MockVault(200, "{\"data\":{\"key\":\"value\"}}");
+        final var mockVault = new MockVault(200, "{\"data\":{\"key\":\"value\"}}");
         vaultServerMock = initHttpMockVaultWithListener(mockVault, connectionListener);
         vaultServerMock.start();
 
@@ -51,7 +50,7 @@ public class ConnectionReUsageTest {
         int readNum = 10;
 
         var httpClient = HttpClient.newBuilder()
-                .connectTimeout(Duration.of(10, ChronoUnit.SECONDS))
+                .connectTimeout(Duration.ofSeconds(10))
                 .build();
 
         Logical vault = Vault.create(new VaultConfig()
@@ -111,8 +110,8 @@ public class ConnectionReUsageTest {
     }
 
     public Server initHttpMockVaultWithListener(final MockVault mock, NetworkTrafficListener listener) {
-        final Server server = new Server();
-        final HttpConfiguration http = new HttpConfiguration();
+        final var server = new Server();
+        final var http = new HttpConfiguration();
 
         var connector =
                 new NetworkTrafficServerConnector(

@@ -20,9 +20,12 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Date;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.security.auth.x500.X500Principal;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
@@ -55,6 +58,8 @@ import org.bouncycastle.pkcs.jcajce.JcaPKCS10CertificationRequestBuilder;
  * TLS Certificate auth backend.  Right now, all such code is isolated to `AuthBackendCertTests`.
  */
 public class SSLUtils implements TestConstants {
+
+    private static final Logger LOGGER = Logger.getLogger(SSLUtils.class.getCanonicalName());
 
     private SSLUtils() {
     }
@@ -173,7 +178,7 @@ public class SSLUtils implements TestConstants {
      */
     private static X509Certificate generateCert(final KeyPair keyPair) {
         String issuer = "C=AU, O=The Legion of the Bouncy Castle, OU=Client Certificate, CN=localhost";
-        final X509v3CertificateBuilder certificateBuilder = new X509v3CertificateBuilder(
+        final var certificateBuilder = new X509v3CertificateBuilder(
                 new X500Name(issuer),
                 BigInteger.ONE,
                 new Date(System.currentTimeMillis() - 1000L * 60 * 60 * 24 * 30),
@@ -182,13 +187,13 @@ public class SSLUtils implements TestConstants {
                 SubjectPublicKeyInfo.getInstance(keyPair.getPublic().getEncoded())
         );
 
-        final GeneralNames subjectAltNames = new GeneralNames(
+        final var subjectAltNames = new GeneralNames(
                 new GeneralName(GeneralName.iPAddress, "127.0.0.1"));
         try {
             certificateBuilder.addExtension(Extension.subjectAlternativeName, false,
                     subjectAltNames);
         } catch (CertIOException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.WARNING, "Failed to add subject alternative name extension", e);
             return null;
         }
 
@@ -205,7 +210,7 @@ public class SSLUtils implements TestConstants {
             final ContentSigner signer = signerBuilder.build(keyp);
             x509CertificateHolder = certificateBuilder.build(signer);
         } catch (IOException | OperatorCreationException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.WARNING, "Failed to build certificate", e);
             return null;
         }
 
@@ -216,7 +221,7 @@ public class SSLUtils implements TestConstants {
             certificate.verify(keyPair.getPublic());
         } catch (CertificateException | SignatureException | InvalidKeyException |
                  NoSuchAlgorithmException | NoSuchProviderException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.WARNING, "Failed to verify generated certificate", e);
             return null;
         }
 
@@ -241,7 +246,7 @@ public class SSLUtils implements TestConstants {
         } catch (CertificateEncodingException e) {
             throw new IOException("Failed to encode certificate", e);
         }
-        final String certContents = new String(encoder.encode(certBytes));
+        final var certContents = new String(encoder.encode(certBytes));
         return certHeader + certContents + certFooter;
     }
 
@@ -258,7 +263,7 @@ public class SSLUtils implements TestConstants {
         final String keyHeader = "-----BEGIN PRIVATE KEY-----\n";
         final String keyFooter = "\n-----END PRIVATE KEY-----";
         final byte[] keyBytes = key.getEncoded();
-        final String keyContents = new String(encoder.encode(keyBytes));
+        final var keyContents = new String(encoder.encode(keyBytes));
         return keyHeader + keyContents + keyFooter;
     }
 
@@ -273,7 +278,7 @@ public class SSLUtils implements TestConstants {
      */
     public static String generatePKCS10(KeyPair kp, String CN, String OU, String O,
             String L, String S, String C) throws IOException, OperatorCreationException {
-        X500Principal subject = new X500Principal(
+        var subject = new X500Principal(
                 String.format("C=%s, ST=%s, L=%s, O=%s, OU=%s, CN=%S", C, S, L, O, OU, CN));
         ContentSigner signGen = new JcaContentSignerBuilder("SHA256withRSA").build(kp.getPrivate());
         PKCS10CertificationRequestBuilder builder = new JcaPKCS10CertificationRequestBuilder(
@@ -285,7 +290,7 @@ public class SSLUtils implements TestConstants {
                     pem.writeObject(csr);
                 }
             }
-            return new String(output.toByteArray());
+            return output.toString(StandardCharsets.UTF_8);
         }
     }
 

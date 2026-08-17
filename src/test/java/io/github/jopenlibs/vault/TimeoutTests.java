@@ -50,10 +50,9 @@ public class TimeoutTests {
 
         // The Vault call should time out
         try {
-            final var response = vault.logical().read("secret/hello");
-        } catch (Exception e) {
+            vault.logical().read("secret/hello");
+        } finally {
             VaultTestUtils.shutdownMockVault(server);
-            throw e;
         }
     }
 
@@ -97,10 +96,9 @@ public class TimeoutTests {
 
         // The Vault call should time out
         try {
-            final var response = vault.logical().read("secret/hello");
-        } catch (Exception e) {
+            vault.logical().read("secret/hello");
+        } finally {
             VaultTestUtils.shutdownMockVault(server);
-            throw e;
         }
     }
 

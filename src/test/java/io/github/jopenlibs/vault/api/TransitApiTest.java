@@ -41,18 +41,18 @@ public class TransitApiTest {
 
     @Test
     public void testTransitEncrypt() throws Exception {
-        final JsonObject expectedRequest = new JsonObject()
+        final var expectedRequest = new JsonObject()
                 .add("plaintext", PLAIN_DATA[0]);
-        final JsonObject expectedResponse = new JsonObject()
+        final var expectedResponse = new JsonObject()
                 .add("data", new JsonObject()
                         .add("ciphertext", CIPHER_DATA[0]));
 
         start(expectedResponse.toString());
 
-        final VaultConfig vaultConfig = new VaultConfig()
+        final var vaultConfig = new VaultConfig()
                 .address("http://127.0.0.1:8999")
                 .build();
-        final Vault vault = Vault.create(vaultConfig, 1);
+        final var vault = Vault.create(vaultConfig, 1);
 
         LogicalResponse response = vault.logical().write("transit/encrypt/test",
                 Map.of("plaintext", PLAIN_DATA[0]));
@@ -64,18 +64,18 @@ public class TransitApiTest {
 
     @Test
     public void testTransitDecrypt() throws Exception {
-        final JsonObject expectedRequest = new JsonObject()
+        final var expectedRequest = new JsonObject()
                 .add("ciphertext", CIPHER_DATA[0]);
-        final JsonObject expectedResponse = new JsonObject()
+        final var expectedResponse = new JsonObject()
                 .add("data", new JsonObject()
                         .add("plaintext", PLAIN_DATA[0]));
 
         start(expectedResponse.toString());
 
-        final VaultConfig vaultConfig = new VaultConfig()
+        final var vaultConfig = new VaultConfig()
                 .address("http://127.0.0.1:8999")
                 .build();
-        final Vault vault = Vault.create(vaultConfig, 1);
+        final var vault = Vault.create(vaultConfig, 1);
 
         LogicalResponse response = vault.logical().write("transit/decrypt/test",
                 Map.of("ciphertext", CIPHER_DATA[0]));
@@ -87,28 +87,28 @@ public class TransitApiTest {
 
     @Test
     public void testBulkTransitEncrypt() throws Exception {
-        JsonArray batchRequest = new JsonArray();
+        var batchRequest = new JsonArray();
         for (String text : PLAIN_DATA) {
             batchRequest.add(new JsonObject().add("plaintext", text));
         }
-        JsonArray batchResponse = new JsonArray();
+        var batchResponse = new JsonArray();
         for (String text : CIPHER_DATA) {
             batchResponse.add(new JsonObject().add("ciphertext", text));
         }
-        final JsonObject expectedRequest = new JsonObject()
+        final var expectedRequest = new JsonObject()
                 .add("batch_input", batchRequest);
-        final JsonObject expectedResponse = new JsonObject()
+        final var expectedResponse = new JsonObject()
                 .add("data", new JsonObject()
                         .add("batch_results", batchResponse));
 
         start(expectedResponse.toString());
 
-        final VaultConfig vaultConfig = new VaultConfig()
+        final var vaultConfig = new VaultConfig()
                 .address("http://127.0.0.1:8999")
                 .build();
-        final Vault vault = Vault.create(vaultConfig, 1);
+        final var vault = Vault.create(vaultConfig, 1);
 
-        JsonArray batch = new JsonArray();
+        var batch = new JsonArray();
         for (String text : PLAIN_DATA) {
             batch.add(new JsonObject().add("plaintext", text));
         }
@@ -122,28 +122,28 @@ public class TransitApiTest {
 
     @Test
     public void testBulkTransitDecrypt() throws Exception {
-        JsonArray batchRequest = new JsonArray();
+        var batchRequest = new JsonArray();
         for (String text : CIPHER_DATA) {
             batchRequest.add(new JsonObject().add("ciphertext", text));
         }
-        JsonArray batchResponse = new JsonArray();
+        var batchResponse = new JsonArray();
         for (String text : PLAIN_DATA) {
             batchResponse.add(new JsonObject().add("plaintext", text));
         }
-        final JsonObject expectedRequest = new JsonObject()
+        final var expectedRequest = new JsonObject()
                 .add("batch_input", batchRequest);
-        final JsonObject expectedResponse = new JsonObject()
+        final var expectedResponse = new JsonObject()
                 .add("data", new JsonObject()
                         .add("batch_results", batchResponse));
 
         start(expectedResponse.toString());
 
-        final VaultConfig vaultConfig = new VaultConfig()
+        final var vaultConfig = new VaultConfig()
                 .address("http://127.0.0.1:8999")
                 .build();
-        final Vault vault = Vault.create(vaultConfig, 1);
+        final var vault = Vault.create(vaultConfig, 1);
 
-        JsonArray batch = new JsonArray();
+        var batch = new JsonArray();
         for (String text : CIPHER_DATA) {
             batch.add(new JsonObject().add("ciphertext", text));
         }

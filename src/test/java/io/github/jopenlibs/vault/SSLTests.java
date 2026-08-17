@@ -8,11 +8,10 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.security.KeyStore;
+import java.util.List;
 import java.util.Map;
-import org.eclipse.jetty.server.Server;
 import org.junit.Test;
 
-import java.util.Arrays;
 import javax.net.ssl.SSLContext;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -25,17 +24,17 @@ public class SSLTests {
 
     @Test
     public void testSslVerify_Enabled_Get() throws Exception {
-        final MockVault mockVault = new MockVault(200, "{\"data\":{\"value\":\"mock\"}}");
-        final Server server = VaultTestUtils.initHttpsMockVault(mockVault);
+        final var mockVault = new MockVault(200, "{\"data\":{\"value\":\"mock\"}}");
+        final var server = VaultTestUtils.initHttpsMockVault(mockVault);
         server.start();
 
-        final VaultConfig vaultConfig = new VaultConfig()
+        final var vaultConfig = new VaultConfig()
                 .address("https://127.0.0.1:9998")
                 .token("mock_token")
                 .sslConfig(new SslConfig().verify(false))
                 .engineVersion(1)
                 .build();
-        final Vault vault = Vault.create(vaultConfig);
+        final var vault = Vault.create(vaultConfig);
         final LogicalResponse response = vault.logical().read("secret/hello");
 
         assertEquals(200, response.getRestResponse().getStatus());
@@ -46,36 +45,35 @@ public class SSLTests {
 
     @Test(expected = VaultException.class)
     public void testSslVerify_Disabled_Get() throws Exception {
-        final MockVault mockVault = new MockVault(200, "{\"data\":{\"value\":\"mock\"}}");
-        final Server server = VaultTestUtils.initHttpsMockVault(mockVault);
+        final var mockVault = new MockVault(200, "{\"data\":{\"value\":\"mock\"}}");
+        final var server = VaultTestUtils.initHttpsMockVault(mockVault);
         server.start();
 
-        final VaultConfig vaultConfig = new VaultConfig()
+        final var vaultConfig = new VaultConfig()
                 .address("https://127.0.0.1:9998")
                 .token("mock_token")
                 .build();
-        final Vault vault = Vault.create(vaultConfig);
+        final var vault = Vault.create(vaultConfig);
 
         try {
-            final LogicalResponse response = vault.logical().read("secret/hello");
-        } catch (Exception e) {
+            vault.logical().read("secret/hello");
+        } finally {
             VaultTestUtils.shutdownMockVault(server);
-            throw e;
         }
     }
 
     @Test
     public void testSslVerify_Enabled_Post() throws Exception {
-        final MockVault mockVault = new MockVault(204, null);
-        final Server server = VaultTestUtils.initHttpsMockVault(mockVault);
+        final var mockVault = new MockVault(204, null);
+        final var server = VaultTestUtils.initHttpsMockVault(mockVault);
         server.start();
 
-        final VaultConfig vaultConfig = new VaultConfig()
+        final var vaultConfig = new VaultConfig()
                 .address("https://127.0.0.1:9998")
                 .sslConfig(new SslConfig().pemResource("/cert.pem").build())
                 .token("mock_token")
                 .build();
-        final Vault vault = Vault.create(vaultConfig);
+        final var vault = Vault.create(vaultConfig);
         final LogicalResponse response = vault.logical().write("secret/hello", Map.of("value", "world"));
         assertEquals(204, response.getRestResponse().getStatus());
 
@@ -84,44 +82,43 @@ public class SSLTests {
 
     @Test(expected = VaultException.class)
     public void testSslVerify_Disabled_Post() throws Exception {
-        final MockVault mockVault = new MockVault(204, null);
-        final Server server = VaultTestUtils.initHttpsMockVault(mockVault);
+        final var mockVault = new MockVault(204, null);
+        final var server = VaultTestUtils.initHttpsMockVault(mockVault);
         server.start();
 
-        final VaultConfig vaultConfig = new VaultConfig().address("https://127.0.0.1:9998")
+        final var vaultConfig = new VaultConfig().address("https://127.0.0.1:9998")
                 .token("mock_token").build();
-        final Vault vault = Vault.create(vaultConfig);
+        final var vault = Vault.create(vaultConfig);
 
         try {
-            final LogicalResponse response = vault.logical().read("secret/hello");
-        } catch (Exception e) {
+            vault.logical().read("secret/hello");
+        } finally {
             VaultTestUtils.shutdownMockVault(server);
-            throw e;
         }
     }
 
     @Test
     public void testSslPem_File() throws Exception {
-        final MockVault mockVault = new MockVault(200, "{\"data\":{\"value\":\"mock\"}}");
-        final Server server = VaultTestUtils.initHttpsMockVault(mockVault);
+        final var mockVault = new MockVault(200, "{\"data\":{\"value\":\"mock\"}}");
+        final var server = VaultTestUtils.initHttpsMockVault(mockVault);
         server.start();
 
         final String tempDirectoryPath = System.getProperty("java.io.tmpdir");
-        final File pem = new File(tempDirectoryPath + File.separator + "cert.pem");
+        final var pem = new File(tempDirectoryPath + File.separator + "cert.pem");
         try (final InputStream input = this.getClass().getResourceAsStream("/cert.pem");
-                final FileOutputStream output = new FileOutputStream(pem)) {
+                final var output = new FileOutputStream(pem)) {
             int nextChar;
             while ((nextChar = input.read()) != -1) {
                 output.write((char) nextChar);
             }
         }
 
-        final VaultConfig vaultConfig = new VaultConfig()
+        final var vaultConfig = new VaultConfig()
                 .address("https://127.0.0.1:9998")
                 .token("mock_token")
                 .sslConfig(new SslConfig().pemFile(pem).build())
                 .build();
-        final Vault vault = Vault.create(vaultConfig);
+        final var vault = Vault.create(vaultConfig);
         final LogicalResponse response = vault.logical().read("secret/hello");
 
         VaultTestUtils.shutdownMockVault(server);
@@ -129,16 +126,16 @@ public class SSLTests {
 
     @Test
     public void testSslPem_Resource_Get() throws Exception {
-        final MockVault mockVault = new MockVault(200, "{\"data\":{\"value\":\"mock\"}}");
-        final Server server = VaultTestUtils.initHttpsMockVault(mockVault);
+        final var mockVault = new MockVault(200, "{\"data\":{\"value\":\"mock\"}}");
+        final var server = VaultTestUtils.initHttpsMockVault(mockVault);
         server.start();
 
-        final VaultConfig vaultConfig = new VaultConfig()
+        final var vaultConfig = new VaultConfig()
                 .address("https://127.0.0.1:9998")
                 .token("mock_token")
                 .sslConfig(new SslConfig().pemResource("/cert.pem").build())
                 .build();
-        final Vault vault = Vault.create(vaultConfig);
+        final var vault = Vault.create(vaultConfig);
         final LogicalResponse response = vault.logical().read("secret/hello");
 
         VaultTestUtils.shutdownMockVault(server);
@@ -146,16 +143,16 @@ public class SSLTests {
 
     @Test
     public void testSslPem_Resource_Post() throws Exception {
-        final MockVault mockVault = new MockVault(204, null);
-        final Server server = VaultTestUtils.initHttpsMockVault(mockVault);
+        final var mockVault = new MockVault(204, null);
+        final var server = VaultTestUtils.initHttpsMockVault(mockVault);
         server.start();
 
-        final VaultConfig vaultConfig = new VaultConfig()
+        final var vaultConfig = new VaultConfig()
                 .address("https://127.0.0.1:9998")
                 .token("mock_token")
                 .sslConfig(new SslConfig().pemResource("/cert.pem").build())
                 .build();
-        final Vault vault = Vault.create(vaultConfig);
+        final var vault = Vault.create(vaultConfig);
         final LogicalResponse response = vault.logical()
                 .write("secret/hello", Map.of("value", "world"));
 
@@ -164,8 +161,8 @@ public class SSLTests {
 
     @Test
     public void testSslPem_UTF8() throws Exception {
-        final MockVault mockVault = new MockVault(200, "{\"data\":{\"value\":\"mock\"}}");
-        final Server server = VaultTestUtils.initHttpsMockVault(mockVault);
+        final var mockVault = new MockVault(200, "{\"data\":{\"value\":\"mock\"}}");
+        final var server = VaultTestUtils.initHttpsMockVault(mockVault);
         server.start();
 
         final String pemUTF8;
@@ -179,12 +176,12 @@ public class SSLTests {
             pemUTF8 = utf8.toString();
         }
 
-        final VaultConfig vaultConfig = new VaultConfig()
+        final var vaultConfig = new VaultConfig()
                 .address("https://127.0.0.1:9998")
                 .token("mock_token")
                 .sslConfig(new SslConfig().pemUTF8(pemUTF8).build())
                 .build();
-        final Vault vault = Vault.create(vaultConfig);
+        final var vault = Vault.create(vaultConfig);
         final LogicalResponse response = vault.logical().read("secret/hello");
 
         VaultTestUtils.shutdownMockVault(server);
@@ -192,16 +189,16 @@ public class SSLTests {
 
     @Test
     public void testSslJks_loadTrustStoreFromClasspath() throws Exception {
-        final MockVault mockVault = new MockVault(200, "{\"data\":{\"value\":\"mock\"}}");
-        final Server server = VaultTestUtils.initHttpsMockVault(mockVault);
+        final var mockVault = new MockVault(200, "{\"data\":{\"value\":\"mock\"}}");
+        final var server = VaultTestUtils.initHttpsMockVault(mockVault);
         server.start();
 
-        final VaultConfig vaultConfig = new VaultConfig()
+        final var vaultConfig = new VaultConfig()
                 .address("https://127.0.0.1:9998")
                 .token("mock_token")
                 .sslConfig(new SslConfig().trustStoreResource("/keystore.jks").build())
                 .build();
-        final Vault vault = Vault.create(vaultConfig);
+        final var vault = Vault.create(vaultConfig);
         final LogicalResponse response = vault.logical().read("secret/hello");
 
         VaultTestUtils.shutdownMockVault(server);
@@ -215,24 +212,24 @@ public class SSLTests {
         // known location (i.e. the system temp directory).
         final InputStream inputStream = this.getClass().getResourceAsStream("/keystore.jks");
         final String tempDirectoryPath = System.getProperty("java.io.tmpdir");
-        final File jks = new File(tempDirectoryPath + File.separator + "keystore.jks");
-        final FileOutputStream outputStream = new FileOutputStream(jks);
+        final var jks = new File(tempDirectoryPath + File.separator + "keystore.jks");
+        final var outputStream = new FileOutputStream(jks);
         final byte[] buffer = new byte[1024];
         int noOfBytes = 0;
         while ((noOfBytes = inputStream.read(buffer)) != -1) {
             outputStream.write(buffer, 0, noOfBytes);
         }
 
-        final MockVault mockVault = new MockVault(200, "{\"data\":{\"value\":\"mock\"}}");
-        final Server server = VaultTestUtils.initHttpsMockVault(mockVault);
+        final var mockVault = new MockVault(200, "{\"data\":{\"value\":\"mock\"}}");
+        final var server = VaultTestUtils.initHttpsMockVault(mockVault);
         server.start();
 
-        final VaultConfig vaultConfig = new VaultConfig()
+        final var vaultConfig = new VaultConfig()
                 .address("https://127.0.0.1:9998")
                 .token("mock_token")
                 .sslConfig(new SslConfig().trustStoreFile(jks).build())
                 .build();
-        final Vault vault = Vault.create(vaultConfig);
+        final var vault = Vault.create(vaultConfig);
         final LogicalResponse response = vault.logical().read("secret/hello");
 
         VaultTestUtils.shutdownMockVault(server);
@@ -240,20 +237,20 @@ public class SSLTests {
 
     @Test
     public void testSslJks_loadTrustStoreFromMemory() throws Exception {
-        final MockVault mockVault = new MockVault(200, "{\"data\":{\"value\":\"mock\"}}");
-        final Server server = VaultTestUtils.initHttpsMockVault(mockVault);
+        final var mockVault = new MockVault(200, "{\"data\":{\"value\":\"mock\"}}");
+        final var server = VaultTestUtils.initHttpsMockVault(mockVault);
         server.start();
 
         final KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
         trustStore.load(this.getClass().getResourceAsStream("/keystore.jks"),
                 "password".toCharArray());
 
-        final VaultConfig vaultConfig = new VaultConfig()
+        final var vaultConfig = new VaultConfig()
                 .address("https://127.0.0.1:9998")
                 .token("mock_token")
                 .sslConfig(new SslConfig().trustStore(trustStore).build())
                 .build();
-        final Vault vault = Vault.create(vaultConfig);
+        final var vault = Vault.create(vaultConfig);
         final LogicalResponse response = vault.logical().read("secret/hello");
 
         VaultTestUtils.shutdownMockVault(server);
@@ -261,17 +258,17 @@ public class SSLTests {
 
     @Test
     public void testSslJks_loadKeyStoreAndTrustStore() throws Exception {
-        final MockVault mockVault = new MockVault(200, "{\"data\":{\"value\":\"mock\"}}");
-        final Server server = VaultTestUtils.initHttpsMockVault(mockVault);
+        final var mockVault = new MockVault(200, "{\"data\":{\"value\":\"mock\"}}");
+        final var server = VaultTestUtils.initHttpsMockVault(mockVault);
         server.start();
 
-        final VaultConfig vaultConfig = new VaultConfig()
+        final var vaultConfig = new VaultConfig()
                 .address("https://127.0.0.1:9998")
                 .token("mock_token")
                 .sslConfig(new SslConfig().trustStoreResource("/keystore.jks").keyStoreResource(
                         "/keystore.jks", "password").build())
                 .build();
-        final Vault vault = Vault.create(vaultConfig);
+        final var vault = Vault.create(vaultConfig);
         final LogicalResponse response = vault.logical().read("secret/hello");
 
         VaultTestUtils.shutdownMockVault(server);
@@ -279,9 +276,9 @@ public class SSLTests {
 
     @Test
     public void testSslContextFromPemSupportsTls13() throws Exception {
-        final SslConfig sslConfig = new SslConfig().pemResource("/cert.pem").build();
+        final var sslConfig = new SslConfig().pemResource("/cert.pem").build();
         final SSLContext sslContext = sslConfig.getSslContext();
-        final java.util.List<String> supported = Arrays.asList(
+        final List<String> supported = List.of(
                 sslContext.getSupportedSSLParameters().getProtocols());
         assertTrue("SSLContext from PEM must support TLSv1.3", supported.contains("TLSv1.3"));
         assertTrue("SSLContext from PEM must support TLSv1.2", supported.contains("TLSv1.2"));

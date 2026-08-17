@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import junit.framework.TestCase;
+import org.bouncycastle.operator.OperatorCreationException;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -70,7 +71,7 @@ public class AuthBackendPkiIT {
     public void testCreateRole_WithOptions() throws VaultException {
         final Vault vault = container.getRootVault();
 
-        final RoleOptions options = new RoleOptions().allowAnyName(true);
+        final var options = new RoleOptions().allowAnyName(true);
         vault.pki().createOrUpdateRole("testRole", options);
         final PkiResponse response = vault.pki().getRole("testRole");
         assertTrue(compareRoleOptions(options, response.getRoleOptions()));
@@ -143,11 +144,11 @@ public class AuthBackendPkiIT {
         KeyPair kp = kpg.generateKeyPair();
         PublicKey pub = kp.getPublic();
         PrivateKey pvt = kp.getPrivate();
-        String csr = null;
+        String csr;
         try {
             csr = SSLUtils.generatePKCS10(kp, "", "", "", "", "", "");
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException | OperatorCreationException e) {
+            throw new AssertionError("Failed to generate CSR", e);
         }
         final Vault vault = container.getRootVault();
 

@@ -17,7 +17,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -78,7 +78,7 @@ public class AuthBackendTokenIT {
         final String token = createResponse.getAuthClientToken();
 
         assertNotNull(token);
-        assertNotSame("", token.trim());
+        assertNotEquals("", token.trim());
 
         // Renew the client token
         final Vault renewVault = container.getVault(token);
@@ -94,7 +94,7 @@ public class AuthBackendTokenIT {
 
         assertEquals(token, explicitToken);
 
-        final String explicitJson = new String(explicitResponse.getRestResponse().getBody(),
+        final var explicitJson = new String(explicitResponse.getRestResponse().getBody(),
                 StandardCharsets.UTF_8);
         final long explicitLeaseDuration = Json.parse(explicitJson).asObject().get("auth")
                 .asObject().get("lease_duration").asLong();
@@ -114,7 +114,7 @@ public class AuthBackendTokenIT {
         final String token = createResponse.getAuthClientToken();
 
         assertNotNull(token);
-        assertNotSame("", token.trim());
+        assertNotEquals("", token.trim());
 
         // Lookup the client token
         final Vault lookupVault = container.getVault(token);
@@ -137,7 +137,7 @@ public class AuthBackendTokenIT {
         final String token = createResponse.getAuthClientToken();
 
         assertNotNull(token);
-        assertNotSame("", token.trim());
+        assertNotEquals("", token.trim());
 
         // Revoke the client token
         container.getVault(token).auth().revokeSelf();

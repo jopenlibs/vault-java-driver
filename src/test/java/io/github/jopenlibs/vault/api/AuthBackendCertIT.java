@@ -16,7 +16,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNotEquals;
 
 /**
  * <p>Integration tests for the TLS Certificate auth backend.</p>
@@ -63,7 +63,7 @@ public class AuthBackendCertIT {
         final String token = vault.auth().loginByCert().getAuthClientToken();
 
         assertNotNull(token);
-        assertNotSame("", token.trim());
+        assertNotEquals("", token.trim());
     }
 
     @Test
@@ -88,7 +88,7 @@ public class AuthBackendCertIT {
         final String token = vault.auth().loginByCert().getAuthClientToken();
 
         assertNotNull(token);
-        assertNotSame("", token.trim());
+        assertNotEquals("", token.trim());
     }
 
 }

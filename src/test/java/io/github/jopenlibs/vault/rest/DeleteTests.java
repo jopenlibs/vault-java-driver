@@ -3,8 +3,6 @@ package io.github.jopenlibs.vault.rest;
 import io.github.jopenlibs.vault.json.Json;
 import io.github.jopenlibs.vault.VaultTestUtils;
 import io.github.jopenlibs.vault.mock.EchoInputMockVault;
-import java.io.UnsupportedEncodingException;
-import org.eclipse.jetty.server.Server;
 import org.junit.Test;
 
 import static junit.framework.TestCase.assertEquals;
@@ -27,14 +25,11 @@ public class DeleteTests {
      * <p>Unfortunately, the "httpbin.org" service that we're using for all of the other REST-layer
      * unit tests does not support the DELETE verb.  So we have to use a self-contained Jetty
      * instance for these tests.</p>
-     *
-     * @throws UnsupportedEncodingException If there's a problem shutting down the Jetty test
-     * server
      */
     @Test
     public void testDelete_Plain() throws Exception {
         final var echoInputMockVault = new EchoInputMockVault(204);
-        final Server server = VaultTestUtils.initHttpMockVault(echoInputMockVault);
+        final var server = VaultTestUtils.initHttpMockVault(echoInputMockVault);
         server.start();
 
         final var restResponse = new Rest()//NOPMD
@@ -51,7 +46,7 @@ public class DeleteTests {
     @Test
     public void testDelete_WithParams() throws Exception {
         final var echoInputMockVault = new EchoInputMockVault(204);
-        final Server server = VaultTestUtils.initHttpMockVault(echoInputMockVault);
+        final var server = VaultTestUtils.initHttpMockVault(echoInputMockVault);
         server.start();
 
         final String url = "http://127.0.0.1:8999/?param1=value1&param2=value2";
@@ -72,7 +67,7 @@ public class DeleteTests {
     @Test
     public void testDelete_WithHeaders() throws Exception {
         final var echoInputMockVault = new EchoInputMockVault(204);
-        final Server server = VaultTestUtils.initHttpMockVault(echoInputMockVault);
+        final var server = VaultTestUtils.initHttpMockVault(echoInputMockVault);
         server.start();
 
         final var restResponse = new Rest()//NOPMD
@@ -96,7 +91,7 @@ public class DeleteTests {
     @Test
     public void testDelete_WithOptionalHeaders() throws Exception {
         final var echoInputMockVault = new EchoInputMockVault(204);
-        final Server server = VaultTestUtils.initHttpMockVault(echoInputMockVault);
+        final var server = VaultTestUtils.initHttpMockVault(echoInputMockVault);
         server.start();
 
         final var restResponse = new Rest()//NOPMD

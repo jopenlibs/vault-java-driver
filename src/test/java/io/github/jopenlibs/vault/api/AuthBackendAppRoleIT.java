@@ -11,7 +11,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNotEquals;
 
 /**
  * Integration tests for the AppRole auth backend.
@@ -54,7 +54,7 @@ public class AuthBackendAppRoleIT {
                 .getAuthClientToken();
 
         assertNotNull(token);
-        assertNotSame("", token.trim());
+        assertNotEquals("", token.trim());
     }
 
 }

@@ -9,7 +9,6 @@ import io.github.jopenlibs.vault.VaultTestUtils;
 import io.github.jopenlibs.vault.mock.AuthRequestValidatingMockVault;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.function.Predicate;
-import org.eclipse.jetty.server.Server;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -29,16 +28,16 @@ public class AuthBackendAwsTests {
                 return false;
             }
         };
-        final AuthRequestValidatingMockVault mockVault = new AuthRequestValidatingMockVault(
+        final var mockVault = new AuthRequestValidatingMockVault(
                 isValidEc2IdRequest);
 
-        final Server server = VaultTestUtils.initHttpMockVault(mockVault);
+        final var server = VaultTestUtils.initHttpMockVault(mockVault);
         server.start();
 
-        final VaultConfig vaultConfig = new VaultConfig()
+        final var vaultConfig = new VaultConfig()
                 .address("http://127.0.0.1:8999")
                 .build();
-        final Vault vault = Vault.create(vaultConfig);
+        final var vault = Vault.create(vaultConfig);
 
         String token = null;
         String nonce = null;
@@ -67,20 +66,19 @@ public class AuthBackendAwsTests {
                 return requestBody != null && request.getRequestURI().endsWith("/auth/aws/login") &&
                         requestBody.getString("pkcs7", "").equals("pkcs7");
             } catch (Exception e) {
-                e.printStackTrace(System.out);
                 return false;
             }
         };
-        final AuthRequestValidatingMockVault mockVault = new AuthRequestValidatingMockVault(
+        final var mockVault = new AuthRequestValidatingMockVault(
                 isValidEc2pkcs7Request);
 
-        final Server server = VaultTestUtils.initHttpMockVault(mockVault);
+        final var server = VaultTestUtils.initHttpMockVault(mockVault);
         server.start();
 
-        final VaultConfig vaultConfig = new VaultConfig()
+        final var vaultConfig = new VaultConfig()
                 .address("http://127.0.0.1:8999")
                 .build();
-        final Vault vault = Vault.create(vaultConfig);
+        final var vault = Vault.create(vaultConfig);
 
         System.out.println("Running Aws EC2 test");
 
@@ -112,16 +110,16 @@ public class AuthBackendAwsTests {
                     requestBody.getString("iam_request_headers", "").equals("headers");
         };
 
-        final AuthRequestValidatingMockVault mockVault = new AuthRequestValidatingMockVault(
+        final var mockVault = new AuthRequestValidatingMockVault(
                 isValidEc2IamRequest);
 
-        final Server server = VaultTestUtils.initHttpMockVault(mockVault);
+        final var server = VaultTestUtils.initHttpMockVault(mockVault);
         server.start();
 
-        final VaultConfig vaultConfig = new VaultConfig()
+        final var vaultConfig = new VaultConfig()
                 .address("http://127.0.0.1:8999")
                 .build();
-        final Vault vault = Vault.create(vaultConfig);
+        final var vault = Vault.create(vaultConfig);
 
         AuthResponse response = vault.auth()
                 .loginByAwsIam("role", "url", "body", "headers",

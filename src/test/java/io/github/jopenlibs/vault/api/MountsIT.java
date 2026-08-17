@@ -55,7 +55,7 @@ public class MountsIT {
     public void testEnable() throws VaultException {
         final Vault vault = container.getRootVault();
 
-        final MountPayload payload = new MountPayload()
+        final var payload = new MountPayload()
                 .defaultLeaseTtl(TimeToLive.of(12, TimeUnit.HOURS))
                 .maxLeaseTtl(TimeToLive.of(12, TimeUnit.HOURS))
                 .description("description for pki engine");
@@ -73,7 +73,7 @@ public class MountsIT {
 
         final Vault vault = container.getRootVault();
 
-        final MountPayload payload = new MountPayload()
+        final var payload = new MountPayload()
                 .defaultLeaseTtl(TimeToLive.of(168, TimeUnit.HOURS))
                 .maxLeaseTtl(TimeToLive.of(168, TimeUnit.HOURS))
                 .description("description for pki engine");
@@ -88,7 +88,7 @@ public class MountsIT {
 
         final Vault vault = container.getRootVault();
 
-        final MountPayload payload = new MountPayload()
+        final var payload = new MountPayload()
                 .defaultLeaseTtl(TimeToLive.of(30, TimeUnit.MINUTES))
                 .maxLeaseTtl(TimeToLive.of(30, TimeUnit.MINUTES))
                 .description("description for pki engine");
@@ -102,7 +102,7 @@ public class MountsIT {
 
         final Vault vault = container.getRootVault();
 
-        final MountPayload payload = new MountPayload()
+        final var payload = new MountPayload()
                 .defaultLeaseTtl(TimeToLive.of(7, null));
 
         vault.sys().mounts().enable("pki-itest-path-3", MountType.PKI, payload);
@@ -115,7 +115,7 @@ public class MountsIT {
 
         final Vault vault = container.getRootVault();
 
-        final MountPayload payload = new MountPayload()
+        final var payload = new MountPayload()
                 .defaultLeaseTtl(TimeToLive.of(7, TimeUnit.DAYS));
 
         vault.sys().mounts().enable("pki-itest-path-4", MountType.PKI, payload);
@@ -134,7 +134,7 @@ public class MountsIT {
     public void testRead() throws VaultException {
         final Vault vault = container.getRootVault();
 
-        final MountPayload payload = new MountPayload()
+        final var payload = new MountPayload()
                 .defaultLeaseTtl(TimeToLive.of(360, TimeUnit.MINUTES))
                 .maxLeaseTtl(TimeToLive.of(360, TimeUnit.MINUTES));
 
@@ -164,13 +164,13 @@ public class MountsIT {
     public void testTune() throws VaultException {
         final Vault vault = container.getRootVault();
 
-        final MountPayload enablePayload = new MountPayload()
+        final var enablePayload = new MountPayload()
                 .defaultLeaseTtl(TimeToLive.of(6, TimeUnit.HOURS))
                 .maxLeaseTtl(TimeToLive.of(6, TimeUnit.HOURS));
 
         vault.sys().mounts().enable("pki-predefined-path-2", MountType.PKI, enablePayload);
 
-        final MountPayload tunePayload = new MountPayload()
+        final var tunePayload = new MountPayload()
                 .defaultLeaseTtl(TimeToLive.of(12, TimeUnit.HOURS))
                 .maxLeaseTtl(TimeToLive.of(12, TimeUnit.HOURS));
 
@@ -194,7 +194,7 @@ public class MountsIT {
 
         final Vault vault = container.getRootVault();
 
-        final MountPayload tunePayload = new MountPayload()
+        final var tunePayload = new MountPayload()
                 .defaultLeaseTtl(TimeToLive.of(24, TimeUnit.HOURS))
                 .maxLeaseTtl(TimeToLive.of(24, TimeUnit.HOURS));
 
