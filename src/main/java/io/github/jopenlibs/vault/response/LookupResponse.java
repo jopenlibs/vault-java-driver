@@ -1,9 +1,6 @@
 package io.github.jopenlibs.vault.response;
 
 import io.github.jopenlibs.vault.json.Json;
-import io.github.jopenlibs.vault.json.JsonArray;
-import io.github.jopenlibs.vault.json.JsonObject;
-import io.github.jopenlibs.vault.json.JsonValue;
 import io.github.jopenlibs.vault.json.ParseException;
 import io.github.jopenlibs.vault.rest.RestResponse;
 import java.nio.charset.StandardCharsets;
@@ -41,9 +38,9 @@ public class LookupResponse extends VaultResponse {
         super(restResponse, retries);
 
         try {
-            final String responseJson = new String(restResponse.getBody(), StandardCharsets.UTF_8);
-            final JsonObject jsonObject = Json.parse(responseJson).asObject();
-            final JsonObject dataJsonObject = jsonObject.get("data").asObject();
+            final var responseJson = new String(restResponse.getBody(), StandardCharsets.UTF_8);
+            final var jsonObject = Json.parse(responseJson).asObject();
+            final var dataJsonObject = jsonObject.get("data").asObject();
 
             accessor = dataJsonObject.getString("accessor", "");
             creationTime = dataJsonObject.getLong("creation_time", 0);
@@ -51,23 +48,21 @@ public class LookupResponse extends VaultResponse {
             displayName = dataJsonObject.getString("display_name", "");
             explicitMaxTTL = dataJsonObject.getLong("explicit_max_ttl", 0);
             id = dataJsonObject.getString("id", "");
-            final JsonValue lastRenewalTimeJsonValue = dataJsonObject.get("last_renewal_time");
+            final var lastRenewalTimeJsonValue = dataJsonObject.get("last_renewal_time");
             if (lastRenewalTimeJsonValue != null) {
                 lastRenewalTime = lastRenewalTimeJsonValue.asLong();
             }
             if (dataJsonObject.get("metadata") != null && !dataJsonObject.get("metadata").toString()
                     .equalsIgnoreCase("null")) {
-                final JsonObject metadata = dataJsonObject.get("metadata").asObject();
+                final var metadata = dataJsonObject.get("metadata").asObject();
                 username = metadata.getString("username", "");
             }
             numUses = dataJsonObject.getInt("num_uses", 0);
             orphan = dataJsonObject.getBoolean("orphan", true);
             path = dataJsonObject.getString("path", "");
-            final JsonArray policiesJsonArray = dataJsonObject.get("policies").asArray();
+            final var policiesJsonArray = dataJsonObject.get("policies").asArray();
             policies = new ArrayList<>();
-            for (final JsonValue policy : policiesJsonArray) {
-                policies.add(policy.asString());
-            }
+            policiesJsonArray.forEach(policy -> policies.add(policy.asString()));
             renewable = dataJsonObject.getBoolean("renewable", false);
             ttl = dataJsonObject.getLong("ttl", 0);
 

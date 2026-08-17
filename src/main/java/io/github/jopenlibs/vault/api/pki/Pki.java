@@ -96,7 +96,7 @@ public class Pki extends OperationsBase {
      * final Vault vault = Vault.create(config);
      *
      * final RoleOptions options = new RoleOptions()
-     *                              .allowedDomains(new ArrayList<String>(){{ add("myvault.com"); }})
+     *                              .allowedDomains(List.of("myvault.com"))
      *                              .allowSubdomains(true)
      *                              .maxTtl("9h");
      * final PkiResponse response = vault.pki().createOrUpdateRole("testRole", options);
@@ -210,7 +210,7 @@ public class Pki extends OperationsBase {
      */
     public PkiResponse revoke(final String serialNumber) throws VaultException {
         return retry(attempt -> {
-            JsonObject jsonObject = new JsonObject();
+            final JsonObject jsonObject = new JsonObject();
 
             if (serialNumber != null) {
                 jsonObject.add("serial_number", serialNumber);
@@ -497,25 +497,11 @@ public class Pki extends OperationsBase {
             }
 
             if (altNames != null && !altNames.isEmpty()) {
-                final StringBuilder altNamesCsv = new StringBuilder();//NOPMD
-                for (int index = 0; index < altNames.size(); index++) {
-                    altNamesCsv.append(altNames.get(index));
-                    if (index + 1 < altNames.size()) {
-                        altNamesCsv.append(',');
-                    }
-                }
-                jsonObject.add("alt_names", altNamesCsv.toString());
+                jsonObject.add("alt_names", String.join(",", altNames));
             }
 
             if (ipSans != null && !ipSans.isEmpty()) {
-                final StringBuilder ipSansCsv = new StringBuilder();//NOPMD
-                for (int index = 0; index < ipSans.size(); index++) {
-                    ipSansCsv.append(ipSans.get(index));
-                    if (index + 1 < ipSans.size()) {
-                        ipSansCsv.append(',');
-                    }
-                }
-                jsonObject.add("ip_sans", ipSansCsv.toString());
+                jsonObject.add("ip_sans", String.join(",", ipSans));
             }
 
             if (ttl != null) {
@@ -572,7 +558,7 @@ public class Pki extends OperationsBase {
             addJsonFieldIfNotNull(jsonObject, "ttl", options.getTtl());
             addJsonFieldIfNotNull(jsonObject, "max_ttl", options.getMaxTtl());
             addJsonFieldIfNotNull(jsonObject, "allow_localhost", options.getAllowLocalhost());
-            if (options.getAllowedDomains() != null && options.getAllowedDomains().size() > 0) {
+            if (options.getAllowedDomains() != null && !options.getAllowedDomains().isEmpty()) {
                 addJsonFieldIfNotNull(jsonObject, "allowed_domains",
                         String.join(",", options.getAllowedDomains()));
             }
@@ -591,7 +577,7 @@ public class Pki extends OperationsBase {
             addJsonFieldIfNotNull(jsonObject, "key_bits", options.getKeyBits());
             addJsonFieldIfNotNull(jsonObject, "use_csr_common_name", options.getUseCsrCommonName());
             addJsonFieldIfNotNull(jsonObject, "use_csr_sans", options.getUseCsrSans());
-            if (options.getKeyUsage() != null && options.getKeyUsage().size() > 0) {
+            if (options.getKeyUsage() != null && !options.getKeyUsage().isEmpty()) {
                 addJsonFieldIfNotNull(jsonObject, "key_usage",
                         String.join(",", options.getKeyUsage()));
             }

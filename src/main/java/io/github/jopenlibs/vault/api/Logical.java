@@ -86,7 +86,7 @@ public class Logical extends OperationsBase {
             throws VaultException {
         return retry(attempt -> {
             // Make an HTTP request to Vault
-            final RestResponse restResponse = getRest()//NOPMD
+            final var restResponse = getRest()//NOPMD
                     .url(config.getAddress() + "/v1/" + adjustPathForReadOrWrite(path,
                             config.getPrefixPathDepth(), operation))
                     .token(config.getToken())
@@ -143,7 +143,7 @@ public class Logical extends OperationsBase {
         return OperationsBase.retry(
                 attempt -> {
                     // Make an HTTP request to Vault
-                    final RestResponse restResponse =
+                    final var restResponse =
                             getRest() //NOPMD
                                     .url(config.getAddress() + "/v1/" + adjustPathForReadOrWrite(
                                             path,
@@ -182,7 +182,7 @@ public class Logical extends OperationsBase {
      *
      * <blockquote>
      * <pre>{@code
-     * final Map<String, String> nameValuePairs = new HashMap<String, Object>();
+     * final Map<String, Object> nameValuePairs = new HashMap<>();
      * nameValuePairs.put("value", "foo");
      * nameValuePairs.put("other_value", "bar");
      *
@@ -219,7 +219,7 @@ public class Logical extends OperationsBase {
      *
      * <blockquote>
      * <pre>{@code
-     * final Map<String, String> nameValuePairs = new HashMap<String, Object>();
+     * final Map<String, Object> nameValuePairs = new HashMap<>();
      * nameValuePairs.put("value", "foo");
      * nameValuePairs.put("other_value", "bar");
      *
@@ -280,10 +280,10 @@ public class Logical extends OperationsBase {
             throws VaultException {
 
         return retry(attempt -> {
-            JsonObject dataJson = buildJsonFromMap(nameValuePairs);
-            JsonObject optionsJson = buildJsonFromMap(writeOptions.getOptionsMap());
+            final var dataJson = buildJsonFromMap(nameValuePairs);
+            final var optionsJson = buildJsonFromMap(writeOptions.getOptionsMap());
              // Make an HTTP request to Vault
-            final RestResponse restResponse = getRest()//NOPMD
+            final var restResponse = getRest()//NOPMD
                     .url(config.getAddress() + "/v1/" + adjustPathForReadOrWrite(path,
                             config.getPrefixPathDepth(), operation))
                     .body(jsonObjectToWriteFromEngineVersion(operation, dataJson, optionsJson)
@@ -395,7 +395,7 @@ public class Logical extends OperationsBase {
             throws VaultException {
         return retry(attempt -> {
             // Make an HTTP request to Vault
-            final RestResponse restResponse = getRest()//NOPMD
+            final var restResponse = getRest()//NOPMD
                     .url(config.getAddress() + "/v1/" + adjustPathForDelete(path,
                             config.getPrefixPathDepth(), operation))
                     .token(config.getToken())
@@ -444,8 +444,8 @@ public class Logical extends OperationsBase {
 
         return retry(attempt -> {
             // Make an HTTP request to Vault
-            JsonObject versionsToDelete = new JsonObject().add("versions", versions);
-            final RestResponse restResponse = getRest()//NOPMD
+            final var versionsToDelete = new JsonObject().add("versions", versions);
+            final var restResponse = getRest()//NOPMD
                     .url(config.getAddress() + "/v1/" + adjustPathForVersionDelete(path,
                             config.getPrefixPathDepth()))
                     .token(config.getToken())
@@ -504,8 +504,8 @@ public class Logical extends OperationsBase {
 
         return retry(attempt -> {
             // Make an HTTP request to Vault
-            JsonObject versionsToUnDelete = new JsonObject().add("versions", versions);
-            final RestResponse restResponse = getRest() //NOPMD
+            final var versionsToUnDelete = new JsonObject().add("versions", versions);
+            final var restResponse = getRest() //NOPMD
                     .url(config.getAddress() + "/v1/" + adjustPathForVersionUnDelete(path,
                             config.getPrefixPathDepth()))
                     .token(config.getToken())
@@ -551,8 +551,8 @@ public class Logical extends OperationsBase {
 
         return retry(attempt -> {
             // Make an HTTP request to Vault
-            JsonObject versionsToDestroy = new JsonObject().add("versions", versions);
-            final RestResponse restResponse = getRest()//NOPMD
+            final var versionsToDestroy = new JsonObject().add("versions", versions);
+            final var restResponse = getRest()//NOPMD
                     .url(config.getAddress() + "/v1/" + adjustPathForVersionDestroy(path,
                             config.getPrefixPathDepth()))
                     .token(config.getToken())
@@ -587,9 +587,9 @@ public class Logical extends OperationsBase {
 
         return retry(attempt -> {
             // Make an HTTP request to Vault
-            JsonObject kvToUpgrade = new JsonObject().add("options",
+            final var kvToUpgrade = new JsonObject().add("options",
                     new JsonObject().add("version", 2));
-            final RestResponse restResponse = getRest()//NOPMD
+            final var restResponse = getRest()//NOPMD
                     .url(config.getAddress() + "/v1/sys/mounts/" + (kvPath.replaceAll("/", "")
                             + "/tune"))
                     .token(config.getToken())
@@ -636,12 +636,12 @@ public class Logical extends OperationsBase {
      * @return the detected engine version (1 or 2), or the global default if not found
      */
     private Integer engineVersionForSecretPath(final String secretPath) {
-        final Map<String, String> pathMap = this.config.getSecretsEnginePathMap();
+        final var pathMap = this.config.getSecretsEnginePathMap();
         if (!pathMap.isEmpty()) {
             int idx = secretPath.length();
             do {
-                final String prefix = secretPath.substring(0, idx);
-                final String version = pathMap.get(prefix + '/');
+                final var prefix = secretPath.substring(0, idx);
+                final var version = pathMap.get(prefix + '/');
                 if (version != null && !version.equals("unknown")) {
                     return Integer.parseInt(version);
                 }
@@ -665,9 +665,9 @@ public class Logical extends OperationsBase {
     }
 
     private JsonObject buildJsonFromMap(Map<String, Object> nameValuePairs) {
-        JsonObject jsonObject = Json.object();
+        var jsonObject = Json.object();
         if (nameValuePairs != null) {
-            for (final Map.Entry<String, Object> pair : nameValuePairs.entrySet()) {
+            for (final var pair : nameValuePairs.entrySet()) {
                 final Object value = pair.getValue();
                 if (value == null) {
                     jsonObject = jsonObject.add(pair.getKey(), (String) null);

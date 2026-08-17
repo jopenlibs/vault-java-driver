@@ -22,8 +22,8 @@ public class LogicalUtilities {
      * @return The path potentially mutated, based on the operation
      */
     private static List<String> getPathSegments(final String path) {
-        final List<String> segments = new ArrayList<>();
-        final StringTokenizer tokenizer = new StringTokenizer(path, "/");
+        final var segments = new ArrayList<String>();
+        final var tokenizer = new StringTokenizer(path, "/");
         while (tokenizer.hasMoreTokens()) {
             segments.add(tokenizer.nextToken());
         }
@@ -42,7 +42,7 @@ public class LogicalUtilities {
      */
     public static String addQualifierToPath(final List<String> segments, final int prefixPathDepth,
             final String qualifier) {
-        final StringBuilder adjustedPath = new StringBuilder();
+        final var adjustedPath = new StringBuilder();
         int index;
 
         for (index = 0; index < prefixPathDepth; index++) {
@@ -71,11 +71,11 @@ public class LogicalUtilities {
      */
     public static String adjustPathForReadOrWrite(final String path, final int prefixPathLength,
             final Logical.logicalOperations operation) {
-        final List<String> pathSegments = getPathSegments(path);
+        final var pathSegments = getPathSegments(path);
         if (operation.equals(Logical.logicalOperations.readV2) || operation
                 .equals(Logical.logicalOperations.writeV2)) {
             // Version 2
-            final StringBuilder adjustedPath = new StringBuilder(
+            final var adjustedPath = new StringBuilder(
                     addQualifierToPath(pathSegments, prefixPathLength, "data"));
             if (path.endsWith("/")) {
                 adjustedPath.append("/");
@@ -100,8 +100,8 @@ public class LogicalUtilities {
      */
     public static String adjustPathForList(final String path, int prefixPathDepth,
             final Logical.logicalOperations operation) {
-        final List<String> pathSegments = getPathSegments(path);
-        final StringBuilder adjustedPath = new StringBuilder();
+        final var pathSegments = getPathSegments(path);
+        final var adjustedPath = new StringBuilder();
         switch (operation) {
             case listV1:
                 // Version 1
@@ -136,9 +136,9 @@ public class LogicalUtilities {
      */
     public static String adjustPathForDelete(final String path, final int prefixPathDepth,
             final Logical.logicalOperations operation) {
-        final List<String> pathSegments = getPathSegments(path);
+        final var pathSegments = getPathSegments(path);
         if (operation.equals(Logical.logicalOperations.deleteV2)) {
-            final StringBuilder adjustedPath = new StringBuilder(
+            final var adjustedPath = new StringBuilder(
                     addQualifierToPath(pathSegments, prefixPathDepth, "metadata"));
             if (path.endsWith("/")) {
                 adjustedPath.append("/");
@@ -158,8 +158,8 @@ public class LogicalUtilities {
      * @return The modified path
      */
     public static String adjustPathForVersionDelete(final String path, final int prefixPathDepth) {
-        final List<String> pathSegments = getPathSegments(path);
-        final StringBuilder adjustedPath = new StringBuilder(
+        final var pathSegments = getPathSegments(path);
+        final var adjustedPath = new StringBuilder(
                 addQualifierToPath(pathSegments, prefixPathDepth, "delete"));
         if (path.endsWith("/")) {
             adjustedPath.append("/");
@@ -177,8 +177,8 @@ public class LogicalUtilities {
      */
     public static String adjustPathForVersionUnDelete(final String path,
             final int prefixPathDepth) {
-        final List<String> pathSegments = getPathSegments(path);
-        final StringBuilder adjustedPath = new StringBuilder(
+        final var pathSegments = getPathSegments(path);
+        final var adjustedPath = new StringBuilder(
                 addQualifierToPath(pathSegments, prefixPathDepth, "undelete"));
         if (path.endsWith("/")) {
             adjustedPath.append("/");
@@ -195,8 +195,8 @@ public class LogicalUtilities {
      * @return The path mutated depending on the operation.
      */
     public static String adjustPathForVersionDestroy(final String path, final int prefixPathDepth) {
-        final List<String> pathSegments = getPathSegments(path);
-        final StringBuilder adjustedPath = new StringBuilder(
+        final var pathSegments = getPathSegments(path);
+        final var adjustedPath = new StringBuilder(
                 addQualifierToPath(pathSegments, prefixPathDepth, "destroy"));
         if (path.endsWith("/")) {
             adjustedPath.append("/");
@@ -217,7 +217,7 @@ public class LogicalUtilities {
             final Logical.logicalOperations operation, final JsonObject jsonObject,
             final JsonObject optionsJsonObject) {
         if (operation.equals(Logical.logicalOperations.writeV2)) {
-            final JsonObject wrappedJson = new JsonObject();
+            final var wrappedJson = new JsonObject();
             wrappedJson.add("data", jsonObject);
             if (!optionsJsonObject.isEmpty()) {
                 wrappedJson.add("options", optionsJsonObject);

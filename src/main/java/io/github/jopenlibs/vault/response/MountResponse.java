@@ -6,7 +6,6 @@ import io.github.jopenlibs.vault.api.sys.mounts.MountConfig;
 import io.github.jopenlibs.vault.api.sys.mounts.MountType;
 import io.github.jopenlibs.vault.json.JsonObject;
 import io.github.jopenlibs.vault.json.JsonObject.Member;
-import io.github.jopenlibs.vault.json.JsonValue;
 import io.github.jopenlibs.vault.rest.RestResponse;
 import java.util.Collections;
 import java.util.Map;
@@ -73,8 +72,8 @@ public class MountResponse extends LogicalResponse {
             return null;
         }
 
-        JsonValue object = data.get("config");
-        JsonObject config = object != null ? object.asObject() : data;
+        final var object = data.get("config");
+        final var config = object != null ? object.asObject() : data;
 
         if (config == null || config.isEmpty()) {
             return null;

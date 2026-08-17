@@ -3,7 +3,6 @@ package io.github.jopenlibs.vault.response;
 import io.github.jopenlibs.vault.api.Logical;
 import io.github.jopenlibs.vault.api.Logical.logicalOperations;
 import io.github.jopenlibs.vault.json.Json;
-import io.github.jopenlibs.vault.json.JsonArray;
 import io.github.jopenlibs.vault.json.JsonObject;
 import io.github.jopenlibs.vault.json.JsonValue;
 import io.github.jopenlibs.vault.rest.RestResponse;
@@ -79,9 +78,9 @@ public class LogicalResponse extends VaultResponse {
 
     private void parseMetadataFields() {
         try {
-            final String jsonString = new String(getRestResponse().getBody(),
+            final var jsonString = new String(getRestResponse().getBody(),
                     StandardCharsets.UTF_8);
-            final JsonObject jsonObject = Json.parse(jsonString).asObject();
+            final var jsonObject = Json.parse(jsonString).asObject();
 
             this.leaseId = jsonObject.get("lease_id").asString();
             this.renewable = jsonObject.get("renewable").asBoolean();
@@ -94,12 +93,12 @@ public class LogicalResponse extends VaultResponse {
 
     private void parseResponseData(final Logical.logicalOperations operation) {
         try {
-            final String jsonString = new String(getRestResponse().getBody(),
+            final var jsonString = new String(getRestResponse().getBody(),
                     StandardCharsets.UTF_8);
-            JsonObject jsonObject = Json.parse(jsonString).asObject();
+            var jsonObject = Json.parse(jsonString).asObject();
             if (operation.equals(Logical.logicalOperations.readV2)) {
                 jsonObject = jsonObject.get("data").asObject();
-                JsonValue metadataValue = jsonObject.get("metadata");
+                final var metadataValue = jsonObject.get("metadata");
                 if (null != metadataValue) {
                     parseJsonIntoMap(metadataValue.asObject(), dataMetadata);
                 }
@@ -113,10 +112,8 @@ public class LogicalResponse extends VaultResponse {
                     Logical.logicalOperations.listV2)) {
                 if (getRestResponse().getStatus() != 404 && data.get("keys") != null) {
 
-                    final JsonArray keys = Json.parse(data.get("keys")).asArray();
-                    for (int index = 0; index < keys.size(); index++) {
-                        listData.add(keys.get(index).asString());
-                    }
+                    final var keys = Json.parse(data.get("keys")).asArray();
+                    keys.forEach(key -> listData.add(key.asString()));
                 }
 
             }

@@ -322,7 +322,7 @@ public class VaultImpl implements Vault {
             }
 
             final String jsonString = new String(restResponse.getBody(), StandardCharsets.UTF_8);
-            final Map<String, String> data = new HashMap<>();
+            final var data = new HashMap<String, String>();
             final JsonObject jsonData = Json.parse(jsonString).asObject().get("data").asObject();
             for (JsonObject.Member member : jsonData) {
                 final String name = member.getName();

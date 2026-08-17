@@ -59,16 +59,14 @@ public class MountConfig implements Serializable {
 
     public MountConfig auditNonHmacRequestKeys(final List<String> auditNonHmacRequestKeys) {
         if (auditNonHmacRequestKeys != null) {
-            this.auditNonHmacRequestKeys = new ArrayList<>();
-            this.auditNonHmacRequestKeys.addAll(auditNonHmacRequestKeys);
+            this.auditNonHmacRequestKeys = new ArrayList<>(auditNonHmacRequestKeys);
         }
         return this;
     }
 
     public MountConfig auditNonHmacResponseKeys(final List<String> auditNonHmacResponseKeys) {
         if (auditNonHmacResponseKeys != null) {
-            this.auditNonHmacResponseKeys = new ArrayList<>();
-            this.auditNonHmacResponseKeys.addAll(auditNonHmacResponseKeys);
+            this.auditNonHmacResponseKeys = new ArrayList<>(auditNonHmacResponseKeys);
         }
         return this;
     }

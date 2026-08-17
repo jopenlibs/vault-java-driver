@@ -1,9 +1,7 @@
 package io.github.jopenlibs.vault.response;
 
 import io.github.jopenlibs.vault.json.Json;
-import io.github.jopenlibs.vault.json.JsonArray;
 import io.github.jopenlibs.vault.json.JsonObject;
-import io.github.jopenlibs.vault.json.JsonValue;
 import io.github.jopenlibs.vault.json.ParseException;
 import io.github.jopenlibs.vault.rest.RestResponse;
 import java.nio.charset.StandardCharsets;
@@ -38,10 +36,10 @@ public class AuthResponse extends VaultResponse {
         super(restResponse, retries);
 
         try {
-            final String responseJson = new String(restResponse.getBody(), StandardCharsets.UTF_8);
+            final var responseJson = new String(restResponse.getBody(), StandardCharsets.UTF_8);
             jsonResponse = Json.parse(responseJson).asObject();
-            JsonValue authJsonVal = jsonResponse.get("auth");
-            final JsonObject authJsonObject =
+            final var authJsonVal = jsonResponse.get("auth");
+            final var authJsonObject =
                     authJsonVal != null && !authJsonVal.isNull() ? authJsonVal.asObject() : null;
 
             if (authJsonObject != null) {
@@ -49,7 +47,7 @@ public class AuthResponse extends VaultResponse {
                 authRenewable = authJsonObject.getBoolean("renewable", false);
                 if (authJsonObject.get("metadata") != null && !authJsonObject.get("metadata")
                         .toString().equalsIgnoreCase("null")) {
-                    final JsonObject metadata = authJsonObject.get("metadata").asObject();
+                    final var metadata = authJsonObject.get("metadata").asObject();
                     appId = metadata.getString("app-id", "");
                     userId = metadata.getString("user-id", "");
                     username = metadata.getString("username", "");
@@ -59,12 +57,9 @@ public class AuthResponse extends VaultResponse {
                 authClientToken = authJsonObject.getString("client_token", "");
                 tokenAccessor = authJsonObject.getString("accessor", "");
 
-                final JsonArray authPoliciesJsonArray = authJsonObject.get("policies").asArray();
+                final var authPoliciesJsonArray = authJsonObject.get("policies").asArray();
                 authPolicies = new ArrayList<>();
-
-                for (final JsonValue authPolicy : authPoliciesJsonArray) {
-                    authPolicies.add(authPolicy.asString());
-                }
+                authPoliciesJsonArray.forEach(authPolicy -> authPolicies.add(authPolicy.asString()));
             }
 
             renewable = jsonResponse.get("renewable").asBoolean();

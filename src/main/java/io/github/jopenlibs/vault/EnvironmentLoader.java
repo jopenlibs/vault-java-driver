@@ -2,7 +2,6 @@ package io.github.jopenlibs.vault;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -24,9 +23,8 @@ public class EnvironmentLoader implements Serializable {
             } else {
                 // Not in the environment, looking for a ".vault-token" file in the executing user's home directory instead
                 try {
-                    final byte[] bytes = Files.readAllBytes(
-                            Paths.get(System.getProperty("user.home")).resolve(".vault-token"));
-                    value = new String(bytes, StandardCharsets.UTF_8).trim();
+                    value = Files.readString(
+                            Paths.get(System.getProperty("user.home")).resolve(".vault-token")).strip();
                 } catch (IOException e) {
                     // No-op... there simply isn't a token value available
                 }

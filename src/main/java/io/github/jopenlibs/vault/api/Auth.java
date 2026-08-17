@@ -309,11 +309,11 @@ public class Auth extends OperationsBase {
      */
     public AuthResponse createToken(final TokenRequest tokenRequest, final String tokenAuthMount)
             throws VaultException {
-        final String mount = tokenAuthMount != null ? tokenAuthMount : "token";
+        final var mount = tokenAuthMount != null ? tokenAuthMount : "token";
 
         return retry((attempt) -> {
             // Parse parameters to JSON
-            final JsonObject jsonObject = Json.object();
+            final var jsonObject = Json.object();
 
             if (tokenRequest.getId() != null) {
                 jsonObject.add("id", tokenRequest.getId().toString());
@@ -326,10 +326,8 @@ public class Auth extends OperationsBase {
             }
 
             if (tokenRequest.getMeta() != null && !tokenRequest.getMeta().isEmpty()) {
-                final JsonObject metaMap = Json.object();
-                for (final Map.Entry<String, String> entry : tokenRequest.getMeta().entrySet()) {
-                    metaMap.add(entry.getKey(), entry.getValue());
-                }
+                final var metaMap = Json.object();
+                tokenRequest.getMeta().forEach(metaMap::add);
                 jsonObject.add("meta", metaMap);
             }
             if (tokenRequest.getNoParent() != null) {
@@ -363,19 +361,19 @@ public class Auth extends OperationsBase {
                 jsonObject.add("entity_alias", tokenRequest.getEntityAlias());
             }
 
-            final String requestJson = jsonObject.toString();
+            final var requestJson = jsonObject.toString();
 
-            final StringBuilder urlBuilder = new StringBuilder(config.getAddress())//NOPMD
+            final var urlBuilder = new StringBuilder(config.getAddress())//NOPMD
                     .append("/v1/auth/")
                     .append(mount)
                     .append("/create");
             if (tokenRequest.getRole() != null) {
                 urlBuilder.append("/").append(tokenRequest.getRole());
             }
-            final String url = urlBuilder.toString();
+            final var url = urlBuilder.toString();
 
             // HTTP request to Vault
-            final RestResponse restResponse = getRest()//NOPMD
+            final var restResponse = getRest()//NOPMD
                     .url(url)
                     .token(config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)
@@ -396,7 +394,7 @@ public class Auth extends OperationsBase {
                         restResponse.getStatus());
             }
 
-            final String mimeType =
+            final var mimeType =
                     restResponse.getMimeType() == null ? "null" : restResponse.getMimeType();
             if (!mimeType.equals("application/json")) {
                 throw new VaultException("Vault responded with MIME type: " + mimeType,
@@ -434,9 +432,9 @@ public class Auth extends OperationsBase {
             throws VaultException {
         return retry((attempt) -> {
             // HTTP request to Vault
-            final String requestJson = Json.object().add("app_id", appId).add("user_id", userId)
+            final var requestJson = Json.object().add("app_id", appId).add("user_id", userId)
                     .toString();
-            final RestResponse restResponse = getRest()//NOPMD
+            final var restResponse = getRest()//NOPMD
                     .url(config.getAddress() + "/v1/auth/" + path)
                     .header("X-Vault-Namespace", this.nameSpace)
                     .body(requestJson.getBytes(StandardCharsets.UTF_8))
@@ -455,7 +453,7 @@ public class Auth extends OperationsBase {
                         restResponse.getStatus());
             }
 
-            final String mimeType =
+            final var mimeType =
                     restResponse.getMimeType() == null ? "null" : restResponse.getMimeType();
             if (!mimeType.equals("application/json")) {
                 throw new VaultException("Vault responded with MIME type: " + mimeType,
@@ -522,9 +520,9 @@ public class Auth extends OperationsBase {
             final String secretId) throws VaultException {
         return retry(attempt -> {
             // HTTP request to Vault
-            final String requestJson = Json.object().add("role_id", roleId)
+            final var requestJson = Json.object().add("role_id", roleId)
                     .add("secret_id", secretId).toString();
-            final RestResponse restResponse = getRest()//NOPMD
+            final var restResponse = getRest()//NOPMD
                     .url(config.getAddress() + "/v1/auth/" + path + "/login")
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
@@ -543,7 +541,7 @@ public class Auth extends OperationsBase {
                                 StandardCharsets.UTF_8),
                         restResponse.getStatus());
             }
-            final String mimeType =
+            final var mimeType =
                     restResponse.getMimeType() == null ? "null" : restResponse.getMimeType();
             if (!mimeType.equals("application/json")) {
                 throw new VaultException("Vault responded with MIME type: " + mimeType,
@@ -596,12 +594,12 @@ public class Auth extends OperationsBase {
      */
     public AuthResponse loginByUserPass(final String username, final String password,
             final String userpassAuthMount) throws VaultException {
-        final String mount = userpassAuthMount != null ? userpassAuthMount : "userpass";
+        final var mount = userpassAuthMount != null ? userpassAuthMount : "userpass";
 
         return retry(attempt -> {
             // HTTP request to Vault
-            final String requestJson = Json.object().add("password", password).toString();
-            final RestResponse restResponse = getRest()//NOPMD
+            final var requestJson = Json.object().add("password", password).toString();
+            final var restResponse = getRest()//NOPMD
                     .url(config.getAddress() + "/v1/auth/" + mount + "/login/" + username)
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
@@ -620,7 +618,7 @@ public class Auth extends OperationsBase {
                                 StandardCharsets.UTF_8),
                         restResponse.getStatus());
             }
-            final String mimeType =
+            final var mimeType =
                     restResponse.getMimeType() == null ? "null" : restResponse.getMimeType();
             if (!mimeType.equals("application/json")) {
                 throw new VaultException("Vault responded with MIME type: " + mimeType,
@@ -672,7 +670,7 @@ public class Auth extends OperationsBase {
      */
     public AuthResponse loginByLDAP(final String username, final String password,
             final String ldapAuthMount) throws VaultException {
-        final String mount = ldapAuthMount != null ? ldapAuthMount : "ldap";
+        final var mount = ldapAuthMount != null ? ldapAuthMount : "ldap";
         // LDAP has the same API like Username & Password backend
         return loginByUserPass(username, password, mount);
     }
@@ -706,11 +704,11 @@ public class Auth extends OperationsBase {
     public AuthResponse loginByAwsEc2(final String role, final String identity,
             final String signature, final String nonce, final String awsAuthMount)
             throws VaultException {
-        final String mount = awsAuthMount != null ? awsAuthMount : "aws";
+        final var mount = awsAuthMount != null ? awsAuthMount : "aws";
 
         return retry(attempt -> {
             // HTTP request to Vault
-            final JsonObject request = Json.object().add("identity", identity)
+            final var request = Json.object().add("identity", identity)
                     .add("signature", signature);
             if (role != null) {
                 request.add("role", role);
@@ -718,9 +716,9 @@ public class Auth extends OperationsBase {
             if (nonce != null) {
                 request.add("nonce", nonce);
             }
-            final String requestJson = request.toString();
+            final var requestJson = request.toString();
 
-            final RestResponse restResponse = getRest()//NOPMD
+            final var restResponse = getRest()//NOPMD
                     .url(config.getAddress() + "/v1/auth/" + mount + "/login")
                     .body(requestJson.getBytes(StandardCharsets.UTF_8))
                     .header("X-Vault-Namespace", this.nameSpace)
@@ -739,7 +737,7 @@ public class Auth extends OperationsBase {
                                 StandardCharsets.UTF_8),
                         restResponse.getStatus());
             }
-            final String mimeType =
+            final var mimeType =
                     restResponse.getMimeType() == null ? "null" : restResponse.getMimeType();
             if (!mimeType.equals("application/json")) {
                 throw new VaultException("Vault responded with MIME type: " + mimeType,
@@ -776,19 +774,19 @@ public class Auth extends OperationsBase {
     // TODO: Needs integration test coverage if possible
     public AuthResponse loginByAwsEc2(final String role, final String pkcs7, final String nonce,
             final String awsAuthMount) throws VaultException {
-        final String mount = awsAuthMount != null ? awsAuthMount : "aws";
+        final var mount = awsAuthMount != null ? awsAuthMount : "aws";
 
         return retry(attempt -> {
             // HTTP request to Vault
-            final JsonObject request = Json.object().add("pkcs7", pkcs7);
+            final var request = Json.object().add("pkcs7", pkcs7);
             if (role != null) {
                 request.add("role", role);
             }
             if (nonce != null) {
                 request.add("nonce", nonce);
             }
-            final String requestJson = request.toString();
-            final RestResponse restResponse = getRest()//NOPMD
+            final var requestJson = request.toString();
+            final var restResponse = getRest()//NOPMD
                     .url(config.getAddress() + "/v1/auth/" + mount + "/login")
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
@@ -808,7 +806,7 @@ public class Auth extends OperationsBase {
                         restResponse.getStatus());
             }
 
-            final String mimeType =
+            final var mimeType =
                     restResponse.getMimeType() == null ? "null" : restResponse.getMimeType();
 
             if (!mimeType.equals("application/json")) {
@@ -853,19 +851,19 @@ public class Auth extends OperationsBase {
     public AuthResponse loginByAwsIam(final String role, final String iamRequestUrl,
             final String iamRequestBody, final String iamRequestHeaders, final String awsAuthMount)
             throws VaultException {
-        final String mount = awsAuthMount != null ? awsAuthMount : "aws";
+        final var mount = awsAuthMount != null ? awsAuthMount : "aws";
 
         return retry(attempt -> {
             // HTTP request to Vault
-            final JsonObject request = Json.object().add("iam_request_url", iamRequestUrl)
+            final var request = Json.object().add("iam_request_url", iamRequestUrl)
                     .add("iam_request_body", iamRequestBody)
                     .add("iam_request_headers", iamRequestHeaders)
                     .add("iam_http_request_method", "POST");
             if (role != null) {
                 request.add("role", role);
             }
-            final String requestJson = request.toString();
-            final RestResponse restResponse = getRest()//NOPMD
+            final var requestJson = request.toString();
+            final var restResponse = getRest()//NOPMD
                     .url(config.getAddress() + "/v1/auth/" + mount + "/login")
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
@@ -884,7 +882,7 @@ public class Auth extends OperationsBase {
                                 StandardCharsets.UTF_8),
                         restResponse.getStatus());
             }
-            final String mimeType =
+            final var mimeType =
                     restResponse.getMimeType() == null ? "null" : restResponse.getMimeType();
             if (!mimeType.equals("application/json")) {
                 throw new VaultException("Vault responded with MIME type: " + mimeType,
@@ -933,12 +931,12 @@ public class Auth extends OperationsBase {
     public AuthResponse loginByGithub(final String githubToken, final String githubAuthMount)
             throws VaultException {
         // TODO:  Add (optional?) integration test coverage
-        final String mount = githubAuthMount != null ? githubAuthMount : "github";
+        final var mount = githubAuthMount != null ? githubAuthMount : "github";
 
         return retry(attempt -> {
             // HTTP request to Vault
-            final String requestJson = Json.object().add("token", githubToken).toString();
-            final RestResponse restResponse = getRest()//NOPMD
+            final var requestJson = Json.object().add("token", githubToken).toString();
+            final var restResponse = getRest()//NOPMD
                     .url(config.getAddress() + "/v1/auth/" + mount + "/login")
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
@@ -957,7 +955,7 @@ public class Auth extends OperationsBase {
                                 StandardCharsets.UTF_8),
                         restResponse.getStatus());
             }
-            final String mimeType =
+            final var mimeType =
                     restResponse.getMimeType() == null ? "null" : restResponse.getMimeType();
             if (!mimeType.equals("application/json")) {
                 throw new VaultException("Vault responded with MIME type: " + mimeType,
@@ -1017,9 +1015,9 @@ public class Auth extends OperationsBase {
 
         return retry(attempt -> {
             // HTTP request to Vault
-            final String requestJson = Json.object().add("role", role).add("jwt", jwt)
+            final var requestJson = Json.object().add("role", role).add("jwt", jwt)
                     .toString();
-            final RestResponse restResponse = getRest()
+            final var restResponse = getRest()
                     .url(config.getAddress() + "/v1/" + authPath + "/login")
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
@@ -1038,7 +1036,7 @@ public class Auth extends OperationsBase {
                                 StandardCharsets.UTF_8),
                         restResponse.getStatus());
             }
-            final String mimeType =
+            final var mimeType =
                     restResponse.getMimeType() == null ? "null" : restResponse.getMimeType();
             if (!mimeType.equals("application/json")) {
                 throw new VaultException("Vault responded with MIME type: " + mimeType,
@@ -1175,10 +1173,10 @@ public class Auth extends OperationsBase {
      * @throws VaultException If any error occurs, or unexpected response received from Vault
      */
     public AuthResponse loginByCert(final String certAuthMount) throws VaultException {
-        final String mount = certAuthMount != null ? certAuthMount : "cert";
+        final var mount = certAuthMount != null ? certAuthMount : "cert";
 
         return retry(attempt -> {
-            final RestResponse restResponse = getRest()//NOPMD
+            final var restResponse = getRest()//NOPMD
                     .url(config.getAddress() + "/v1/auth/" + mount + "/login")
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
@@ -1197,7 +1195,7 @@ public class Auth extends OperationsBase {
                         restResponse.getStatus());
             }
 
-            final String mimeType =
+            final var mimeType =
                     restResponse.getMimeType() == null ? "null" : restResponse.getMimeType();
             if (!mimeType.equals("application/json")) {
                 throw new VaultException("Vault responded with MIME type: " + mimeType,
@@ -1245,12 +1243,12 @@ public class Auth extends OperationsBase {
      */
     public AuthResponse renewSelf(final long increment, final String tokenAuthMount)
             throws VaultException {
-        final String mount = tokenAuthMount != null ? tokenAuthMount : "token";
+        final var mount = tokenAuthMount != null ? tokenAuthMount : "token";
 
         return retry(attempt -> {
             // HTTP request to Vault
-            final String requestJson = Json.object().add("increment", increment).toString();
-            final RestResponse restResponse = getRest()//NOPMD
+            final var requestJson = Json.object().add("increment", increment).toString();
+            final var restResponse = getRest()//NOPMD
                     .url(config.getAddress() + "/v1/auth/" + mount + "/renew-self")
                     .token(config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)
@@ -1271,7 +1269,7 @@ public class Auth extends OperationsBase {
                         restResponse.getStatus());
             }
 
-            final String mimeType =
+            final var mimeType =
                     restResponse.getMimeType() == null ? "null" : restResponse.getMimeType();
 
             if (!mimeType.equals("application/json")) {
@@ -1302,11 +1300,11 @@ public class Auth extends OperationsBase {
      * @throws VaultException If any error occurs, or unexpected response received from Vault
      */
     public LookupResponse lookupSelf(final String tokenAuthMount) throws VaultException {
-        final String mount = tokenAuthMount != null ? tokenAuthMount : "token";
+        final var mount = tokenAuthMount != null ? tokenAuthMount : "token";
 
         return retry(attempt -> {
             // HTTP request to Vault
-            final RestResponse restResponse = getRest()//NOPMD
+            final var restResponse = getRest()//NOPMD
                     .url(config.getAddress() + "/v1/auth/" + mount + "/lookup-self")
                     .token(config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)
@@ -1325,7 +1323,7 @@ public class Auth extends OperationsBase {
                                 StandardCharsets.UTF_8),
                         restResponse.getStatus());
             }
-            final String mimeType = restResponse.getMimeType();
+            final var mimeType = restResponse.getMimeType();
             if (!"application/json".equals(mimeType)) {
                 throw new VaultException("Vault responded with MIME type: " + mimeType,
                         restResponse.getStatus());
@@ -1339,7 +1337,7 @@ public class Auth extends OperationsBase {
      * @deprecated This method is deprecated and in future it will be removed
      */
     public LogicalResponse lookupWrap() throws VaultException {
-        Sys sys = new Sys(this.config);
+        final var sys = new Sys(this.config);
         return sys.wrapping().lookupWrap(config.getToken(), false);
     }
 
@@ -1348,7 +1346,7 @@ public class Auth extends OperationsBase {
      * @deprecated This method is deprecated and in future it will be removed
      */
     public LogicalResponse lookupWrap(final char[] wrappedToken) throws VaultException {
-        Sys sys = new Sys(this.config);
+        final var sys = new Sys(this.config);
         return sys.wrapping().lookupWrap(wrappedToken, true);
     }
 
@@ -1358,7 +1356,7 @@ public class Auth extends OperationsBase {
      */
     public LogicalResponse lookupWrap(final char[] wrappedToken, boolean inBody)
             throws VaultException {
-        Sys sys = new Sys(this.config);
+        final var sys = new Sys(this.config);
         return sys.wrapping().lookupWrap(wrappedToken, inBody);
     }
 
@@ -1379,11 +1377,11 @@ public class Auth extends OperationsBase {
      * @throws VaultException If any error occurs, or unexpected response received from Vault
      */
     public void revokeSelf(final String tokenAuthMount) throws VaultException {
-        final String mount = tokenAuthMount != null ? tokenAuthMount : "token";
+        final var mount = tokenAuthMount != null ? tokenAuthMount : "token";
 
         retry(attempt -> {
             // HTTP request to Vault
-            final RestResponse restResponse = getRest()//NOPMD
+            final var restResponse = getRest()//NOPMD
                     .url(config.getAddress() + "/v1/auth/" + mount + "/revoke-self")
                     .token(config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)
@@ -1412,7 +1410,7 @@ public class Auth extends OperationsBase {
      * @deprecated This method is deprecated and in future it will be removed
      */
     public UnwrapResponse unwrap() throws VaultException {
-        Sys sys = new Sys(this.config);
+        final var sys = new Sys(this.config);
         return sys.wrapping().unwrap(config.getToken(), false);
     }
 
@@ -1421,7 +1419,7 @@ public class Auth extends OperationsBase {
      * @deprecated This method is deprecated and in future it will be removed
      */
     public UnwrapResponse unwrap(final char[] wrappedToken) throws VaultException {
-        Sys sys = new Sys(this.config);
+        final var sys = new Sys(this.config);
         return sys.wrapping().unwrap(wrappedToken, true);
     }
 
@@ -1430,7 +1428,7 @@ public class Auth extends OperationsBase {
      * @deprecated This method is deprecated and in future it will be removed
      */
     public UnwrapResponse unwrap(final char[] wrappedToken, boolean inBody) throws VaultException {
-        Sys sys = new Sys(this.config);
+        final var sys = new Sys(this.config);
         return sys.wrapping().unwrap(wrappedToken, inBody);
     }
 
@@ -1439,7 +1437,7 @@ public class Auth extends OperationsBase {
      * @deprecated This method is deprecated and in future it will be removed
      */
     public WrapResponse wrap(final JsonObject jsonObject, int ttlInSec) throws VaultException {
-        Sys sys = new Sys(this.config);
+        final var sys = new Sys(this.config);
         return sys.wrapping().wrap(jsonObject, ttlInSec);
     }
 
@@ -1448,7 +1446,7 @@ public class Auth extends OperationsBase {
      * @deprecated This method is deprecated and in future it will be removed
      */
     public WrapResponse rewrap(final char[] wrappedToken) throws VaultException {
-        Sys sys = new Sys(this.config);
+        final var sys = new Sys(this.config);
         return sys.wrapping().rewrap(wrappedToken);
     }
 }

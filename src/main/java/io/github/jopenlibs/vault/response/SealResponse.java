@@ -1,7 +1,6 @@
 package io.github.jopenlibs.vault.response;
 
 import io.github.jopenlibs.vault.json.Json;
-import io.github.jopenlibs.vault.json.JsonObject;
 import io.github.jopenlibs.vault.json.ParseException;
 import io.github.jopenlibs.vault.rest.RestResponse;
 import java.nio.charset.StandardCharsets;
@@ -27,8 +26,8 @@ public class SealResponse extends VaultResponse {
         super(restResponse, retries);
 
         try {
-            final String responseJson = new String(restResponse.getBody(), StandardCharsets.UTF_8);
-            final JsonObject jsonObject = Json.parse(responseJson).asObject();
+            final var responseJson = new String(restResponse.getBody(), StandardCharsets.UTF_8);
+            final var jsonObject = Json.parse(responseJson).asObject();
 
             sealed = jsonObject.getBoolean("sealed", false);
             threshold = jsonObject.getLong("t", 0);

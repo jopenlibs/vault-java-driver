@@ -685,16 +685,16 @@ public class SslConfig implements Serializable {
      * @return A UTF-8 encoded String, containing all of the InputStream's content
      */
     private static String inputStreamToUTF8(final InputStream input) throws IOException {
-        final BufferedReader in = new BufferedReader(
-                new InputStreamReader(input, StandardCharsets.UTF_8));
         final StringBuilder utf8 = new StringBuilder();
-        String str;
-        while ((str = in.readLine()) != null) {
-            // String concatenation is less efficient, but for some reason the line-breaks (which are necessary
-            // for Java to correctly parse SSL certs) are stripped off when using a StringBuilder.
-            utf8.append(str).append(System.lineSeparator());
+        try (final BufferedReader in = new BufferedReader(
+                new InputStreamReader(input, StandardCharsets.UTF_8))) {
+            String str;
+            while ((str = in.readLine()) != null) {
+                // String concatenation is less efficient, but for some reason the line-breaks (which are necessary
+                // for Java to correctly parse SSL certs) are stripped off when using a StringBuilder.
+                utf8.append(str).append(System.lineSeparator());
+            }
         }
-        in.close();
         return utf8.toString();
     }
 

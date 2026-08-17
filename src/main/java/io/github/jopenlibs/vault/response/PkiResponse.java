@@ -116,7 +116,7 @@ public class PkiResponse extends LogicalResponse {
         }
         final String certificate = data.get("certificate");
         final String issuingCa = data.get("issuing_ca");
-        final JsonValue caChainJsonValue = dataObject != null ? dataObject.get("ca_chain") : null;
+        final var caChainJsonValue = dataObject != null ? dataObject.get("ca_chain") : null;
         final List<String> caChain = caChainJsonValue != null
                 ? caChainJsonValue.asArray().values().stream()
                 .map(JsonValue::asString)

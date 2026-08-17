@@ -1,8 +1,6 @@
 package io.github.jopenlibs.vault.response;
 
 import io.github.jopenlibs.vault.json.Json;
-import io.github.jopenlibs.vault.json.JsonObject;
-import io.github.jopenlibs.vault.json.JsonValue;
 import io.github.jopenlibs.vault.json.ParseException;
 import io.github.jopenlibs.vault.rest.RestResponse;
 import java.nio.charset.StandardCharsets;
@@ -30,11 +28,11 @@ public class WrapResponse extends VaultResponse {
         super(restResponse, retries);
 
         try {
-            final String responseJson = new String(restResponse.getBody(), StandardCharsets.UTF_8);
-            JsonObject jsonResponse = Json.parse(responseJson).asObject();
-            JsonValue wrapInfoJsonVal = jsonResponse.get("wrap_info");
+            final var responseJson = new String(restResponse.getBody(), StandardCharsets.UTF_8);
+            final var jsonResponse = Json.parse(responseJson).asObject();
+            final var wrapInfoJsonVal = jsonResponse.get("wrap_info");
             if (wrapInfoJsonVal != null && !wrapInfoJsonVal.isNull()) {
-                final JsonObject wrapInfoJsonObject = wrapInfoJsonVal.asObject();
+                final var wrapInfoJsonObject = wrapInfoJsonVal.asObject();
                 token = wrapInfoJsonObject.getString("token", null).toCharArray();
                 accessor = wrapInfoJsonObject.getString("accessor", null);
                 ttl = wrapInfoJsonObject.getInt("ttl", 0);

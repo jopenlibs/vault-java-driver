@@ -11,7 +11,7 @@ import java.util.List;
  * <blockquote>
  * <pre>{@code
  * final RoleOptions options = new RoleOptions()
- *                              .allowedDomains(new ArrayList<String>(){{ add("myvault.com"); }})
+ *                              .allowedDomains(List.of("myvault.com"))
  *                              .allowSubdomains(true)
  *                              .maxTtl("9h");
  * }</pre>
@@ -82,8 +82,7 @@ public class RoleOptions implements Serializable {
      */
     public RoleOptions allowedDomains(final List<String> allowedDomains) {
         if (allowedDomains != null) {
-            this.allowedDomains = new ArrayList<>();
-            this.allowedDomains.addAll(allowedDomains);
+            this.allowedDomains = new ArrayList<>(allowedDomains);
         }
         return this;
     }

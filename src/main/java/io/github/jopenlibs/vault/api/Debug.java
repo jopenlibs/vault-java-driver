@@ -3,8 +3,6 @@ package io.github.jopenlibs.vault.api;
 import io.github.jopenlibs.vault.VaultConfig;
 import io.github.jopenlibs.vault.VaultException;
 import io.github.jopenlibs.vault.response.HealthResponse;
-import io.github.jopenlibs.vault.rest.Rest;
-import io.github.jopenlibs.vault.rest.RestResponse;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -102,11 +100,11 @@ public class Debug extends OperationsBase {
             final Integer sealedCode,
             final Integer uninitCode
     ) throws VaultException {
-        final String path = "sys/health";
+        final var path = "sys/health";
 
         return retry(attempt -> {
             // Build an HTTP request for Vault
-            final Rest rest = getRest()//NOPMD
+            final var rest = getRest()//NOPMD
                     .url(config.getAddress() + "/v1/" + path)
                     .token(config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)
@@ -141,17 +139,10 @@ public class Debug extends OperationsBase {
                 rest.parameter("uninitcode", uninitCode.toString());
             }
             // Execute request
-            final RestResponse restResponse = rest.get();
+            final var restResponse = rest.get();
 
             // Validate response
-            final Set<Integer> validCodes = new HashSet<>();//NOPMD
-            validCodes.add(200);
-            validCodes.add(429);
-            validCodes.add(472);
-            validCodes.add(473);
-            validCodes.add(500);
-            validCodes.add(501);
-            validCodes.add(503);
+            final var validCodes = new HashSet<>(Set.of(200, 429, 472, 473, 500, 501, 503));//NOPMD
             if (activeCode != null) {
                 validCodes.add(activeCode);
             }

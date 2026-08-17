@@ -70,16 +70,14 @@ public class MountPayload implements Serializable {
 
     public MountPayload auditNonHmacRequestKeys(final List<String> auditNonHmacRequestKeys) {
         if (auditNonHmacRequestKeys != null) {
-            this.auditNonHmacRequestKeys = new ArrayList<>();
-            this.auditNonHmacRequestKeys.addAll(auditNonHmacRequestKeys);
+            this.auditNonHmacRequestKeys = new ArrayList<>(auditNonHmacRequestKeys);
         }
         return this;
     }
 
     public MountPayload auditNonHmacResponseKeys(final List<String> auditNonHmacResponseKeys) {
         if (auditNonHmacResponseKeys != null) {
-            this.auditNonHmacResponseKeys = new ArrayList<>();
-            this.auditNonHmacResponseKeys.addAll(auditNonHmacResponseKeys);
+            this.auditNonHmacResponseKeys = new ArrayList<>(auditNonHmacResponseKeys);
         }
         return this;
     }
@@ -126,12 +124,12 @@ public class MountPayload implements Serializable {
 
         jsonObject.addIfNotNull("description", this.description);
 
-        if (this.auditNonHmacRequestKeys != null && this.auditNonHmacRequestKeys.size() > 0) {
+        if (this.auditNonHmacRequestKeys != null && !this.auditNonHmacRequestKeys.isEmpty()) {
             jsonObject.addIfNotNull("audit_non_hmac_request_keys",
                     String.join(",", this.auditNonHmacRequestKeys));
         }
 
-        if (this.auditNonHmacResponseKeys != null && this.auditNonHmacResponseKeys.size() > 0) {
+        if (this.auditNonHmacResponseKeys != null && !this.auditNonHmacResponseKeys.isEmpty()) {
             jsonObject.addIfNotNull("audit_non_hmac_response_keys",
                     String.join(",", this.auditNonHmacResponseKeys));
         }

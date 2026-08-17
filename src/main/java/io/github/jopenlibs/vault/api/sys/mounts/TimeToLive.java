@@ -39,21 +39,19 @@ public class TimeToLive {
     }
 
     public String toString() {
-        return new StringBuilder()
-                .append(ttl)
-                .append(convertTimeUnit())
-                .toString();
+        return ttl + convertTimeUnit();
     }
 
     private String convertTimeUnit() {
-        if (unit == TimeUnit.SECONDS) {
-            return "s";
-        } else if (unit == TimeUnit.MINUTES) {
-            return "m";
-        } else if (unit == TimeUnit.HOURS) {
-            return "h";
-        } else {
-            throw new IllegalArgumentException(unit + " is not a vaild TimeUnit for Vault");
+        switch (unit) {
+            case SECONDS:
+                return "s";
+            case MINUTES:
+                return "m";
+            case HOURS:
+                return "h";
+            default:
+                throw new IllegalArgumentException(unit + " is not a vaild TimeUnit for Vault");
         }
     }
 }
