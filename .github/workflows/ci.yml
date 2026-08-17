@@ -29,16 +29,14 @@ jobs:
           - 1.17.6
           - 1.18.5
           - 1.19.5
-          - 1.20.0
-          - 1.20.1
-          - 1.20.2
-          - 1.20.3
           - 1.20.4
-          - 1.21.0
-          - 1.21.1
-          - 1.21.2
-          - 1.21.3
           - 1.21.4
+          - 2.0.0
+          - 2.0.1
+          - 2.0.2
+          - 2.0.3
+          - 2.0.4
+          - latest
         os:
           - ubuntu-latest
         # TODO: We disable Windows because testcontainers doesn't support runs in containers
@@ -59,6 +57,7 @@ jobs:
         run: mvn --batch-mode --update-snapshots verify
         env:
           VAULT_VERSION: ${{ matrix.vault }}
+          TESTCONTAINERS_RYUK_DISABLED: true
 
       - uses: actions/upload-artifact@v4  # upload test results
         if: success() || failure()        # run this step even if previous step failed

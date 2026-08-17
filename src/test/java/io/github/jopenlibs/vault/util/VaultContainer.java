@@ -56,7 +56,8 @@ public class VaultContainer extends GenericContainer<VaultContainer> implements 
                 .withClasspathResourceMapping("/allowRewrapPolicy.hcl", ALLOW_REWRAP_POLICY_FILE,
                         BindMode.READ_ONLY)
                 .withFileSystemBind(SSL_DIRECTORY, CONTAINER_SSL_DIRECTORY, BindMode.READ_WRITE)
-                .withCreateContainerCmdModifier(command -> command.withCapAdd(Capability.IPC_LOCK))
+                .withCreateContainerCmdModifier(command -> command.withCapAdd(Capability.IPC_LOCK)
+                        .withUser("root"))
                 .withExposedPorts(8200, 8280)
                 .withCommand("/bin/sh " + CONTAINER_STARTUP_SCRIPT)
                 .withLogConsumer(new Slf4jLogConsumer(LOGGER))
