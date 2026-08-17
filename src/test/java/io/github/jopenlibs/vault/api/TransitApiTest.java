@@ -7,7 +7,7 @@ import io.github.jopenlibs.vault.json.JsonObject;
 import io.github.jopenlibs.vault.response.LogicalResponse;
 import io.github.jopenlibs.vault.VaultTestUtils;
 import io.github.jopenlibs.vault.mock.MockVault;
-import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
 import org.eclipse.jetty.server.Server;
 import org.junit.After;
@@ -55,7 +55,7 @@ public class TransitApiTest {
         final Vault vault = Vault.create(vaultConfig, 1);
 
         LogicalResponse response = vault.logical().write("transit/encrypt/test",
-                Collections.singletonMap("plaintext", PLAIN_DATA[0]));
+                Map.of("plaintext", PLAIN_DATA[0]));
 
         assertEquals("http://127.0.0.1:8999/v1/transit/encrypt/test", vaultServer.getRequestUrl());
         assertEquals(Optional.of(expectedRequest), vaultServer.getRequestBody());
@@ -78,7 +78,7 @@ public class TransitApiTest {
         final Vault vault = Vault.create(vaultConfig, 1);
 
         LogicalResponse response = vault.logical().write("transit/decrypt/test",
-                Collections.singletonMap("ciphertext", CIPHER_DATA[0]));
+                Map.of("ciphertext", CIPHER_DATA[0]));
 
         assertEquals("http://127.0.0.1:8999/v1/transit/decrypt/test", vaultServer.getRequestUrl());
         assertEquals(Optional.of(expectedRequest), vaultServer.getRequestBody());
@@ -113,7 +113,7 @@ public class TransitApiTest {
             batch.add(new JsonObject().add("plaintext", text));
         }
         LogicalResponse response = vault.logical().write("transit/encrypt/test",
-                Collections.singletonMap("batch_input", batch));
+                Map.of("batch_input", batch));
 
         assertEquals(Optional.of(expectedRequest), vaultServer.getRequestBody());
         assertEquals("http://127.0.0.1:8999/v1/transit/encrypt/test", vaultServer.getRequestUrl());
@@ -148,7 +148,7 @@ public class TransitApiTest {
             batch.add(new JsonObject().add("ciphertext", text));
         }
         LogicalResponse response = vault.logical().write("transit/decrypt/test",
-                Collections.singletonMap("batch_input", batch));
+                Map.of("batch_input", batch));
 
         assertEquals(Optional.of(expectedRequest), vaultServer.getRequestBody());
         assertEquals("http://127.0.0.1:8999/v1/transit/decrypt/test", vaultServer.getRequestUrl());

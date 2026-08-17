@@ -8,7 +8,7 @@ public class RoleOptionsTests {
 
     @Test
     public void RoleOptionsTests() {
-        RoleOptions roleOptions = new RoleOptions();
+        final var roleOptions = new RoleOptions();
         Assert.assertNotNull(roleOptions);
 
         Assert.assertNull(roleOptions.getAllowedDomains());

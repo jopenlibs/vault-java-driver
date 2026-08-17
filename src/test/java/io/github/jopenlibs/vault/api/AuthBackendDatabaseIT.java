@@ -7,7 +7,6 @@ import io.github.jopenlibs.vault.response.DatabaseResponse;
 import io.github.jopenlibs.vault.util.DbContainer;
 import io.github.jopenlibs.vault.util.VaultContainer;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import junit.framework.TestCase;
 import org.junit.BeforeClass;
@@ -36,11 +35,10 @@ public class AuthBackendDatabaseIT {
     public void testRoleCreation() throws VaultException {
         final Vault vault = container.getRootVault();
 
-        List<String> creationStatements = new ArrayList<>();
-        creationStatements.add(
+        final var creationStatements = List.of(
                 "CREATE USER \"{{name}}\" WITH PASSWORD '{{password}}'; GRANT ALL PRIVILEGES ON DATABASE \"postgres\" to \"{{name}}\";");
 
-        DatabaseRoleOptions roleToCreate = new DatabaseRoleOptions().dbName("postgres")
+        final var roleToCreate = new DatabaseRoleOptions().dbName("postgres")
                 .creationStatements(creationStatements);
 
         DatabaseResponse response = vault.database().createOrUpdateRole("test-role", roleToCreate);
@@ -56,11 +54,10 @@ public class AuthBackendDatabaseIT {
     public void testDeleteRole() throws VaultException {
         final Vault vault = container.getRootVault();
 
-        List<String> creationStatements = new ArrayList<>();
-        creationStatements.add(
+        final var creationStatements = List.of(
                 "CREATE USER \"{{name}}\" WITH PASSWORD '{{password}}'; GRANT ALL PRIVILEGES ON DATABASE \"postgres\" to \"{{name}}\";");
 
-        DatabaseRoleOptions roleToCreate = new DatabaseRoleOptions().dbName("postgres")
+        final var roleToCreate = new DatabaseRoleOptions().dbName("postgres")
                 .creationStatements(creationStatements);
 
         DatabaseResponse response = vault.database()
@@ -92,8 +89,7 @@ public class AuthBackendDatabaseIT {
     public void testGetCredentials() throws VaultException {
         final Vault vault = container.getRootVault();
 
-        List<String> creationStatements = new ArrayList<>();
-        creationStatements.add(
+        final var creationStatements = List.of(
                 "CREATE USER \"{{name}}\" WITH PASSWORD '{{password}}'; GRANT ALL PRIVILEGES ON DATABASE \"postgres\" to \"{{name}}\";");
 
         DatabaseResponse response = vault.database().createOrUpdateRole("new-role",

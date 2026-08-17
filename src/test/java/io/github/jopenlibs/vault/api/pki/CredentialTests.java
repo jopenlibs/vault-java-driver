@@ -7,7 +7,7 @@ public class CredentialTests {
 
     @Test
     public void credentialTests() {
-        Credential credential = new Credential();
+        final var credential = new Credential();
         Assert.assertNotNull(credential);
         credential.certificate("certificate");
         credential.issuingCa("issuingCa");

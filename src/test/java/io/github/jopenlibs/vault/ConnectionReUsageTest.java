@@ -50,7 +50,7 @@ public class ConnectionReUsageTest {
     public void readShouldReuseConnectionAfterSuccessfulRequestByHttp() throws Exception {
         int readNum = 10;
 
-        HttpClient httpClient = HttpClient.newBuilder()
+        var httpClient = HttpClient.newBuilder()
                 .connectTimeout(Duration.of(10, ChronoUnit.SECONDS))
                 .build();
 
@@ -114,7 +114,7 @@ public class ConnectionReUsageTest {
         final Server server = new Server();
         final HttpConfiguration http = new HttpConfiguration();
 
-        NetworkTrafficServerConnector connector =
+        var connector =
                 new NetworkTrafficServerConnector(
                         server,
                         new HttpConnectionFactory(http));

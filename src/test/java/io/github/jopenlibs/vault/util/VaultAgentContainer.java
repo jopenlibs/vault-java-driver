@@ -57,7 +57,7 @@ public class VaultAgentContainer extends GenericContainer<VaultAgentContainer> i
      * @throws VaultException On error.
      */
     public Vault getVault() throws VaultException {
-        final VaultConfig config =
+        final var config =
                 new VaultConfig()
                         .address(getAddress())
                         .openTimeout(5)

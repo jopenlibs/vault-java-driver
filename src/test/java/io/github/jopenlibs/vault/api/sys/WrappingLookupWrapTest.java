@@ -37,9 +37,9 @@ public class WrappingLookupWrapTest {
 
     @Test
     public void should_lookup_wrap_use_url_sys_wrapping_lookup() throws Exception {
-        VaultConfig vaultConfig = new VaultConfig().address("http://127.0.0.1:8999")
+        var vaultConfig = new VaultConfig().address("http://127.0.0.1:8999")
                 .token("wrapped").build();
-        Vault vault = Vault.create(vaultConfig);
+        var vault = Vault.create(vaultConfig);
         LogicalResponse response = vault.sys().wrapping().lookupWrap();
 
         assertEquals(200, response.getRestResponse().getStatus());

@@ -11,7 +11,7 @@ public class LogicalUtilitiesTests {
 
     @Test
     public void addQualifierToPathTests() {
-        ArrayList<String> stringList = new ArrayList<>();
+        var stringList = new ArrayList<String>();
         stringList.add("");
         String qualifierOutput = LogicalUtilities.addQualifierToPath(stringList, 1, "test");
         Assert.assertEquals("/test", qualifierOutput);
@@ -117,19 +117,19 @@ public class LogicalUtilitiesTests {
 
     @Test
     public void jsonObjectToWriteFromEngineVersionTests() {
-        JsonObject jsonObjectV2 = new JsonObject().add("test", "test");
+        var jsonObjectV2 = new JsonObject().add("test", "test");
         JsonObject jsonObjectFromEngineVersionV2 = LogicalUtilities.jsonObjectToWriteFromEngineVersion(
                 Logical.logicalOperations.writeV2, jsonObjectV2, new JsonObject());
         Assert.assertEquals(jsonObjectFromEngineVersionV2.get("data"), jsonObjectV2);
         Assert.assertNull(jsonObjectFromEngineVersionV2.get("options"));
 
-        JsonObject casWriteOptions = new JsonObject().add("cas", "0");
+        var casWriteOptions = new JsonObject().add("cas", "0");
         JsonObject jsonObjectFromEngineVersion2WithOptions = LogicalUtilities.jsonObjectToWriteFromEngineVersion(
                 Logical.logicalOperations.writeV2, jsonObjectV2, casWriteOptions);
         Assert.assertEquals(jsonObjectFromEngineVersion2WithOptions.get("data"), jsonObjectV2);
         Assert.assertEquals(jsonObjectFromEngineVersion2WithOptions.get("options"), casWriteOptions);
 
-        JsonObject jsonObjectV1 = new JsonObject().add("test", "test");
+        var jsonObjectV1 = new JsonObject().add("test", "test");
         JsonObject jsonObjectFromEngineVersionV1 = LogicalUtilities.jsonObjectToWriteFromEngineVersion(
                 Logical.logicalOperations.writeV1, jsonObjectV1, new JsonObject());
         Assert.assertNull(jsonObjectFromEngineVersionV1.get("data"));

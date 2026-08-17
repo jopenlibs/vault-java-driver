@@ -41,9 +41,9 @@ public class WrappingUnwrapTest {
     @Test
     public void should_unwrap_without_param_sends_no_token_and_return_unwrapped_token()
             throws Exception {
-        VaultConfig vaultConfig = new VaultConfig().address("http://127.0.0.1:8999")
+        var vaultConfig = new VaultConfig().address("http://127.0.0.1:8999")
                 .token("wrappedToken").build();
-        Vault vault = Vault.create(vaultConfig);
+        var vault = Vault.create(vaultConfig);
         AuthResponse response = vault.sys().wrapping().unwrap();
 
         assertEquals(200, response.getRestResponse().getStatus());
@@ -58,9 +58,9 @@ public class WrappingUnwrapTest {
 
     @Test
     public void should_unwrap_param_sends_token_and_return_unwrapped_token() throws Exception {
-        VaultConfig vaultConfig = new VaultConfig().address("http://127.0.0.1:8999")
+        var vaultConfig = new VaultConfig().address("http://127.0.0.1:8999")
                 .token("authToken").build();
-        Vault vault = Vault.create(vaultConfig);
+        var vault = Vault.create(vaultConfig);
         AuthResponse response = vault.sys().wrapping().unwrap("wrappedToken".toCharArray());
 
         assertEquals(200, response.getRestResponse().getStatus());

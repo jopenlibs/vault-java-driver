@@ -8,7 +8,6 @@ import io.github.jopenlibs.vault.response.VaultResponse;
 import io.github.jopenlibs.vault.util.DbContainer;
 import io.github.jopenlibs.vault.util.VaultContainer;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.Before;
@@ -47,8 +46,7 @@ public class LeasesIT {
     }
 
     public DatabaseResponse generateCredentials() throws VaultException {
-        List<String> creationStatements = new ArrayList<>();
-        creationStatements.add(
+        final var creationStatements = List.of(
                 "CREATE USER \"{{name}}\" WITH PASSWORD '{{password}}';"
                         + "GRANT SELECT ON ALL TABLES IN SCHEMA public TO \"{{name}}\";");
 

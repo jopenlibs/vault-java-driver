@@ -222,9 +222,9 @@ public class VaultConfigTests {
         final File mockTokenFile = new File(
                 mockHomeDirectory + File.separatorChar + ".vault-token");
         assertTrue(mockTokenFile.createNewFile());
-        final PrintWriter out = new PrintWriter(mockTokenFile, "UTF-8");
-        out.println("d24e2469-298a-6c64-6a71-5b47c9ba459a");
-        out.close();
+        try (final PrintWriter out = new PrintWriter(mockTokenFile, StandardCharsets.UTF_8)) {
+            out.println("d24e2469-298a-6c64-6a71-5b47c9ba459a");
+        }
 
         final MockEnvironmentLoader mock = new MockEnvironmentLoader(mockHomeDirectory);
         mock.override("VAULT_ADDR", "http://127.0.0.1:8200");

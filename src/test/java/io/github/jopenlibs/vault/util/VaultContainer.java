@@ -6,7 +6,6 @@ import io.github.jopenlibs.vault.Vault;
 import io.github.jopenlibs.vault.VaultConfig;
 import io.github.jopenlibs.vault.VaultException;
 import io.github.jopenlibs.vault.json.Json;
-import io.github.jopenlibs.vault.json.JsonObject;
 import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -96,15 +95,15 @@ public class VaultContainer extends GenericContainer<VaultContainer> implements 
      */
     public void initAndUnsealVault() throws IOException, InterruptedException {
         // Initialize the Vault server
-        final ExecResult initResult = runCommand("vault", "operator", "init",
+        final var initResult = runCommand("vault", "operator", "init",
                 "-ca-cert=" + CONTAINER_CERT_PEMFILE,
                 "-key-shares=1",
                 "-key-threshold=1",
                 "-format=json"
         );
 
-        final String stdout = initResult.getStdout().replaceAll("\\r?\\n", "");
-        JsonObject initJson = Json.parse(stdout).asObject();
+        final var stdout = initResult.getStdout().replaceAll("\\r?\\n", "");
+        final var initJson = Json.parse(stdout).asObject();
         this.unsealKey = initJson.get("unseal_keys_b64").asArray().get(0).asString();
         this.rootToken = initJson.get("root_token").asString();
 
@@ -307,7 +306,7 @@ public class VaultContainer extends GenericContainer<VaultContainer> implements 
      */
     public Vault getVault(final VaultConfig config, final Integer maxRetries,
             final Integer retryMillis) {
-        Vault vault = Vault.create(config);
+        var vault = Vault.create(config);
         if (maxRetries != null && retryMillis != null) {
             vault = vault.withRetries(maxRetries, retryMillis);
         } else if (maxRetries != null) {
@@ -322,7 +321,7 @@ public class VaultContainer extends GenericContainer<VaultContainer> implements 
      * Constructs an instance of the Vault driver, using sensible defaults.
      */
     public Vault getVault() throws VaultException {
-        final VaultConfig config =
+        final var config =
                 new VaultConfig()
                         .address(getAddress())
                         .openTimeout(5)
@@ -350,7 +349,7 @@ public class VaultContainer extends GenericContainer<VaultContainer> implements 
      * supplied token for authentication.
      */
     public Vault getVault(final String token) throws VaultException {
-        final VaultConfig config =
+        final var config =
                 new VaultConfig()
                         .address(getAddress())
                         .token(token)
@@ -365,7 +364,7 @@ public class VaultContainer extends GenericContainer<VaultContainer> implements 
      * Constructs an instance of the Vault driver using a custom Vault config.
      */
     public Vault getRootVaultWithCustomVaultConfig(VaultConfig vaultConfig) throws VaultException {
-        final VaultConfig config =
+        final var config =
                 vaultConfig
                         .address(getAddress())
                         .token(rootToken)
@@ -419,9 +418,9 @@ public class VaultContainer extends GenericContainer<VaultContainer> implements 
     private ExecResult runCommand(final String... command)
             throws IOException, InterruptedException {
         LOGGER.info("Command: {}", String.join(" ", command));
-        final ExecResult result = execInContainer(command);
-        final String out = result.getStdout();
-        final String err = result.getStderr();
+        final var result = execInContainer(command);
+        final var out = result.getStdout();
+        final var err = result.getStderr();
         if (out != null && !out.isEmpty()) {
             LOGGER.info("Command stdout: {}", result.getStdout());
         }

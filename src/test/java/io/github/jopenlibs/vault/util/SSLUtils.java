@@ -22,7 +22,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Base64;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.Map;
 import javax.security.auth.x500.X500Principal;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
@@ -73,7 +73,7 @@ public class SSLUtils implements TestConstants {
      *
      * @throws IOException When certificate was not created
      */
-    public static HashMap<String, Object> createClientCertAndKey() throws IOException {
+    public static Map<String, Object> createClientCertAndKey() throws IOException {
 
         Security.addProvider(new BouncyCastleProvider());
         final X509CertificateHolder certificateHolder = getX509CertificateHolder();
@@ -94,14 +94,11 @@ public class SSLUtils implements TestConstants {
         // Also write the client certificate to a PEM file, so it can be registered with Vault
         String certToPem = certToPem(clientCertificate);
         String privateKeyToPem = privateKeyToPem(keyPair.getPrivate());
-        return new HashMap<String, Object>() {
-            {
-                put("clientKeystore", clientKeystore);
-                put("clientTrustStore", clientTrustStore);
-                put("cert", certToPem);
-                put("privateKey", privateKeyToPem);
-            }
-        };
+        return Map.of(
+                "clientKeystore", clientKeystore,
+                "clientTrustStore", clientTrustStore,
+                "cert", certToPem,
+                "privateKey", privateKeyToPem);
     }
 
     private static KeyStore getClientTrustStore(X509Certificate vaultCertificate)

@@ -10,7 +10,7 @@ import io.github.jopenlibs.vault.util.VaultContainer;
 import java.io.File;
 import java.io.IOException;
 import java.security.KeyStore;
-import java.util.HashMap;
+import java.util.Map;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -30,7 +30,7 @@ public class AuthBackendCertIT {
 
     @ClassRule
     public static final VaultContainer container = new VaultContainer();
-    private static HashMap<String, Object> clientCertAndKey;
+    private static Map<String, Object> clientCertAndKey;
     private static String cert;
 
     @BeforeClass

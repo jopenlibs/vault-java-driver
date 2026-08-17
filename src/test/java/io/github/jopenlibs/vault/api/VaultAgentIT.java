@@ -8,7 +8,6 @@ import io.github.jopenlibs.vault.util.VaultAgentContainer;
 import io.github.jopenlibs.vault.util.VaultContainer;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -64,8 +63,7 @@ public class VaultAgentIT {
         final String value = "world";
         final Vault vault = vaultAgentContainer.getVault();
 
-        final Map<String, Object> testMap = new HashMap<>();
-        testMap.put("value", value);
+        final Map<String, Object> testMap = Map.of("value", value);
 
         vault.logical().write(pathToWrite, testMap);
 

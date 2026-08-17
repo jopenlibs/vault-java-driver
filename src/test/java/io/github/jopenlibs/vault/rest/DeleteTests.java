@@ -1,7 +1,6 @@
 package io.github.jopenlibs.vault.rest;
 
 import io.github.jopenlibs.vault.json.Json;
-import io.github.jopenlibs.vault.json.JsonObject;
 import io.github.jopenlibs.vault.VaultTestUtils;
 import io.github.jopenlibs.vault.mock.EchoInputMockVault;
 import java.io.UnsupportedEncodingException;
@@ -34,11 +33,11 @@ public class DeleteTests {
      */
     @Test
     public void testDelete_Plain() throws Exception {
-        final EchoInputMockVault echoInputMockVault = new EchoInputMockVault(204);
+        final var echoInputMockVault = new EchoInputMockVault(204);
         final Server server = VaultTestUtils.initHttpMockVault(echoInputMockVault);
         server.start();
 
-        final RestResponse restResponse = new Rest()//NOPMD
+        final var restResponse = new Rest()//NOPMD
                 .url("http://127.0.0.1:8999")
                 .delete();
         assertEquals(204, restResponse.getStatus());
@@ -51,12 +50,12 @@ public class DeleteTests {
      */
     @Test
     public void testDelete_WithParams() throws Exception {
-        final EchoInputMockVault echoInputMockVault = new EchoInputMockVault(204);
+        final var echoInputMockVault = new EchoInputMockVault(204);
         final Server server = VaultTestUtils.initHttpMockVault(echoInputMockVault);
         server.start();
 
         final String url = "http://127.0.0.1:8999/?param1=value1&param2=value2";
-        final RestResponse restResponse = new Rest()//NOPMD
+        final var restResponse = new Rest()//NOPMD
                 .url(url)
                 .delete();
 
@@ -72,18 +71,18 @@ public class DeleteTests {
      */
     @Test
     public void testDelete_WithHeaders() throws Exception {
-        final EchoInputMockVault echoInputMockVault = new EchoInputMockVault(204);
+        final var echoInputMockVault = new EchoInputMockVault(204);
         final Server server = VaultTestUtils.initHttpMockVault(echoInputMockVault);
         server.start();
 
-        final RestResponse restResponse = new Rest()//NOPMD
+        final var restResponse = new Rest()//NOPMD
                 .url("http://127.0.0.1:8999")
                 .header("header1", "value1")
                 .header("header2", "value2")
                 .delete();
 
         assertEquals(204, restResponse.getStatus());
-        final JsonObject headers = Json.parse(echoInputMockVault.getLastRequestDetails()).asObject()
+        final var headers = Json.parse(echoInputMockVault.getLastRequestDetails()).asObject()
                 .get("headers").asObject();
         assertEquals("value1", headers.getString("header1", ""));
         assertEquals("value2", headers.getString("header2", ""));
@@ -96,11 +95,11 @@ public class DeleteTests {
      */
     @Test
     public void testDelete_WithOptionalHeaders() throws Exception {
-        final EchoInputMockVault echoInputMockVault = new EchoInputMockVault(204);
+        final var echoInputMockVault = new EchoInputMockVault(204);
         final Server server = VaultTestUtils.initHttpMockVault(echoInputMockVault);
         server.start();
 
-        final RestResponse restResponse = new Rest()//NOPMD
+        final var restResponse = new Rest()//NOPMD
                 .url("http://127.0.0.1:8999")
                 .header("header1", "value1")
                 .header("header2", "value2")
@@ -108,7 +107,7 @@ public class DeleteTests {
                 .delete();
 
         assertEquals(204, restResponse.getStatus());
-        final JsonObject headers = Json.parse(echoInputMockVault.getLastRequestDetails()).asObject()
+        final var headers = Json.parse(echoInputMockVault.getLastRequestDetails()).asObject()
                 .get("headers").asObject();
         assertEquals("value1", headers.getString("header1", ""));
         assertEquals("value2", headers.getString("header2", ""));

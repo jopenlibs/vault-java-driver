@@ -1,7 +1,6 @@
 package io.github.jopenlibs.vault.rest;
 
 import io.github.jopenlibs.vault.json.Json;
-import io.github.jopenlibs.vault.json.JsonObject;
 import io.github.jopenlibs.vault.VaultTestUtils;
 import io.github.jopenlibs.vault.mock.EchoInputMockVault;
 import java.nio.charset.StandardCharsets;
@@ -23,7 +22,7 @@ public class PostTests {
 
     @Before
     public void startServer() throws Exception {
-        EchoInputMockVault echoInputMockVault = new EchoInputMockVault(200);
+        final var echoInputMockVault = new EchoInputMockVault(200);
 
         this.server = VaultTestUtils.initHttpMockVault(echoInputMockVault);
         this.server.start();
@@ -39,14 +38,14 @@ public class PostTests {
      */
     @Test
     public void testPost_Plain() throws RestException {
-        final RestResponse restResponse = new Rest()
+        final var restResponse = new Rest()
                 .url(this.URL)
                 .post();
         assertEquals(200, restResponse.getStatus());
         assertEquals("application/json", restResponse.getMimeType());
 
-        final String jsonString = new String(restResponse.getBody(), StandardCharsets.UTF_8);
-        final JsonObject jsonObject = Json.parse(jsonString).asObject();
+        final var jsonString = new String(restResponse.getBody(), StandardCharsets.UTF_8);
+        final var jsonObject = Json.parse(jsonString).asObject();
         assertEquals(this.URL, jsonObject.getString("URL", null));
     }
 
@@ -57,7 +56,7 @@ public class PostTests {
      */
     @Test
     public void testPost_InsertParams() throws RestException {
-        final RestResponse restResponse = new Rest()
+        final var restResponse = new Rest()
                 .url(this.URL)
                 .parameter("foo", "bar")
                 .parameter("apples", "oranges")
@@ -66,11 +65,11 @@ public class PostTests {
         assertEquals(200, restResponse.getStatus());
         assertEquals("application/json", restResponse.getMimeType());
 
-        final String jsonString = new String(restResponse.getBody(), StandardCharsets.UTF_8);
-        final JsonObject jsonObject = Json.parse(jsonString).asObject();
+        final var jsonString = new String(restResponse.getBody(), StandardCharsets.UTF_8);
+        final var jsonObject = Json.parse(jsonString).asObject();
         assertEquals(this.URL, jsonObject.getString("URL", null));
 
-        final JsonObject form = jsonObject.get("args").asObject();
+        final var form = jsonObject.get("args").asObject();
         assertEquals("bar", form.getString("foo", null));
         assertEquals("oranges", form.getString("apples", null));
         assertEquals("this parameter has whitespace in its name and value",
@@ -84,7 +83,7 @@ public class PostTests {
      */
     @Test
     public void testPost_UpdateParams() throws RestException {
-        final RestResponse restResponse = new Rest()
+        final var restResponse = new Rest()
                 .url(this.URL + "?hot=cold")
                 .parameter("foo", "bar")
                 .parameter("apples", "oranges")
@@ -93,10 +92,10 @@ public class PostTests {
         assertEquals(200, restResponse.getStatus());
         assertEquals("application/json", restResponse.getMimeType());
 
-        final String jsonString = new String(restResponse.getBody(), StandardCharsets.UTF_8);
-        final JsonObject jsonObject = Json.parse(jsonString).asObject();
+        final var jsonString = new String(restResponse.getBody(), StandardCharsets.UTF_8);
+        final var jsonObject = Json.parse(jsonString).asObject();
         assertEquals(this.URL + "?hot=cold", jsonObject.getString("URL", null));
-        final JsonObject args = jsonObject.get("args").asObject();
+        final var args = jsonObject.get("args").asObject();
         assertEquals("cold", args.getString("hot", null));
         assertEquals("bar", args.getString("foo", null));
         assertEquals("oranges", args.getString("apples", null));
@@ -112,7 +111,7 @@ public class PostTests {
      */
     @Test
     public void testPost_WithHeaders() throws RestException {
-        final RestResponse restResponse = new Rest()
+        final var restResponse = new Rest()
                 .url(this.URL)
                 .header("Black", "white")
                 .header("Day", "night")
@@ -121,10 +120,10 @@ public class PostTests {
         assertEquals(200, restResponse.getStatus());
         assertEquals("application/json", restResponse.getMimeType());
 
-        final String jsonString = new String(restResponse.getBody(), StandardCharsets.UTF_8);
-        final JsonObject jsonObject = Json.parse(jsonString).asObject();
+        final var jsonString = new String(restResponse.getBody(), StandardCharsets.UTF_8);
+        final var jsonObject = Json.parse(jsonString).asObject();
         assertEquals(this.URL, jsonObject.getString("URL", null));
-        final JsonObject headers = jsonObject.get("headers").asObject();
+        final var headers = jsonObject.get("headers").asObject();
         assertEquals("white", headers.getString("Black", null));
         assertEquals("night", headers.getString("Day", null));
         assertEquals("Header value", headers.getString("Two-Part", null));
@@ -138,7 +137,7 @@ public class PostTests {
      */
     @Test
     public void testPost_WithOptionalHeaders() throws RestException {
-        final RestResponse restResponse = new Rest()
+        final var restResponse = new Rest()
                 .url(this.URL)
                 .header("Black", "white")
                 .header("Day", "night")
@@ -149,10 +148,10 @@ public class PostTests {
         assertEquals(200, restResponse.getStatus());
         assertEquals("application/json", restResponse.getMimeType());
 
-        final String jsonString = new String(restResponse.getBody(), StandardCharsets.UTF_8);
-        final JsonObject jsonObject = Json.parse(jsonString).asObject();
+        final var jsonString = new String(restResponse.getBody(), StandardCharsets.UTF_8);
+        final var jsonObject = Json.parse(jsonString).asObject();
         assertEquals(this.URL, jsonObject.getString("URL", null));
-        final JsonObject headers = jsonObject.get("headers").asObject();
+        final var headers = jsonObject.get("headers").asObject();
         assertEquals("white", headers.getString("Black", null));
         assertEquals("night", headers.getString("Day", null));
         assertEquals("Header value", headers.getString("Two-Part", null));

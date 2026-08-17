@@ -32,21 +32,21 @@ public class VaultTestUtils {
     }
 
     public static Server initHttpMockVault(final MockVault mock) {
-        final Server server = new Server(8999);
+        final var server = new Server(8999);
         server.setHandler(mock);
         return server;
     }
 
     public static Server initHttpsMockVault(final MockVault mock) {
-        final Server server = new Server();
-        final SslContextFactory.Server sslContextFactory = new SslContextFactory.Server();
+        final var server = new Server();
+        final var sslContextFactory = new SslContextFactory.Server();
         sslContextFactory.setKeyStorePath(
                 VaultTestUtils.class.getResource("/keystore.jks").toExternalForm());
         sslContextFactory.setKeyStorePassword("password");
         sslContextFactory.setKeyManagerPassword("password");
-        final HttpConfiguration https = new HttpConfiguration();
+        final var https = new HttpConfiguration();
         https.addCustomizer(new SecureRequestCustomizer());
-        final ServerConnector sslConnector = new ServerConnector(
+        final var sslConnector = new ServerConnector(
                 server,
                 new SslConnectionFactory(sslContextFactory, "http/1.1"),
                 new HttpConnectionFactory(https)
@@ -69,7 +69,7 @@ public class VaultTestUtils {
 
     public static Optional<JsonObject> readRequestBody(HttpServletRequest request) {
         try {
-            StringBuilder requestBuffer = new StringBuilder();
+            var requestBuffer = new StringBuilder();
             IOUtils.readLines(request.getReader()).forEach(requestBuffer::append);
             String string = requestBuffer.toString();
             return string.isEmpty() ? Optional.empty() : Optional.of(Json.parse(string).asObject());

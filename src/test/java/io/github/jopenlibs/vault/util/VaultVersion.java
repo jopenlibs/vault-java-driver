@@ -45,9 +45,9 @@ public class VaultVersion implements Comparable<VaultVersion> {
     }
 
     public static boolean lessThan(String version) {
-        VaultVersion accepted = new VaultVersion(version);
+        final var accepted = new VaultVersion(version);
         try {
-            VaultVersion current = new VaultVersion(
+            final var current = new VaultVersion(
                     Optional.ofNullable(System.getenv("VAULT_VERSION")).orElse("latest"));
 
             if (current.getLiteral().equals("latest")) {
@@ -65,9 +65,9 @@ public class VaultVersion implements Comparable<VaultVersion> {
     }
 
     public static boolean greatThan(String version) {
-        VaultVersion accepted = new VaultVersion(version);
+        final var accepted = new VaultVersion(version);
         try {
-            VaultVersion current = new VaultVersion(
+            final var current = new VaultVersion(
                     Optional.ofNullable(System.getenv("VAULT_VERSION")).orElse("latest"));
 
             if (current.getLiteral().equals("latest")) {

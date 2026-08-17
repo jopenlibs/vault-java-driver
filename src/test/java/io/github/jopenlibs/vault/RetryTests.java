@@ -2,7 +2,7 @@ package io.github.jopenlibs.vault;
 
 import io.github.jopenlibs.vault.response.LogicalResponse;
 import io.github.jopenlibs.vault.mock.RetriesMockVault;
-import java.util.HashMap;
+import java.util.Map;
 import org.eclipse.jetty.server.Server;
 import org.junit.Test;
 
@@ -44,9 +44,7 @@ public class RetryTests {
                 .token("mock_token").build();
         final Vault vault = Vault.create(vaultConfig);
         final LogicalResponse response = vault.withRetries(5, 100).logical()
-                .write("secret/hello", new HashMap<String, Object>() {{
-                    put("value", "world");
-                }});
+                .write("secret/hello", Map.of("value", "world"));
         assertEquals(5, response.getRetries());
 
         VaultTestUtils.shutdownMockVault(server);
@@ -79,9 +77,7 @@ public class RetryTests {
                 .token("mock_token").build();
         final Vault vault = Vault.create(vaultConfig);
         final LogicalResponse response = vault.withRetries(5, 100).logical()
-                .write("secret/hello", new HashMap<String, Object>() {{
-                    put("value", "world");
-                }});
+                .write("secret/hello", Map.of("value", "world"));
         assertEquals(3, response.getRetries());
 
         VaultTestUtils.shutdownMockVault(server);
@@ -115,9 +111,7 @@ public class RetryTests {
                 .token("mock_token").build();
         final Vault vault = Vault.create(vaultConfig);
         final LogicalResponse response = vault.withRetries(5, 100).logical()
-                .write("secret/hello", new HashMap<String, Object>() {{
-                    put("value", "world");
-                }});
+                .write("secret/hello", Map.of("value", "world"));
         assertEquals(0, response.getRetries());
         assertEquals(400, response.getRestResponse().getStatus());
 

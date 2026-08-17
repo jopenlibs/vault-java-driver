@@ -52,7 +52,7 @@ public class EchoInputMockVault extends MockVault {
             values.add(name, value);
         }
 
-        String url = request.getScheme()
+        final var url = request.getScheme()
                 + "://"
                 + request.getServerName()
                 + (request.getServerPort() == 0 ? "" : ":" + request.getServerPort())

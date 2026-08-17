@@ -9,7 +9,7 @@ import io.github.jopenlibs.vault.response.LookupResponse;
 import io.github.jopenlibs.vault.util.VaultContainer;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -44,7 +44,7 @@ public class AuthBackendTokenIT {
         final AuthResponse response = vault.auth().createToken(
                 new TokenRequest()
                         .id(UUID.randomUUID())
-                        .polices(Arrays.asList("policy"))
+                        .polices(List.of("policy"))
                         .noParent(true)
                         .noDefaultPolicy(false)
                         .ttl("1h")

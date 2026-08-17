@@ -64,8 +64,7 @@ public class LogicalIT {
         final String value = "world";
         final Vault vault = container.getRootVault();
 
-        final Map<String, Object> testMap = new HashMap<>();
-        testMap.put("value", value);
+        final Map<String, Object> testMap = Map.of("value", value);
 
         vault.logical().write(pathToWrite, testMap);
 
@@ -80,8 +79,7 @@ public class LogicalIT {
         final Vault vault = container.getRootVault();
 
         final String value = "firstWorld";
-        final Map<String, Object> testData = new HashMap<>();
-        testData.put("value", value);
+        final Map<String, Object> testData = Map.of("value", value);
 
         WriteOptions writeOptions = new WriteOptions().checkAndSet(0L).build();
         vault.logical().write(secretPath, testData, null, writeOptions);
@@ -106,8 +104,7 @@ public class LogicalIT {
         final Vault vault = container.getRootVault();
 
         final String value = "firstWorld";
-        final Map<String, Object> testData = new HashMap<>();
-        testData.put("value", value);
+        final Map<String, Object> testData = Map.of("value", value);
 
         WriteOptions writeOptions = new WriteOptions().checkAndSet(1L).build();
         LogicalResponse writeResponse =
@@ -122,15 +119,13 @@ public class LogicalIT {
         final Vault vault = container.getRootVault();
 
         final String createValue = "firstWorld";
-        final Map<String, Object> testDataCreate = new HashMap<>();
-        testDataCreate.put("value", createValue);
+        final Map<String, Object> testDataCreate = Map.of("value", createValue);
 
         LogicalResponse createResponse = vault.logical().write(secretPath, testDataCreate);
         assertEquals(200, createResponse.getRestResponse().getStatus());
 
         final String updateValue = "secondWorld";
-        final Map<String, Object> testDataUpdate = new HashMap<>();
-        testDataUpdate.put("value", updateValue);
+        final Map<String, Object> testDataUpdate = Map.of("value", updateValue);
 
         WriteOptions updateOptions = new WriteOptions().checkAndSet(1L).build();
         LogicalResponse updateResponse =
@@ -155,15 +150,13 @@ public class LogicalIT {
         final Vault vault = container.getRootVault();
 
         final String createValue = "firstWorld";
-        final Map<String, Object> testDataCreate = new HashMap<>();
-        testDataCreate.put("value", createValue);
+        final Map<String, Object> testDataCreate = Map.of("value", createValue);
 
         LogicalResponse createResponse = vault.logical().write(secretPath, testDataCreate);
         assertEquals(200, createResponse.getRestResponse().getStatus());
 
         final String updateValue = "secondWorld";
-        final Map<String, Object> testDataUpdate = new HashMap<>();
-        testDataUpdate.put("value", updateValue);
+        final Map<String, Object> testDataUpdate = Map.of("value", updateValue);
 
         WriteOptions updateOptions = new WriteOptions().checkAndSet(2L).build();
         LogicalResponse updateResponse =
@@ -185,8 +178,7 @@ public class LogicalIT {
         final String value = "world";
         final Vault vault = container.getRootVault();
 
-        final Map<String, Object> testMap = new HashMap<>();
-        testMap.put("value", value);
+        final Map<String, Object> testMap = Map.of("value", value);
 
         LogicalResponse response = vault.logical().write(pathToWrite, testMap, wrapTTL);
 
@@ -213,8 +205,7 @@ public class LogicalIT {
         final Vault vault = container.getRootVaultWithCustomVaultConfig(
                 new VaultConfig().engineVersion(1));
 
-        final Map<String, Object> testMap = new HashMap<>();
-        testMap.put("value", value);
+        final Map<String, Object> testMap = Map.of("value", value);
 
         vault.logical().write(pathToWrite, testMap);
 
@@ -237,8 +228,7 @@ public class LogicalIT {
         final String value = "world";
         final Vault vault = container.getRootVault();
 
-        final Map<String, Object> testMap = new HashMap<>();
-        testMap.put("value", value);
+        final Map<String, Object> testMap = Map.of("value", value);
 
         vault.logical().write(pathToWrite, testMap);
 
@@ -301,8 +291,7 @@ public class LogicalIT {
     @Test
     public void testList() throws VaultException {
         final Vault vault = container.getRootVault();
-        final Map<String, Object> testMap = new HashMap<>();
-        testMap.put("value", "world");
+        final Map<String, Object> testMap = Map.of("value", "world");
 
         vault.logical().write("secret/hello", testMap);
         final List<String> keys = vault.logical().list("secret").getListData();
@@ -340,8 +329,7 @@ public class LogicalIT {
     public void testListKVEngineV1() throws VaultException {
         final Vault vault = container.getRootVaultWithCustomVaultConfig(
                 new VaultConfig().engineVersion(1));
-        final Map<String, Object> testMap = new HashMap<>();
-        testMap.put("value", "world");
+        final Map<String, Object> testMap = Map.of("value", "world");
 
         vault.logical().write("kv-v1/hello", testMap);
         final List<String> keys = vault.logical().list("kv-v1").getListData();
@@ -356,8 +344,7 @@ public class LogicalIT {
     @Test
     public void testDelete() throws VaultException {
         final Vault vault = container.getRootVault();
-        final Map<String, Object> testMap = new HashMap<>();
-        testMap.put("value", "world");
+        final Map<String, Object> testMap = Map.of("value", "world");
 
         vault.logical().write("secret/hello", testMap);
         assertTrue(vault.logical().list("secret").getListData().contains("hello"));
@@ -374,8 +361,7 @@ public class LogicalIT {
     public void testDeleteKVEngineV1() throws VaultException {
         final Vault vault = container.getRootVaultWithCustomVaultConfig(
                 new VaultConfig().engineVersion(1));
-        final Map<String, Object> testMap = new HashMap<>();
-        testMap.put("value", "world");
+        final Map<String, Object> testMap = Map.of("value", "world");
 
         vault.logical().write("kv-v1/hello", testMap);
         assertTrue(vault.logical().list("kv-v1").getListData().contains("hello"));
@@ -392,8 +378,7 @@ public class LogicalIT {
     @Test
     public void testDestroy() throws VaultException {
         final Vault vault = container.getRootVault();
-        final Map<String, Object> testMap = new HashMap<>();
-        testMap.put("value", "world");
+        final Map<String, Object> testMap = Map.of("value", "world");
 
         vault.logical().write("secret/hello", testMap);
         vault.logical().write("secret/hello", testMap);
@@ -488,12 +473,12 @@ public class LogicalIT {
     public void testWriteAndReadAllDataTypes() throws VaultException {
         final String path = "secret/hello";
 
-        final Map<String, Object> nameValuePairs = new HashMap<>();
-        nameValuePairs.put("testBoolean", true);
-        nameValuePairs.put("testInt", 1001);
-        nameValuePairs.put("testFloat", 123.456);
-        nameValuePairs.put("testString", "Hello world!");
-        nameValuePairs.put("testObject",
+        final Map<String, Object> nameValuePairs = Map.of(
+                "testBoolean", true,
+                "testInt", 1001,
+                "testFloat", 123.456,
+                "testString", "Hello world!",
+                "testObject",
                 "{ \"nestedBool\": true, \"nestedInt\": 123, \"nestedFloat\": 123.456, \"nestedString\": \"foobar\", \"nestedArray\": [\"foo\", \"bar\"], \"nestedObject\": { \"foo\": \"bar\" } }");
 
         final Vault vault = container.getRootVault();
@@ -515,12 +500,12 @@ public class LogicalIT {
     public void testWriteAndReadAllDataTypesKVEngineV1() throws VaultException {
         final String path = "kv-v1/hello";
 
-        final Map<String, Object> nameValuePairs = new HashMap<>();
-        nameValuePairs.put("testBoolean", true);
-        nameValuePairs.put("testInt", 1001);
-        nameValuePairs.put("testFloat", 123.456);
-        nameValuePairs.put("testString", "Hello world!");
-        nameValuePairs.put("testObject",
+        final Map<String, Object> nameValuePairs = Map.of(
+                "testBoolean", true,
+                "testInt", 1001,
+                "testFloat", 123.456,
+                "testString", "Hello world!",
+                "testObject",
                 "{ \"nestedBool\": true, \"nestedInt\": 123, \"nestedFloat\": 123.456, \"nestedString\": \"foobar\", \"nestedArray\": [\"foo\", \"bar\"], \"nestedObject\": { \"foo\": \"bar\" } }");
 
         final Vault vault = container.getRootVaultWithCustomVaultConfig(
@@ -586,8 +571,7 @@ public class LogicalIT {
         final String pathToRead = "secret/hello";
         final String version1Value = "world";
         final Vault vault = container.getRootVault();
-        final Map<String, Object> testMap = new HashMap<>();
-        testMap.put("value", version1Value);
+        final Map<String, Object> testMap = Map.of("value", version1Value);
         vault.logical().write(pathToWrite, testMap);
         vault.logical().delete(pathToWrite, new int[]{1});
         try {
