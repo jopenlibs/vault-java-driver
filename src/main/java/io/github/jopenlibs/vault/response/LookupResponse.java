@@ -1,11 +1,12 @@
 package io.github.jopenlibs.vault.response;
 
 import io.github.jopenlibs.vault.json.Json;
+import io.github.jopenlibs.vault.json.JsonValue;
 import io.github.jopenlibs.vault.json.ParseException;
 import io.github.jopenlibs.vault.rest.RestResponse;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * This class is a container for the information returned by Vault in lookup operations on auth
@@ -61,8 +62,9 @@ public class LookupResponse extends VaultResponse {
             orphan = dataJsonObject.getBoolean("orphan", true);
             path = dataJsonObject.getString("path", "");
             final var policiesJsonArray = dataJsonObject.get("policies").asArray();
-            policies = new ArrayList<>();
-            policiesJsonArray.forEach(policy -> policies.add(policy.asString()));
+            policies = policiesJsonArray.values().stream()
+                    .map(JsonValue::asString)
+                    .collect(Collectors.toUnmodifiableList());
             renewable = dataJsonObject.getBoolean("renewable", false);
             ttl = dataJsonObject.getLong("ttl", 0);
 

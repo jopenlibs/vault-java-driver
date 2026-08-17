@@ -183,7 +183,7 @@ public class Database extends OperationsBase {
     public DatabaseResponse revoke(final String serialNumber) throws VaultException {
         return retry(attempt -> {
             // Make an HTTP request to Vault
-            JsonObject jsonObject = new JsonObject();
+            var jsonObject = new JsonObject();
             if (serialNumber != null) {
                 jsonObject.add("serial_number", serialNumber);
             }

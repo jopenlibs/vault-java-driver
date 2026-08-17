@@ -5,10 +5,11 @@ import io.github.jopenlibs.vault.api.database.DatabaseCredential;
 import io.github.jopenlibs.vault.api.database.DatabaseRoleOptions;
 import io.github.jopenlibs.vault.json.JsonArray;
 import io.github.jopenlibs.vault.json.JsonObject;
+import io.github.jopenlibs.vault.json.JsonValue;
 import io.github.jopenlibs.vault.rest.RestResponse;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class DatabaseResponse extends LogicalResponse {
 
@@ -93,10 +94,8 @@ public class DatabaseResponse extends LogicalResponse {
     }
 
     private List<String> extractFromJsonArray(JsonArray array) {
-        List<String> result = new ArrayList<>();
-
-        array.forEach(entry -> result.add(entry.asString()));
-
-        return result;
+        return array.values().stream()
+                .map(JsonValue::asString)
+                .collect(Collectors.toUnmodifiableList());
     }
 }

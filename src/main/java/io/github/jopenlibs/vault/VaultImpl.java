@@ -307,7 +307,7 @@ public class VaultImpl implements Vault {
      */
     private Map<String, String> collectSecretEngineVersions() {
         try {
-            final RestResponse restResponse = new Rest()//NOPMD
+            final var restResponse = new Rest()//NOPMD
                     .url(vaultConfig.getAddress() + "/v1/sys/mounts")
                     .token(vaultConfig.getToken())
                     .header("X-Vault-Namespace", this.vaultConfig.getNameSpace())
@@ -321,10 +321,10 @@ public class VaultImpl implements Vault {
                 return null;
             }
 
-            final String jsonString = new String(restResponse.getBody(), StandardCharsets.UTF_8);
+            final var jsonString = new String(restResponse.getBody(), StandardCharsets.UTF_8);
             final var data = new HashMap<String, String>();
-            final JsonObject jsonData = Json.parse(jsonString).asObject().get("data").asObject();
-            for (JsonObject.Member member : jsonData) {
+            final var jsonData = Json.parse(jsonString).asObject().get("data").asObject();
+            for (final var member : jsonData) {
                 final String name = member.getName();
                 String version = "unknown";
 

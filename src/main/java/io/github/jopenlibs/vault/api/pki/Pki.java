@@ -210,7 +210,7 @@ public class Pki extends OperationsBase {
      */
     public PkiResponse revoke(final String serialNumber) throws VaultException {
         return retry(attempt -> {
-            final JsonObject jsonObject = new JsonObject();
+            final var jsonObject = new JsonObject();
 
             if (serialNumber != null) {
                 jsonObject.add("serial_number", serialNumber);

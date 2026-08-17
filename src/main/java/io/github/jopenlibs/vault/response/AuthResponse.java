@@ -2,11 +2,12 @@ package io.github.jopenlibs.vault.response;
 
 import io.github.jopenlibs.vault.json.Json;
 import io.github.jopenlibs.vault.json.JsonObject;
+import io.github.jopenlibs.vault.json.JsonValue;
 import io.github.jopenlibs.vault.json.ParseException;
 import io.github.jopenlibs.vault.rest.RestResponse;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * This class is a container for the information returned by Vault in auth backend operations.
@@ -58,8 +59,9 @@ public class AuthResponse extends VaultResponse {
                 tokenAccessor = authJsonObject.getString("accessor", "");
 
                 final var authPoliciesJsonArray = authJsonObject.get("policies").asArray();
-                authPolicies = new ArrayList<>();
-                authPoliciesJsonArray.forEach(authPolicy -> authPolicies.add(authPolicy.asString()));
+                authPolicies = authPoliciesJsonArray.values().stream()
+                        .map(JsonValue::asString)
+                        .collect(Collectors.toUnmodifiableList());
             }
 
             renewable = jsonResponse.get("renewable").asBoolean();

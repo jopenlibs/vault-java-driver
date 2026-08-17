@@ -12,6 +12,7 @@ import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.security.KeyFactory;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
@@ -306,8 +307,8 @@ public class SslConfig implements Serializable {
      * @throws VaultException If any error occurs while loading and parsing the PEM file
      */
     public SslConfig pemFile(final File pemFile) throws VaultException {
-        try (final InputStream input = new FileInputStream(pemFile)) {
-            this.pemUTF8 = inputStreamToUTF8(input);
+        try {
+            this.pemUTF8 = Files.readString(pemFile.toPath(), StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new VaultException(e);
         }
@@ -381,8 +382,8 @@ public class SslConfig implements Serializable {
      * @see Auth#loginByCert()
      */
     public SslConfig clientPemFile(final File clientPemFile) throws VaultException {
-        try (final InputStream input = new FileInputStream(clientPemFile)) {
-            this.clientPemUTF8 = inputStreamToUTF8(input);
+        try {
+            this.clientPemUTF8 = Files.readString(clientPemFile.toPath(), StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new VaultException(e);
         }
@@ -446,8 +447,9 @@ public class SslConfig implements Serializable {
      * @throws VaultException If any error occurs while loading and parsing the PEM file
      */
     public SslConfig clientKeyPemFile(final File clientKeyPemFile) throws VaultException {
-        try (final InputStream input = new FileInputStream(clientKeyPemFile)) {
-            this.clientKeyPemUTF8 = inputStreamToUTF8(input);
+        try {
+            this.clientKeyPemUTF8 = Files.readString(clientKeyPemFile.toPath(),
+                    StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new VaultException(e);
         }
@@ -502,9 +504,9 @@ public class SslConfig implements Serializable {
         }
         if (this.verify && this.pemUTF8 == null
                 && environmentLoader.loadVariable(VAULT_SSL_CERT) != null) {
-            final File pemFile = new File(environmentLoader.loadVariable(VAULT_SSL_CERT));
-            try (final InputStream input = new FileInputStream(pemFile)) {
-                this.pemUTF8 = inputStreamToUTF8(input);
+            final var pemFile = new File(environmentLoader.loadVariable(VAULT_SSL_CERT));
+            try {
+                this.pemUTF8 = Files.readString(pemFile.toPath(), StandardCharsets.UTF_8);
             } catch (IOException e) {
                 throw new VaultException(e);
             }
@@ -629,7 +631,7 @@ public class SslConfig implements Serializable {
                                 "")
                         .replace("-----END PRIVATE KEY-----", "");
                 final byte[] keyBytes = Base64.getMimeDecoder().decode(strippedKey);
-                final PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(keyBytes);
+                final var pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(keyBytes);
                 final KeyFactory factory = KeyFactory.getInstance("RSA");
                 final PrivateKey privateKey = factory.generatePrivate(pkcs8EncodedKeySpec);
 
@@ -685,7 +687,7 @@ public class SslConfig implements Serializable {
      * @return A UTF-8 encoded String, containing all of the InputStream's content
      */
     private static String inputStreamToUTF8(final InputStream input) throws IOException {
-        final StringBuilder utf8 = new StringBuilder();
+        final var utf8 = new StringBuilder();
         try (final BufferedReader in = new BufferedReader(
                 new InputStreamReader(input, StandardCharsets.UTF_8))) {
             String str;

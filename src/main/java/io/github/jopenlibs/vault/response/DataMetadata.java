@@ -1,6 +1,5 @@
 package io.github.jopenlibs.vault.response;
 
-import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -22,7 +21,7 @@ public class DataMetadata {
     }
 
     public Map<String, String> getMetadataMap() {
-        return Collections.unmodifiableMap(metadataMap);
+        return Map.copyOf(metadataMap);
     }
 
     public boolean isEmpty() {

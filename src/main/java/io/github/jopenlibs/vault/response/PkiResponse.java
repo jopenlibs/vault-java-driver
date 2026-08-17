@@ -166,8 +166,8 @@ public class PkiResponse extends LogicalResponse {
         if (input == null) {
             return null;
         }
-        final List<String> returnValue = new ArrayList<>();
-        final StringTokenizer tokenizer = new StringTokenizer(input, ",");
+        final var returnValue = new ArrayList<String>();
+        final var tokenizer = new StringTokenizer(input, ",");
         while (tokenizer.hasMoreTokens()) {
             returnValue.add(tokenizer.nextToken());
         }

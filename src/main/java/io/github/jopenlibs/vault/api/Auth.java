@@ -16,6 +16,7 @@ import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 
@@ -309,7 +310,7 @@ public class Auth extends OperationsBase {
      */
     public AuthResponse createToken(final TokenRequest tokenRequest, final String tokenAuthMount)
             throws VaultException {
-        final var mount = tokenAuthMount != null ? tokenAuthMount : "token";
+        final var mount = Objects.requireNonNullElse(tokenAuthMount, "token");
 
         return retry((attempt) -> {
             // Parse parameters to JSON
@@ -556,7 +557,7 @@ public class Auth extends OperationsBase {
      */
     public AuthResponse loginByUserPass(final String username, final String password,
             final String userpassAuthMount) throws VaultException {
-        final var mount = userpassAuthMount != null ? userpassAuthMount : "userpass";
+        final var mount = Objects.requireNonNullElse(userpassAuthMount, "userpass");
 
         return retry(attempt -> {
             // HTTP request to Vault
@@ -620,7 +621,7 @@ public class Auth extends OperationsBase {
      */
     public AuthResponse loginByLDAP(final String username, final String password,
             final String ldapAuthMount) throws VaultException {
-        final var mount = ldapAuthMount != null ? ldapAuthMount : "ldap";
+        final var mount = Objects.requireNonNullElse(ldapAuthMount, "ldap");
         // LDAP has the same API like Username & Password backend
         return loginByUserPass(username, password, mount);
     }
@@ -654,7 +655,7 @@ public class Auth extends OperationsBase {
     public AuthResponse loginByAwsEc2(final String role, final String identity,
             final String signature, final String nonce, final String awsAuthMount)
             throws VaultException {
-        final var mount = awsAuthMount != null ? awsAuthMount : "aws";
+        final var mount = Objects.requireNonNullElse(awsAuthMount, "aws");
 
         return retry(attempt -> {
             // HTTP request to Vault
@@ -712,7 +713,7 @@ public class Auth extends OperationsBase {
     // TODO: Needs integration test coverage if possible
     public AuthResponse loginByAwsEc2(final String role, final String pkcs7, final String nonce,
             final String awsAuthMount) throws VaultException {
-        final var mount = awsAuthMount != null ? awsAuthMount : "aws";
+        final var mount = Objects.requireNonNullElse(awsAuthMount, "aws");
 
         return retry(attempt -> {
             // HTTP request to Vault
@@ -775,7 +776,7 @@ public class Auth extends OperationsBase {
     public AuthResponse loginByAwsIam(final String role, final String iamRequestUrl,
             final String iamRequestBody, final String iamRequestHeaders, final String awsAuthMount)
             throws VaultException {
-        final var mount = awsAuthMount != null ? awsAuthMount : "aws";
+        final var mount = Objects.requireNonNullElse(awsAuthMount, "aws");
 
         return retry(attempt -> {
             // HTTP request to Vault
@@ -843,7 +844,7 @@ public class Auth extends OperationsBase {
     public AuthResponse loginByGithub(final String githubToken, final String githubAuthMount)
             throws VaultException {
         // TODO:  Add (optional?) integration test coverage
-        final var mount = githubAuthMount != null ? githubAuthMount : "github";
+        final var mount = Objects.requireNonNullElse(githubAuthMount, "github");
 
         return retry(attempt -> {
             // HTTP request to Vault
@@ -1061,7 +1062,7 @@ public class Auth extends OperationsBase {
      * @throws VaultException If any error occurs, or unexpected response received from Vault
      */
     public AuthResponse loginByCert(final String certAuthMount) throws VaultException {
-        final var mount = certAuthMount != null ? certAuthMount : "cert";
+        final var mount = Objects.requireNonNullElse(certAuthMount, "cert");
 
         return retry(attempt -> {
             final var restResponse = getRest()//NOPMD
@@ -1118,7 +1119,7 @@ public class Auth extends OperationsBase {
      */
     public AuthResponse renewSelf(final long increment, final String tokenAuthMount)
             throws VaultException {
-        final var mount = tokenAuthMount != null ? tokenAuthMount : "token";
+        final var mount = Objects.requireNonNullElse(tokenAuthMount, "token");
 
         return retry(attempt -> {
             // HTTP request to Vault
@@ -1161,7 +1162,7 @@ public class Auth extends OperationsBase {
      * @throws VaultException If any error occurs, or unexpected response received from Vault
      */
     public LookupResponse lookupSelf(final String tokenAuthMount) throws VaultException {
-        final var mount = tokenAuthMount != null ? tokenAuthMount : "token";
+        final var mount = Objects.requireNonNullElse(tokenAuthMount, "token");
 
         return retry(attempt -> {
             // HTTP request to Vault
@@ -1227,7 +1228,7 @@ public class Auth extends OperationsBase {
      * @throws VaultException If any error occurs, or unexpected response received from Vault
      */
     public void revokeSelf(final String tokenAuthMount) throws VaultException {
-        final var mount = tokenAuthMount != null ? tokenAuthMount : "token";
+        final var mount = Objects.requireNonNullElse(tokenAuthMount, "token");
 
         retry(attempt -> {
             // HTTP request to Vault
