@@ -2,6 +2,7 @@ package io.github.jopenlibs.vault;
 
 import java.io.Serializable;
 import java.net.http.HttpClient;
+import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -80,15 +81,10 @@ public class VaultConfig implements Serializable {
      * @param nameSpace The namespace to use globally in this VaultConfig instance.
      * @return This object, with the namespace populated, ready for additional builder-pattern
      * method calls or else finalization with the build() method
-     * @throws VaultException If any error occurs
      */
-    public VaultConfig nameSpace(final String nameSpace) throws VaultException {
-        if (nameSpace != null && !nameSpace.isEmpty()) {
-            this.nameSpace = nameSpace;
-            return this;
-        } else {
-            throw new VaultException("A namespace cannot be empty.");
-        }
+    public VaultConfig nameSpace(final String nameSpace) {
+        this.nameSpace = nameSpace;
+        return this;
     }
 
     /**
@@ -351,6 +347,9 @@ public class VaultConfig implements Serializable {
      * <code>VAULT_ADDR</code> environment variable value with which to populate it.
      */
     public VaultConfig build() throws VaultException {
+        if (this.nameSpace != null && this.nameSpace.isEmpty()) {
+            throw new VaultException("A namespace cannot be empty.");
+        }
         if (this.environmentLoader == null) {
             this.environmentLoader = new EnvironmentLoader();
         }
@@ -395,7 +394,7 @@ public class VaultConfig implements Serializable {
     }
 
     public Map<String, String> getSecretsEnginePathMap() {
-        return secretsEnginePathMap;
+        return Collections.unmodifiableMap(secretsEnginePathMap);
     }
 
     public String getAddress() {

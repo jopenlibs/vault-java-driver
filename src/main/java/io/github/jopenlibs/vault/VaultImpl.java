@@ -137,7 +137,7 @@ public class VaultImpl implements Vault {
                         "No secrets Engine version map was supplied, attempting to generate one.");
                 final Map<String, String> secretsEnginePathMap = collectSecretEngineVersions();
                 assert secretsEnginePathMap != null;
-                this.vaultConfig.getSecretsEnginePathMap().putAll(secretsEnginePathMap);
+                this.vaultConfig.secretsEnginePathMap(secretsEnginePathMap);
             } catch (Exception e) {
                 throw new VaultException(String.format(
                         "An Engine KV version map was not supplied, and unable to determine " +

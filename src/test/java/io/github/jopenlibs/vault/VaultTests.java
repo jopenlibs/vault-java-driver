@@ -39,9 +39,10 @@ public class VaultTests {
     @Test
     public void testNameSpaceProvidedVaultConstructorCannotBeEmpty() {
         try {
-            var vaultConfig = new VaultConfig().nameSpace("");
+            new VaultConfig().nameSpace("").address("address").build();
+            Assert.fail("Expected a VaultException to be thrown");
         } catch (VaultException e) {
-            Assert.assertEquals(e.getMessage(), "A namespace cannot be empty.");
+            Assert.assertEquals("A namespace cannot be empty.", e.getMessage());
         }
     }
 
