@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
+import org.testcontainers.containers.startupcheck.OneShotStartupCheckStrategy;
 import org.testcontainers.containers.wait.strategy.HttpWaitStrategy;
 import org.testcontainers.lifecycle.TestDescription;
 import org.testcontainers.lifecycle.TestLifecycleAware;
@@ -441,13 +442,35 @@ public class VaultContainer extends GenericContainer<VaultContainer> implements 
         return new Statement() {
             @Override
             public void evaluate() throws Throwable {
-                start();
                 try {
+                    start();
                     base.evaluate();
                 } finally {
                     stop();
+                    cleanupSslDirectory();
                 }
             }
         };
+    }
+
+    /**
+     * {@code startup.sh} writes the SSL artifacts under {@code ssl/} as root (via the bind-mounted
+     * volume), so the host user running the tests usually can't remove them directly. Instead, spin
+     * up a throwaway container that bind-mounts the same directory and deletes its contents as root.
+     */
+    private void cleanupSslDirectory() throws InterruptedException {
+        final var sslDirectory = new File(SSL_DIRECTORY);
+        if (!sslDirectory.exists() || !DOCKER_AVAILABLE) {
+            return;
+        }
+
+        try (final var cleaner = new GenericContainer<>(getDockerImageName())
+                .withFileSystemBind(SSL_DIRECTORY, "/ssl", BindMode.READ_WRITE)
+                .withCreateContainerCmdModifier(command -> command.withUser("root"))
+                .withCommand("sh", "-c", "rm -rf /ssl/*")
+                .withStartupCheckStrategy(new OneShotStartupCheckStrategy()
+                        .withTimeout(Duration.ofSeconds(30)))) {
+            cleaner.start();
+        }
     }
 }
