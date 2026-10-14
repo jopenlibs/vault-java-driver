@@ -5,6 +5,8 @@ package io.github.jopenlibs.vault;
  * operation is retried, and the time to wait between attempts.</p>
  *
  * <p>A policy with <code>maxRetries</code> set to <code>0</code> disables retries.</p>
+ *
+ * @see Vault#retrying(int, int)
  */
 public final class RetryPolicy {
 

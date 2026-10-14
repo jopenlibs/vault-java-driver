@@ -58,6 +58,11 @@ import java.util.logging.Logger;
 public class VaultImpl implements Vault {
 
     private final VaultConfig vaultConfig;
+    /**
+     * The retries for the operations of this instance, or <code>null</code> to use the retries
+     * currently set in {@link #vaultConfig}.
+     */
+    private final RetryPolicy retryPolicy;
     private final Logger logger = Logger.getLogger(VaultImpl.class.getCanonicalName());
 
     /**
@@ -69,6 +74,7 @@ public class VaultImpl implements Vault {
      */
     public VaultImpl(final VaultConfig vaultConfig) {
         this.vaultConfig = vaultConfig;
+        this.retryPolicy = null;
         logNameSpace();
         if (this.vaultConfig.getSecretsEnginePathMap().isEmpty()
                 && this.vaultConfig.getGlobalEngineVersion() == null) {
@@ -95,6 +101,7 @@ public class VaultImpl implements Vault {
         }
         vaultConfig.setEngineVersion(engineVersion);
         this.vaultConfig = vaultConfig;
+        this.retryPolicy = null;
         logNameSpace();
     }
 
@@ -115,6 +122,7 @@ public class VaultImpl implements Vault {
             final Integer globalFallbackVersion)
             throws VaultException {
         this.vaultConfig = vaultConfig;
+        this.retryPolicy = null;
         logNameSpace();
         this.vaultConfig.setEngineVersion(globalFallbackVersion);
         if (Boolean.TRUE.equals(useSecretsEnginePathMap) && this.vaultConfig.getSecretsEnginePathMap().isEmpty()) {
@@ -137,6 +145,15 @@ public class VaultImpl implements Vault {
             }
             this.vaultConfig.secretsEnginePathMap(secretsEnginePathMap);
         }
+    }
+
+    /**
+     * Used by {@link #retrying(int, int)}: shares the configuration of an existing instance, which
+     * has already been set up, so the engine version setup is not run again.
+     */
+    private VaultImpl(final VaultConfig vaultConfig, final RetryPolicy retryPolicy) {
+        this.vaultConfig = vaultConfig;
+        this.retryPolicy = retryPolicy;
     }
 
     private void logNameSpace() {
@@ -166,13 +183,33 @@ public class VaultImpl implements Vault {
     }
 
     /**
+     * <p>Returns a new <code>VaultImpl</code> whose API operations are retried with the given
+     * rules, overriding the retries set in the configuration. This instance, and its configuration,
+     * are left unchanged.</p>
+     *
+     * <p>The returned instance shares the configuration of this one, so later changes to it (e.g.
+     * a new token) apply to both.</p>
+     *
+     * @param maxRetries The number of times that API operations will be retried when a failure
+     * occurs
+     * @param retryIntervalMilliseconds The number of milliseconds that the driver will wait in
+     * between retries
+     * @return A new <code>VaultImpl</code> using the given retries
+     * @throws IllegalArgumentException If either value is negative
+     */
+    @Override
+    public VaultImpl retrying(final int maxRetries, final int retryIntervalMilliseconds) {
+        return new VaultImpl(vaultConfig, new RetryPolicy(maxRetries, retryIntervalMilliseconds));
+    }
+
+    /**
      * Returns the implementing class for Vault's core/logical operations (e.g. read, write).
      *
      * @return The implementing class for Vault's core/logical operations (e.g. read, write)
      */
     @Override
     public Logical logical() {
-        return new Logical(vaultConfig);
+        return new Logical(vaultConfig, retryPolicy);
     }
 
     /**
@@ -183,7 +220,7 @@ public class VaultImpl implements Vault {
      */
     @Override
     public Auth auth() {
-        return new Auth(vaultConfig);
+        return new Auth(vaultConfig, retryPolicy);
     }
 
     /**
@@ -194,7 +231,7 @@ public class VaultImpl implements Vault {
      */
     @Override
     public Sys sys() {
-        return new Sys(vaultConfig);
+        return new Sys(vaultConfig, retryPolicy);
     }
 
     /**
@@ -205,7 +242,7 @@ public class VaultImpl implements Vault {
      */
     @Override
     public Pki pki() {
-        return new Pki(vaultConfig);
+        return new Pki(vaultConfig, "pki", retryPolicy);
     }
 
     /**
@@ -232,17 +269,17 @@ public class VaultImpl implements Vault {
      */
     @Override
     public Pki pki(final String mountPath) {
-        return new Pki(vaultConfig, mountPath);
+        return new Pki(vaultConfig, mountPath, retryPolicy);
     }
 
     @Override
     public Database database() {
-        return new Database(vaultConfig);
+        return new Database(vaultConfig, "database", retryPolicy);
     }
 
     @Override
     public Database database(final String mountPath) {
-        return new Database(vaultConfig, mountPath);
+        return new Database(vaultConfig, mountPath, retryPolicy);
     }
 
     /**
@@ -255,7 +292,7 @@ public class VaultImpl implements Vault {
     @Override
     @Deprecated
     public Leases leases() {
-        return new Leases(vaultConfig);
+        return new Leases(vaultConfig, retryPolicy);
     }
 
     /**
@@ -265,7 +302,7 @@ public class VaultImpl implements Vault {
      */
     @Override
     public Debug debug() {
-        return new Debug(vaultConfig);
+        return new Debug(vaultConfig, retryPolicy);
     }
 
     /**
@@ -279,7 +316,7 @@ public class VaultImpl implements Vault {
     @Override
     @Deprecated
     public Mounts mounts() {
-        return new Mounts(vaultConfig);
+        return new Mounts(vaultConfig, retryPolicy);
     }
 
     /**
@@ -292,7 +329,7 @@ public class VaultImpl implements Vault {
     @Override
     @Deprecated
     public Seal seal() {
-        return new Seal(vaultConfig);
+        return new Seal(vaultConfig, retryPolicy);
     }
 
     /**
