@@ -1,5 +1,6 @@
 package io.github.jopenlibs.vault.api;
 
+import io.github.jopenlibs.vault.RetryPolicy;
 import io.github.jopenlibs.vault.VaultConfig;
 import io.github.jopenlibs.vault.VaultException;
 import io.github.jopenlibs.vault.VaultImpl;
@@ -254,7 +255,17 @@ public class Auth extends OperationsBase {
     private String nameSpace;
 
     public Auth(final VaultConfig config) {
-        super(config);
+        this(config, null);
+    }
+
+    /**
+     * @param config A container for the configuration settings needed to initialize a
+     * <code>Vault</code> driver instance
+     * @param retryPolicy The retries for this instance, overriding those set in the configuration,
+     * or <code>null</code> to use the retries currently set in the configuration
+     */
+    public Auth(final VaultConfig config, final RetryPolicy retryPolicy) {
+        super(config, retryPolicy);
 
         this.nameSpace = this.config.getNameSpace();
     }
@@ -1153,7 +1164,7 @@ public class Auth extends OperationsBase {
      */
     @Deprecated
     public LogicalResponse lookupWrap() throws VaultException {
-        final var sys = new Sys(this.config);
+        final var sys = new Sys(this.config, this.retryPolicy);
         return sys.wrapping().lookupWrap(config.getToken(), false);
     }
 
@@ -1163,7 +1174,7 @@ public class Auth extends OperationsBase {
      */
     @Deprecated
     public LogicalResponse lookupWrap(final char[] wrappedToken) throws VaultException {
-        final var sys = new Sys(this.config);
+        final var sys = new Sys(this.config, this.retryPolicy);
         return sys.wrapping().lookupWrap(wrappedToken, true);
     }
 
@@ -1174,7 +1185,7 @@ public class Auth extends OperationsBase {
     @Deprecated
     public LogicalResponse lookupWrap(final char[] wrappedToken, boolean inBody)
             throws VaultException {
-        final var sys = new Sys(this.config);
+        final var sys = new Sys(this.config, this.retryPolicy);
         return sys.wrapping().lookupWrap(wrappedToken, inBody);
     }
 
@@ -1220,7 +1231,7 @@ public class Auth extends OperationsBase {
      */
     @Deprecated
     public UnwrapResponse unwrap() throws VaultException {
-        final var sys = new Sys(this.config);
+        final var sys = new Sys(this.config, this.retryPolicy);
         return sys.wrapping().unwrap(config.getToken(), false);
     }
 
@@ -1230,7 +1241,7 @@ public class Auth extends OperationsBase {
      */
     @Deprecated
     public UnwrapResponse unwrap(final char[] wrappedToken) throws VaultException {
-        final var sys = new Sys(this.config);
+        final var sys = new Sys(this.config, this.retryPolicy);
         return sys.wrapping().unwrap(wrappedToken, true);
     }
 
@@ -1240,7 +1251,7 @@ public class Auth extends OperationsBase {
      */
     @Deprecated
     public UnwrapResponse unwrap(final char[] wrappedToken, boolean inBody) throws VaultException {
-        final var sys = new Sys(this.config);
+        final var sys = new Sys(this.config, this.retryPolicy);
         return sys.wrapping().unwrap(wrappedToken, inBody);
     }
 
@@ -1250,7 +1261,7 @@ public class Auth extends OperationsBase {
      */
     @Deprecated
     public WrapResponse wrap(final JsonObject jsonObject, int ttlInSec) throws VaultException {
-        final var sys = new Sys(this.config);
+        final var sys = new Sys(this.config, this.retryPolicy);
         return sys.wrapping().wrap(jsonObject, ttlInSec);
     }
 
@@ -1260,7 +1271,7 @@ public class Auth extends OperationsBase {
      */
     @Deprecated
     public WrapResponse rewrap(final char[] wrappedToken) throws VaultException {
-        final var sys = new Sys(this.config);
+        final var sys = new Sys(this.config, this.retryPolicy);
         return sys.wrapping().rewrap(wrappedToken);
     }
 
