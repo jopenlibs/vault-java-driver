@@ -164,8 +164,8 @@ public class Logical extends OperationsBase {
 
                     return new LogicalResponse(restResponse, attempt, logicalOperations.readV2);
                 },
-                shouldRetry ? config.getMaxRetries() : 1,
-                config.getRetryIntervalMilliseconds()
+                shouldRetry ? getMaxRetries() : 1,
+                getRetryIntervalMilliseconds()
         );
     }
 

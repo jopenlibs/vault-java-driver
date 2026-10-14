@@ -1,5 +1,6 @@
 package io.github.jopenlibs.vault.api;
 
+import io.github.jopenlibs.vault.RetryPolicy;
 import io.github.jopenlibs.vault.VaultConfig;
 import io.github.jopenlibs.vault.VaultException;
 import io.github.jopenlibs.vault.rest.Rest;
@@ -14,12 +15,47 @@ public abstract class OperationsBase {
 
     protected final VaultConfig config;
 
+    /**
+     * The retries for this instance, or <code>null</code> to use the retries currently set in
+     * {@link #config}.
+     */
+    protected final RetryPolicy retryPolicy;
+
     protected OperationsBase(VaultConfig config) {
+        this(config, null);
+    }
+
+    /**
+     * @param config The configuration
+     * @param retryPolicy The retries for this instance, overriding those set in the configuration,
+     * or <code>null</code> to use the retries currently set in the configuration, read on every
+     * call
+     */
+    protected OperationsBase(VaultConfig config, RetryPolicy retryPolicy) {
         this.config = config;
+        this.retryPolicy = retryPolicy;
+    }
+
+    /**
+     * @return The maximum number of retries from the retry policy if set, otherwise the one
+     * currently set in the configuration
+     */
+    protected int getMaxRetries() {
+        return retryPolicy != null ? retryPolicy.getMaxRetries() : config.getMaxRetries();
+    }
+
+    /**
+     * @return The interval between retries from the retry policy if set, otherwise the one
+     * currently set in the configuration
+     */
+    protected int getRetryIntervalMilliseconds() {
+        return retryPolicy != null
+                ? retryPolicy.getRetryIntervalMilliseconds()
+                : config.getRetryIntervalMilliseconds();
     }
 
     protected <T> T retry(final EndpointOperation<T> op) throws VaultException {
-        return retry(op, config.getMaxRetries(), config.getRetryIntervalMilliseconds());
+        return retry(op, getMaxRetries(), getRetryIntervalMilliseconds());
     }
 
     /**

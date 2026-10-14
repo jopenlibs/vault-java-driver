@@ -1,5 +1,8 @@
 package io.github.jopenlibs.vault.api;
 
+import io.github.jopenlibs.vault.RetryPolicy;
+import io.github.jopenlibs.vault.Vault;
+import io.github.jopenlibs.vault.VaultConfig;
 import io.github.jopenlibs.vault.VaultException;
 import io.github.jopenlibs.vault.rest.Rest;
 import io.github.jopenlibs.vault.rest.RestException;
@@ -10,6 +13,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -105,6 +109,94 @@ public class OperationsBaseRetryTests {
         }
         assertEquals(1, calls.get());
         assertTrue(Thread.currentThread().isInterrupted());
+    }
+
+    @Test
+    public void testNullPolicyUsesConfigRetries() throws Exception {
+        final var config = configWithRetries(2, 1);
+        final var operations = new TestOperations(config);
+        assertNull(operations.retryPolicy);
+        assertEquals(2, operations.getMaxRetries());
+        assertEquals(1, operations.getRetryIntervalMilliseconds());
+        assertEquals(3, operations.countAttempts());
+    }
+
+    @Test
+    public void testNullPolicyReadsConfigOnEveryCall() throws Exception {
+        final var config = configWithRetries(1, 1);
+        final var operations = new TestOperations(config, null);
+        assertEquals(2, operations.countAttempts());
+
+        Vault.create(config).withRetries(3, 1);
+        assertEquals(3, operations.getMaxRetries());
+        assertEquals(4, operations.countAttempts());
+    }
+
+    @Test
+    public void testNullPolicyKeepsNegativeConfigValues() throws Exception {
+        final var config = configWithRetries(-1, -5);
+        final var operations = new TestOperations(config);
+        assertEquals(-1, operations.getMaxRetries());
+        assertEquals(-5, operations.getRetryIntervalMilliseconds());
+        assertEquals(1, operations.countAttempts());
+    }
+
+    @Test
+    public void testPolicyOverridesConfigRetries() throws Exception {
+        final var config = configWithRetries(5, 1000);
+        final var policy = new RetryPolicy(1, 2);
+        final var operations = new TestOperations(config, policy);
+        assertSame(policy, operations.retryPolicy);
+        assertEquals(1, operations.getMaxRetries());
+        assertEquals(2, operations.getRetryIntervalMilliseconds());
+        assertEquals(2, operations.countAttempts());
+
+        Vault.create(config).withRetries(3, 1);
+        assertEquals(2, operations.countAttempts());
+        assertEquals(3, config.getMaxRetries());
+    }
+
+    @Test
+    public void testZeroPolicyDisablesRetries() throws Exception {
+        final var operations = new TestOperations(configWithRetries(5, 1), new RetryPolicy(0, 0));
+        assertEquals(1, operations.countAttempts());
+    }
+
+    private static VaultConfig configWithRetries(final int maxRetries,
+            final int retryIntervalMilliseconds) throws VaultException {
+        final var config = new VaultConfig().address("http://127.0.0.1:8999")
+                .token("mock_token").engineVersion(1).build();
+        Vault.create(config).withRetries(maxRetries, retryIntervalMilliseconds);
+        return config;
+    }
+
+    private static final class TestOperations extends OperationsBase {
+
+        TestOperations(final VaultConfig config) {
+            super(config);
+        }
+
+        TestOperations(final VaultConfig config, final RetryPolicy retryPolicy) {
+            super(config, retryPolicy);
+        }
+
+        /**
+         * @return The number of attempts made for an operation that always fails with a transient
+         * error
+         */
+        int countAttempts() {
+            final var calls = new AtomicInteger();
+            try {
+                retry(attempt -> {
+                    calls.incrementAndGet();
+                    throw new VaultException("unavailable", 503);
+                });
+                fail("Expected VaultException");
+            } catch (VaultException e) {
+                assertEquals(503, e.getHttpStatusCode());
+            }
+            return calls.get();
+        }
     }
 
     private static RestException connectionRefused() {
