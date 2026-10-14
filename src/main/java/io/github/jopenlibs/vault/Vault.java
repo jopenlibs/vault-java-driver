@@ -50,15 +50,24 @@ public interface Vault {
     }
 
     /**
-     * This method is chained ahead of endpoints (e.g. <code>logical()</code>, <code>auth()</code>,
-     * etc... to specify retry rules for any API operations invoked on that endpoint.
+     * <p>Sets the retry rules for API operations, by writing them to the configuration of this
+     * instance.</p>
+     *
+     * <p>Despite being chained ahead of endpoints (e.g. <code>logical()</code>,
+     * <code>auth()</code>), the retries are not limited to that call: they apply to every later
+     * call on this instance, and on every other <code>Vault</code> sharing the same configuration.
+     * A <code>Vault</code> returned by {@link #retrying(int, int)} ignores them.</p>
      *
      * @param maxRetries The number of times that API operations will be retried when a failure
      * occurs
      * @param retryIntervalMilliseconds The number of milliseconds that the driver will wait in
      * between retries
-     * @return This object, with maxRetries and retryIntervalMilliseconds populated
+     * @return This object, with maxRetries and retryIntervalMilliseconds populated in its
+     * configuration
+     * @deprecated To retry only some calls, use {@link #retrying(int, int)}, which returns a new
+     * instance. To retry every call, use {@link VaultConfig#retries(int, int)}.
      */
+    @Deprecated
     Vault withRetries(final int maxRetries, final int retryIntervalMilliseconds);
 
     /**

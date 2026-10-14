@@ -290,6 +290,27 @@ public class RetryTests {
         }
     }
 
+    @Test
+    @SuppressWarnings("deprecation")
+    public void testWithRetries_Unchanged() throws Exception {
+        final var config = mockConfig();
+        final var vault = Vault.create(config);
+        final var other = Vault.create(config);
+        final var retrying = vault.retrying(1, 10);
+
+        assertSame(vault, vault.withRetries(5, 1000));
+        assertEquals(5, config.getMaxRetries());
+        assertEquals(1000, config.getRetryIntervalMilliseconds());
+        // Shared by every Vault using the config, but ignored by one returned by retrying()
+        assertNull(retryPolicyOf(other.logical()));
+        assertEquals(new RetryPolicy(1, 10), retryPolicyOf(retrying.logical()));
+
+        // Negative values are still written to the config, not validated
+        vault.withRetries(-1, -1);
+        assertEquals(-1, config.getMaxRetries());
+        assertEquals(-1, config.getRetryIntervalMilliseconds());
+    }
+
     private static VaultConfig mockConfig() throws VaultException {
         return new VaultConfig().address("http://127.0.0.1:8999")
                 .token("mock_token").engineVersion(1).build();

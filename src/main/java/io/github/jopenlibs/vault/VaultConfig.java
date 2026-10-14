@@ -349,8 +349,8 @@ public class VaultConfig implements Serializable {
      * <p>Sets the maximum number of times that an API operation will retry upon failure.</p>
      *
      * <p>This method is not meant to be called from application-level code outside of this package
-     * (hence the <code>protected</code> access level.  It is meant to be invoked via
-     * <code>Vault.withRetries()</code> in a builder pattern DSL-style.</p>
+     * (hence the package-private access level). It is used by the deprecated
+     * <code>Vault.withRetries()</code>: use {@link #retries(int, int)} instead.</p>
      *
      * @param maxRetries The number of times that API operations will be retried when a failure
      * occurs.
@@ -364,8 +364,8 @@ public class VaultConfig implements Serializable {
      * attempts for a failing API operation.</p>
      *
      * <p>This method is not meant to be called from application-level code outside of this package
-     * (hence the <code>protected</code> access level.  It is meant to be invoked via
-     * <code>Vault.withRetries()</code> in a builder pattern DSL-style.</p>
+     * (hence the package-private access level). It is used by the deprecated
+     * <code>Vault.withRetries()</code>: use {@link #retries(int, int)} instead.</p>
      *
      * @param retryIntervalMilliseconds The number of milliseconds that the driver will wait in
      * between retries.
