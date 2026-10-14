@@ -1,7 +1,7 @@
 package io.github.jopenlibs.vault.rest;
 
-import io.github.jopenlibs.vault.json.Json;
 import io.github.jopenlibs.vault.VaultTestUtils;
+import io.github.jopenlibs.vault.json.Json;
 import io.github.jopenlibs.vault.mock.EchoInputMockVault;
 import java.nio.charset.StandardCharsets;
 import org.eclipse.jetty.server.Server;
@@ -117,6 +117,27 @@ public class GetTests {
         assertEquals("oranges", args.getString("apples", null));
         assertEquals("this parameter has whitespace in its name and value",
                 args.getString("multi part", null));
+    }
+
+    /**
+     * Parameters containing reserved characters (and '%') are url-encoded exactly once, so the
+     * server receives their original values.
+     */
+    @Test
+    public void testGet_ParamsWithReservedCharacters() throws RestException {
+        final var restResponse = new Rest()
+                .url(this.URL + "?hot=cold")
+                .parameter("key", "a/b c&d=e%f?g#h")
+                .get();
+        assertEquals(200, restResponse.getStatus());
+
+        final var jsonString = new String(restResponse.getBody(), StandardCharsets.UTF_8);
+        final var jsonObject = Json.parse(jsonString).asObject();
+        assertEquals("http://127.0.0.1:8999/?hot=cold&key=a%2Fb+c%26d%3De%25f%3Fg%23h",
+                jsonObject.getString("URL", null));
+        final var args = jsonObject.get("args").asObject();
+        assertEquals("cold", args.getString("hot", null));
+        assertEquals("a/b c&d=e%f?g#h", args.getString("key", null));
     }
 
     /**

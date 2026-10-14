@@ -18,9 +18,15 @@ public class UnwrapResponse extends AuthResponse {
         super(restResponse, retries);
     }
 
+    /**
+     * @return The <code>data</code> object of the unwrapped response, or <code>null</code> if it
+     * has none
+     */
     public JsonObject getData() {
-        assert jsonResponse.get("data").isObject();
-
-        return jsonResponse.get("data").asObject();
+        if (jsonResponse == null) {
+            return null;
+        }
+        final var data = jsonResponse.get("data");
+        return data != null && data.isObject() ? data.asObject() : null;
     }
 }

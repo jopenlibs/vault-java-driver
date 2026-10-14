@@ -1,7 +1,7 @@
 package io.github.jopenlibs.vault;
 
-import io.github.jopenlibs.vault.response.LogicalResponse;
 import io.github.jopenlibs.vault.mock.MockVault;
+import io.github.jopenlibs.vault.response.LogicalResponse;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -10,9 +10,9 @@ import java.io.InputStreamReader;
 import java.security.KeyStore;
 import java.util.List;
 import java.util.Map;
+import javax.net.ssl.SSLContext;
 import org.junit.Test;
 
-import javax.net.ssl.SSLContext;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 

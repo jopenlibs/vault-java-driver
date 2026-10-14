@@ -256,9 +256,7 @@ public class Auth extends OperationsBase {
     public Auth(final VaultConfig config) {
         super(config);
 
-        if (this.config.getNameSpace() != null && !this.config.getNameSpace().isEmpty()) {
-            this.nameSpace = this.config.getNameSpace();
-        }
+        this.nameSpace = this.config.getNameSpace();
     }
 
     public Auth withNameSpace(final String nameSpace) {
@@ -380,10 +378,7 @@ public class Auth extends OperationsBase {
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
                     .body(requestJson.getBytes(StandardCharsets.UTF_8))
-                    .connectTimeoutSeconds(config.getOpenTimeout())
                     .readTimeoutSeconds(config.getReadTimeout())
-                    .sslVerification(config.getSslConfig().isVerify())
-                    .sslContext(config.getSslConfig().getSslContext())
                     .post();
 
             // Validate restResponse
@@ -414,6 +409,8 @@ public class Auth extends OperationsBase {
      * @param userId The user-id used for authentication
      * @return The auth token, with additional response metadata
      * @throws VaultException If any error occurs, or unexpected response received from Vault
+     * @deprecated The App ID auth backend is no longer available in the Vault versions this driver
+     * is tested against (1.16 and later). Use {@link #loginByAppRole(String, String)} instead.
      */
     @Deprecated
     public AuthResponse loginByAppID(final String path, final String appId, final String userId)
@@ -426,10 +423,7 @@ public class Auth extends OperationsBase {
                     .url(config.getAddress() + "/v1/auth/" + path)
                     .header("X-Vault-Namespace", this.nameSpace)
                     .body(requestJson.getBytes(StandardCharsets.UTF_8))
-                    .connectTimeoutSeconds(config.getOpenTimeout())
                     .readTimeoutSeconds(config.getReadTimeout())
-                    .sslVerification(config.getSslConfig().isVerify())
-                    .sslContext(config.getSslConfig().getSslContext())
                     .post();
 
             // Validate restResponse
@@ -502,10 +496,7 @@ public class Auth extends OperationsBase {
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
                     .body(requestJson.getBytes(StandardCharsets.UTF_8))
-                    .connectTimeoutSeconds(config.getOpenTimeout())
                     .readTimeoutSeconds(config.getReadTimeout())
-                    .sslVerification(config.getSslConfig().isVerify())
-                    .sslContext(config.getSslConfig().getSslContext())
                     .post();
 
             // Validate restResponse
@@ -567,10 +558,7 @@ public class Auth extends OperationsBase {
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
                     .body(requestJson.getBytes(StandardCharsets.UTF_8))
-                    .connectTimeoutSeconds(config.getOpenTimeout())
                     .readTimeoutSeconds(config.getReadTimeout())
-                    .sslVerification(config.getSslConfig().isVerify())
-                    .sslContext(config.getSslConfig().getSslContext())
                     .post();
 
             // Validate restResponse
@@ -674,10 +662,7 @@ public class Auth extends OperationsBase {
                     .body(requestJson.getBytes(StandardCharsets.UTF_8))
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
-                    .connectTimeoutSeconds(config.getOpenTimeout())
                     .readTimeoutSeconds(config.getReadTimeout())
-                    .sslVerification(config.getSslConfig().isVerify())
-                    .sslContext(config.getSslConfig().getSslContext())
                     .post();
 
             // Validate restResponse
@@ -730,10 +715,7 @@ public class Auth extends OperationsBase {
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
                     .body(requestJson.getBytes(StandardCharsets.UTF_8))
-                    .connectTimeoutSeconds(config.getOpenTimeout())
                     .readTimeoutSeconds(config.getReadTimeout())
-                    .sslVerification(config.getSslConfig().isVerify())
-                    .sslContext(config.getSslConfig().getSslContext())
                     .post();
 
             // Validate restResponse
@@ -793,10 +775,7 @@ public class Auth extends OperationsBase {
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
                     .body(requestJson.getBytes(StandardCharsets.UTF_8))
-                    .connectTimeoutSeconds(config.getOpenTimeout())
                     .readTimeoutSeconds(config.getReadTimeout())
-                    .sslVerification(config.getSslConfig().isVerify())
-                    .sslContext(config.getSslConfig().getSslContext())
                     .post();
 
             // Validate restResponse
@@ -854,10 +833,7 @@ public class Auth extends OperationsBase {
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
                     .body(requestJson.getBytes(StandardCharsets.UTF_8))
-                    .connectTimeoutSeconds(config.getOpenTimeout())
                     .readTimeoutSeconds(config.getReadTimeout())
-                    .sslVerification(config.getSslConfig().isVerify())
-                    .sslContext(config.getSslConfig().getSslContext())
                     .post();
 
             // Validate restResponse
@@ -923,10 +899,7 @@ public class Auth extends OperationsBase {
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
                     .body(requestJson.getBytes(StandardCharsets.UTF_8))
-                    .connectTimeoutSeconds(config.getOpenTimeout())
                     .readTimeoutSeconds(config.getReadTimeout())
-                    .sslVerification(config.getSslConfig().isVerify())
-                    .sslContext(config.getSslConfig().getSslContext())
                     .post();
 
             // Validate restResponse
@@ -1069,10 +1042,7 @@ public class Auth extends OperationsBase {
                     .url(config.getAddress() + "/v1/auth/" + mount + "/login")
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
-                    .connectTimeoutSeconds(config.getOpenTimeout())
                     .readTimeoutSeconds(config.getReadTimeout())
-                    .sslVerification(config.getSslConfig().isVerify())
-                    .sslContext(config.getSslConfig().getSslContext())
                     .post();
 
             // Validate restResponse
@@ -1130,10 +1100,7 @@ public class Auth extends OperationsBase {
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
                     .body(increment < 0 ? null : requestJson.getBytes(StandardCharsets.UTF_8))
-                    .connectTimeoutSeconds(config.getOpenTimeout())
                     .readTimeoutSeconds(config.getReadTimeout())
-                    .sslVerification(config.getSslConfig().isVerify())
-                    .sslContext(config.getSslConfig().getSslContext())
                     .post();
 
             // Validate restResponse
@@ -1171,10 +1138,7 @@ public class Auth extends OperationsBase {
                     .token(config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
-                    .connectTimeoutSeconds(config.getOpenTimeout())
                     .readTimeoutSeconds(config.getReadTimeout())
-                    .sslVerification(config.getSslConfig().isVerify())
-                    .sslContext(config.getSslConfig().getSslContext())
                     .get();
 
             // Validate restResponse
@@ -1187,6 +1151,7 @@ public class Auth extends OperationsBase {
      * @see io.github.jopenlibs.vault.api.sys.Wrapping#lookupWrap()
      * @deprecated This method is deprecated and in future it will be removed
      */
+    @Deprecated
     public LogicalResponse lookupWrap() throws VaultException {
         final var sys = new Sys(this.config);
         return sys.wrapping().lookupWrap(config.getToken(), false);
@@ -1196,6 +1161,7 @@ public class Auth extends OperationsBase {
      * @see io.github.jopenlibs.vault.api.sys.Wrapping#lookupWrap(char[])
      * @deprecated This method is deprecated and in future it will be removed
      */
+    @Deprecated
     public LogicalResponse lookupWrap(final char[] wrappedToken) throws VaultException {
         final var sys = new Sys(this.config);
         return sys.wrapping().lookupWrap(wrappedToken, true);
@@ -1205,6 +1171,7 @@ public class Auth extends OperationsBase {
      * @see io.github.jopenlibs.vault.api.sys.Wrapping#lookupWrap(char[], boolean)
      * @deprecated This method is deprecated and in future it will be removed
      */
+    @Deprecated
     public LogicalResponse lookupWrap(final char[] wrappedToken, boolean inBody)
             throws VaultException {
         final var sys = new Sys(this.config);
@@ -1237,10 +1204,7 @@ public class Auth extends OperationsBase {
                     .token(config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
-                    .connectTimeoutSeconds(config.getOpenTimeout())
                     .readTimeoutSeconds(config.getReadTimeout())
-                    .sslVerification(config.getSslConfig().isVerify())
-                    .sslContext(config.getSslConfig().getSslContext())
                     .post();
 
             // Validate restResponse
@@ -1254,6 +1218,7 @@ public class Auth extends OperationsBase {
      * @see io.github.jopenlibs.vault.api.sys.Wrapping#unwrap()
      * @deprecated This method is deprecated and in future it will be removed
      */
+    @Deprecated
     public UnwrapResponse unwrap() throws VaultException {
         final var sys = new Sys(this.config);
         return sys.wrapping().unwrap(config.getToken(), false);
@@ -1263,6 +1228,7 @@ public class Auth extends OperationsBase {
      * @see io.github.jopenlibs.vault.api.sys.Wrapping#unwrap(char[])
      * @deprecated This method is deprecated and in future it will be removed
      */
+    @Deprecated
     public UnwrapResponse unwrap(final char[] wrappedToken) throws VaultException {
         final var sys = new Sys(this.config);
         return sys.wrapping().unwrap(wrappedToken, true);
@@ -1272,6 +1238,7 @@ public class Auth extends OperationsBase {
      * @see io.github.jopenlibs.vault.api.sys.Wrapping#unwrap(char[], boolean)
      * @deprecated This method is deprecated and in future it will be removed
      */
+    @Deprecated
     public UnwrapResponse unwrap(final char[] wrappedToken, boolean inBody) throws VaultException {
         final var sys = new Sys(this.config);
         return sys.wrapping().unwrap(wrappedToken, inBody);
@@ -1281,6 +1248,7 @@ public class Auth extends OperationsBase {
      * @see io.github.jopenlibs.vault.api.sys.Wrapping#wrap(JsonObject, int)
      * @deprecated This method is deprecated and in future it will be removed
      */
+    @Deprecated
     public WrapResponse wrap(final JsonObject jsonObject, int ttlInSec) throws VaultException {
         final var sys = new Sys(this.config);
         return sys.wrapping().wrap(jsonObject, ttlInSec);
@@ -1290,6 +1258,7 @@ public class Auth extends OperationsBase {
      * @see io.github.jopenlibs.vault.api.sys.Wrapping#rewrap(char[])
      * @deprecated This method is deprecated and in future it will be removed
      */
+    @Deprecated
     public WrapResponse rewrap(final char[] wrappedToken) throws VaultException {
         final var sys = new Sys(this.config);
         return sys.wrapping().rewrap(wrappedToken);

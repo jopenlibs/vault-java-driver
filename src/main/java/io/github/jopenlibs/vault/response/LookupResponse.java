@@ -41,7 +41,11 @@ public class LookupResponse extends VaultResponse {
         try {
             final var responseJson = new String(restResponse.getBody(), StandardCharsets.UTF_8);
             final var jsonObject = Json.parse(responseJson).asObject();
-            final var dataJsonObject = jsonObject.get("data").asObject();
+            final var dataJsonVal = jsonObject.get("data");
+            if (!hasValue(dataJsonVal)) {
+                return;
+            }
+            final var dataJsonObject = dataJsonVal.asObject();
 
             accessor = dataJsonObject.getString("accessor", "");
             creationTime = dataJsonObject.getLong("creation_time", 0);
@@ -50,21 +54,23 @@ public class LookupResponse extends VaultResponse {
             explicitMaxTTL = dataJsonObject.getLong("explicit_max_ttl", 0);
             id = dataJsonObject.getString("id", "");
             final var lastRenewalTimeJsonValue = dataJsonObject.get("last_renewal_time");
-            if (lastRenewalTimeJsonValue != null) {
+            if (hasValue(lastRenewalTimeJsonValue)) {
                 lastRenewalTime = lastRenewalTimeJsonValue.asLong();
             }
-            if (dataJsonObject.get("metadata") != null && !dataJsonObject.get("metadata").toString()
-                    .equalsIgnoreCase("null")) {
-                final var metadata = dataJsonObject.get("metadata").asObject();
+            final var metadataJsonVal = dataJsonObject.get("metadata");
+            if (hasValue(metadataJsonVal)) {
+                final var metadata = metadataJsonVal.asObject();
                 username = metadata.getString("username", "");
             }
             numUses = dataJsonObject.getInt("num_uses", 0);
             orphan = dataJsonObject.getBoolean("orphan", true);
             path = dataJsonObject.getString("path", "");
-            final var policiesJsonArray = dataJsonObject.get("policies").asArray();
-            policies = policiesJsonArray.values().stream()
-                    .map(JsonValue::asString)
-                    .collect(Collectors.toUnmodifiableList());
+            final var policiesJsonVal = dataJsonObject.get("policies");
+            if (hasValue(policiesJsonVal)) {
+                policies = policiesJsonVal.asArray().values().stream()
+                        .map(JsonValue::asString)
+                        .collect(Collectors.toUnmodifiableList());
+            }
             renewable = dataJsonObject.getBoolean("renewable", false);
             ttl = dataJsonObject.getLong("ttl", 0);
 

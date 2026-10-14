@@ -102,4 +102,42 @@ public class TimeoutTests {
         }
     }
 
+
+    /**
+     * A timeout of 0 means no timeout, as with the former <code>HttpURLConnection</code> client.
+     */
+    @Test
+    public void testZeroTimeouts_MeanNoTimeout() throws Exception {
+        // Mock Vault takes 2 seconds to respond
+        final var readTimeoutsMockVault = new ReadTimeoutsMockVault(2, 200,
+                "{\"data\":{\"value\":\"mock\"}}");
+        final var server = VaultTestUtils.initHttpMockVault(readTimeoutsMockVault);
+        server.start();
+
+        final var vaultConfig = new VaultConfig()
+                .address("http://127.0.0.1:8999")
+                .token("mock_token")
+                .openTimeout(0)
+                .readTimeout(0)
+                .engineVersion(1)
+                .build();
+        final var vault = Vault.create(vaultConfig);
+
+        try {
+            final var response = vault.logical().read("secret/hello");
+            org.junit.Assert.assertEquals("mock", response.getData().get("value"));
+        } finally {
+            VaultTestUtils.shutdownMockVault(server);
+        }
+    }
+
+    @Test(expected = VaultException.class)
+    public void testNegativeOpenTimeout_IsRejected() throws VaultException {
+        new VaultConfig().address("http://127.0.0.1:8999").openTimeout(-1).build();
+    }
+
+    @Test(expected = VaultException.class)
+    public void testNegativeReadTimeout_IsRejected() throws VaultException {
+        new VaultConfig().address("http://127.0.0.1:8999").readTimeout(-1).build();
+    }
 }

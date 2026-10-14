@@ -1,7 +1,7 @@
 package io.github.jopenlibs.vault;
 
-import io.github.jopenlibs.vault.response.LogicalResponse;
 import io.github.jopenlibs.vault.mock.RetriesMockVault;
+import io.github.jopenlibs.vault.response.LogicalResponse;
 import java.util.Map;
 import org.junit.Test;
 

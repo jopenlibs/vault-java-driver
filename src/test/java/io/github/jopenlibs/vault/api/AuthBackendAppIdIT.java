@@ -17,7 +17,10 @@ import static org.junit.Assume.assumeTrue;
  * Integration tests for the AppId auth backend. According to the Vault documentation, this method
  * is deprecated. Also, from Vault 1.11.7 it fails the usage. For this reason, we skip this test if
  * Vault version is greater than 1.11.6
+ *
+ * @deprecated CI only tests Vault 1.16 and later, so this test is always skipped there
  */
+@Deprecated
 public class AuthBackendAppIdIT {
 
     @ClassRule

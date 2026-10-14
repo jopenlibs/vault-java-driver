@@ -307,6 +307,8 @@ public class LogicalIT {
      */
     @Test
     public void testListSubKeys() throws VaultException {
+        // Deprecated: true for every pinned Vault version in CI (1.16 and later), but false for
+        // "latest", where this test is skipped
         assumeTrue(VaultVersion.greatThan("1.9.10"));
 
         final Vault vault = container.getRootVault();

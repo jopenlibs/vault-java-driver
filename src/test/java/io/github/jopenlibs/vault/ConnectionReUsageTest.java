@@ -1,8 +1,8 @@
 package io.github.jopenlibs.vault;
 
 import io.github.jopenlibs.vault.api.Logical;
-import io.github.jopenlibs.vault.response.LogicalResponse;
 import io.github.jopenlibs.vault.mock.MockVault;
+import io.github.jopenlibs.vault.response.LogicalResponse;
 import java.net.Socket;
 import java.net.http.HttpClient;
 import java.nio.ByteBuffer;
@@ -72,6 +72,29 @@ public class ConnectionReUsageTest {
         assertTrue("Too many connections opened: " + opened, opened <= (closed + 1));
     }
 
+    @Test
+    public void readShouldReuseConnectionWithDefaultHttpClient() throws Exception {
+        int readNum = 10;
+
+        Logical vault = Vault.create(new VaultConfig()
+                .address("http://localhost:8999")
+                .token(TOKEN)
+                .openTimeout(10)
+                .readTimeout(10)
+                .engineVersion(1)
+                .build()).logical();
+
+        for (int i = 0; i < readNum; i++) {
+            LogicalResponse resp = vault.read("testing/p1");
+            assertEquals("value", resp.getData().get("key"));
+        }
+
+        int closed = connectionListener.getClosed();
+        int opened = connectionListener.getOpened();
+
+        assertTrue("Too many connections opened: " + opened, opened <= (closed + 1));
+    }
+
     private static class NetworkConnectionListener implements NetworkTrafficListener {
 
         private final AtomicInteger opened = new AtomicInteger();
@@ -109,7 +132,8 @@ public class ConnectionReUsageTest {
         }
     }
 
-    public Server initHttpMockVaultWithListener(final MockVault mock, NetworkTrafficListener listener) {
+    public Server initHttpMockVaultWithListener(final MockVault mock,
+            NetworkTrafficListener listener) {
         final var server = new Server();
         final var http = new HttpConfiguration();
 

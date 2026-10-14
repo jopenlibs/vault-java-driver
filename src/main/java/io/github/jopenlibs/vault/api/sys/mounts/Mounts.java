@@ -4,8 +4,6 @@ import io.github.jopenlibs.vault.VaultConfig;
 import io.github.jopenlibs.vault.VaultException;
 import io.github.jopenlibs.vault.api.OperationsBase;
 import io.github.jopenlibs.vault.response.MountResponse;
-import io.github.jopenlibs.vault.rest.Rest;
-import io.github.jopenlibs.vault.rest.RestResponse;
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -45,14 +43,11 @@ public class Mounts extends OperationsBase {
      */
     public MountResponse list() throws VaultException {
         return retry(attempt -> {
-            final var restResponse = new Rest()//NOPMD
+            final var restResponse = getRest()//NOPMD
                     .url(String.format("%s/v1/sys/mounts", config.getAddress()))
                     .token(config.getToken())
                     .header("X-Vault-Request", "true")
-                    .connectTimeoutSeconds(config.getOpenTimeout())
                     .readTimeoutSeconds(config.getReadTimeout())
-                    .sslVerification(config.getSslConfig().isVerify())
-                    .sslContext(config.getSslConfig().getSslContext())
                     .get();
 
             // Validate restResponse
@@ -90,7 +85,7 @@ public class Mounts extends OperationsBase {
      *                                       .maxLeaseTtl(TimeToLive.of(86400, TimeUnit.SECONDS))
      *                                       .description("description for pki engine");
      *
-     * final MountResponse response = vault.mounts().enable("pki/mount/point/path", MountType.PKI, payload);
+     * final MountResponse response = vault.sys().mounts().enable("pki/mount/point/path", MountType.PKI, payload);
      *
      * assertEquals(204, response.getRestResponse().getStatus();
      * }</pre>
@@ -115,15 +110,12 @@ public class Mounts extends OperationsBase {
         return retry(attempt -> {
             final String requestJson = payload.toEnableJson(type).toString();
 
-            final var restResponse = new Rest()//NOPMD
+            final var restResponse = getRest()//NOPMD
                     .url(String.format("%s/v1/sys/mounts/%s", config.getAddress(), path))
                     .token(config.getToken())
                     .header("X-Vault-Request", "true")
                     .body(requestJson.getBytes(StandardCharsets.UTF_8))
-                    .connectTimeoutSeconds(config.getOpenTimeout())
                     .readTimeoutSeconds(config.getReadTimeout())
-                    .sslVerification(config.getSslConfig().isVerify())
-                    .sslContext(config.getSslConfig().getSslContext())
                     .post();
 
             // Validate restResponse
@@ -153,7 +145,7 @@ public class Mounts extends OperationsBase {
      * final VaultConfig config = new VaultConfig.address(...).token(...).build();
      * final Vault vault = Vault.create(config);
      *
-     * final MountResponse response = vault.mounts().disable("pki/mount/point/path");
+     * final MountResponse response = vault.sys().mounts().disable("pki/mount/point/path");
      *
      * assertEquals(204, response.getRestResponse().getStatus();
      * }</pre>
@@ -165,14 +157,11 @@ public class Mounts extends OperationsBase {
      */
     public MountResponse disable(final String path) throws VaultException {
         return retry(attempt -> {
-            final var restResponse = new Rest()//NOPMD
+            final var restResponse = getRest()//NOPMD
                     .url(String.format("%s/v1/sys/mounts/%s", config.getAddress(), path))
                     .token(config.getToken())
                     .header("X-Vault-Request", "true")
-                    .connectTimeoutSeconds(config.getOpenTimeout())
                     .readTimeoutSeconds(config.getReadTimeout())
-                    .sslVerification(config.getSslConfig().isVerify())
-                    .sslContext(config.getSslConfig().getSslContext())
                     .delete();
 
             // Validate restResponse
@@ -202,7 +191,7 @@ public class Mounts extends OperationsBase {
      * final VaultConfig config = new VaultConfig.address(...).token(...).build();
      * final Vault vault = Vault.create(config);
      *
-     * final MountResponse response = vault.mounts().read("pki/mount/point/path");
+     * final MountResponse response = vault.sys().mounts().read("pki/mount/point/path");
      * final Mount mount = response.getMount();
      * final MountConfig mountConfig = mount.getConfig();
      * }</pre>
@@ -214,14 +203,11 @@ public class Mounts extends OperationsBase {
      */
     public MountResponse read(final String path) throws VaultException {
         return retry(attempt -> {
-            final var restResponse = new Rest()//NOPMD
+            final var restResponse = getRest()//NOPMD
                     .url(String.format("%s/v1/sys/mounts/%s/tune", config.getAddress(), path))
                     .token(config.getToken())
                     .header("X-Vault-Request", "true")
-                    .connectTimeoutSeconds(config.getOpenTimeout())
                     .readTimeoutSeconds(config.getReadTimeout())
-                    .sslVerification(config.getSslConfig().isVerify())
-                    .sslContext(config.getSslConfig().getSslContext())
                     .get();
 
             // Validate restResponse
@@ -259,7 +245,7 @@ public class Mounts extends OperationsBase {
      *                                   .maxLeaseTtl(TimeToLive.of(12, TimeUnit.HOURS))
      *                                   .description("description of pki");
      *
-     * final MountResponse response = vault.mounts().tune("pki/mount/point/path", configs);
+     * final MountResponse response = vault.sys().mounts().tune("pki/mount/point/path", configs);
      *
      * assertEquals(204, response.getRestResponse().getStatus();
      * }</pre>
@@ -278,15 +264,12 @@ public class Mounts extends OperationsBase {
 
             final String requestJson = payload.toTuneJson().toString();
 
-            final var restResponse = new Rest()//NOPMD
+            final var restResponse = getRest()//NOPMD
                     .url(String.format("%s/v1/sys/mounts/%s/tune", config.getAddress(), path))
                     .token(config.getToken())
                     .header("X-Vault-Request", "true")
                     .body(requestJson.getBytes(StandardCharsets.UTF_8))
-                    .connectTimeoutSeconds(config.getOpenTimeout())
                     .readTimeoutSeconds(config.getReadTimeout())
-                    .sslVerification(config.getSslConfig().isVerify())
-                    .sslContext(config.getSslConfig().getSslContext())
                     .post();
 
             // Validate restResponse

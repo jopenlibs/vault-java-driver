@@ -10,11 +10,9 @@ import io.github.jopenlibs.vault.api.sys.Seal;
 import io.github.jopenlibs.vault.api.sys.Sys;
 import io.github.jopenlibs.vault.api.sys.mounts.Mounts;
 import io.github.jopenlibs.vault.json.Json;
-import io.github.jopenlibs.vault.json.JsonObject;
 import io.github.jopenlibs.vault.json.JsonValue;
 import io.github.jopenlibs.vault.rest.Rest;
 import io.github.jopenlibs.vault.rest.RestException;
-import io.github.jopenlibs.vault.rest.RestResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -71,11 +69,7 @@ public class VaultImpl implements Vault {
      */
     public VaultImpl(final VaultConfig vaultConfig) {
         this.vaultConfig = vaultConfig;
-        if (this.vaultConfig.getNameSpace() != null && !this.vaultConfig.getNameSpace().isEmpty()) {
-            logger.info(String.format(
-                    "The NameSpace %s has been bound to this Vault instance. Please keep this in mind when running operations.",
-                    this.vaultConfig.getNameSpace()));
-        }
+        logNameSpace();
         if (this.vaultConfig.getSecretsEnginePathMap().isEmpty()
                 && this.vaultConfig.getGlobalEngineVersion() == null) {
             logger.info(
@@ -94,18 +88,14 @@ public class VaultImpl implements Vault {
      * 2)
      */
     public VaultImpl(final VaultConfig vaultConfig, final Integer engineVersion) {
-        if (engineVersion < 1 || engineVersion > 2) {
+        if (engineVersion == null || engineVersion < 1 || engineVersion > 2) {
             throw new IllegalArgumentException(
                     "The Engine version must be '1' or '2', the version supplied was: '"
                             + engineVersion + "'.");
         }
         vaultConfig.setEngineVersion(engineVersion);
         this.vaultConfig = vaultConfig;
-        if (this.vaultConfig.getNameSpace() != null && !this.vaultConfig.getNameSpace().isEmpty()) {
-            logger.info(String.format(
-                    "The Namespace %s has been bound to this Vault instance. Please keep this in mind when running operations.",
-                    this.vaultConfig.getNameSpace()));
-        }
+        logNameSpace();
     }
 
     /**
@@ -125,26 +115,36 @@ public class VaultImpl implements Vault {
             final Integer globalFallbackVersion)
             throws VaultException {
         this.vaultConfig = vaultConfig;
-        if (this.vaultConfig.getNameSpace() != null && !this.vaultConfig.getNameSpace().isEmpty()) {
+        logNameSpace();
+        this.vaultConfig.setEngineVersion(globalFallbackVersion);
+        if (Boolean.TRUE.equals(useSecretsEnginePathMap) && this.vaultConfig.getSecretsEnginePathMap().isEmpty()) {
+            logger.info(
+                    "No secrets Engine version map was supplied, attempting to generate one.");
+            final Map<String, String> secretsEnginePathMap;
+            try {
+                secretsEnginePathMap = collectSecretEngineVersions();
+            } catch (RuntimeException e) {
+                throw new VaultException(String.format(
+                        "An Engine KV version map was not supplied, and unable to determine KV "
+                                + "Engine version, due to exception: %s. Do you have admin rights?",
+                        e.getMessage()));
+            }
+            // null if Vault could not be reached or did not answer with HTTP 200
+            if (secretsEnginePathMap == null) {
+                throw new VaultException(
+                        "An Engine KV version map was not supplied, and unable to determine KV "
+                                + "Engine version. Do you have admin rights?");
+            }
+            this.vaultConfig.secretsEnginePathMap(secretsEnginePathMap);
+        }
+    }
+
+    private void logNameSpace() {
+        final String nameSpace = this.vaultConfig.getNameSpace();
+        if (nameSpace != null && !nameSpace.isEmpty()) {
             logger.info(String.format(
                     "The Namespace %s has been bound to this Vault instance. Please keep this in mind when running operations.",
-                    this.vaultConfig.getNameSpace()));
-        }
-        this.vaultConfig.setEngineVersion(globalFallbackVersion);
-        if (useSecretsEnginePathMap && this.vaultConfig.getSecretsEnginePathMap().isEmpty()) {
-            try {
-                logger.info(
-                        "No secrets Engine version map was supplied, attempting to generate one.");
-                final Map<String, String> secretsEnginePathMap = collectSecretEngineVersions();
-                assert secretsEnginePathMap != null;
-                this.vaultConfig.secretsEnginePathMap(secretsEnginePathMap);
-            } catch (Exception e) {
-                throw new VaultException(String.format(
-                        "An Engine KV version map was not supplied, and unable to determine " +
-                                "KV Engine " +
-                                "version, " + "due to exception: %s",
-                        e.getMessage() + ". Do you have admin rights?"));
-            }
+                    nameSpace));
         }
     }
 
@@ -249,8 +249,11 @@ public class VaultImpl implements Vault {
      * Returns the implementing class for Vault's lease operations (e.g. revoke, revoke-prefix).
      *
      * @return The implementing class for Vault's lease operations (e.g. revoke, revoke-prefix).
+     *
+     * @deprecated This method is deprecated and in future it will be removed
      */
     @Override
+    @Deprecated
     public Leases leases() {
         return new Leases(vaultConfig);
     }
@@ -270,8 +273,11 @@ public class VaultImpl implements Vault {
      * <code>/v1/sys/mounts/*</code> REST endpoints).
      *
      * @return the implementing class for Vault's sys mounts operations
+     *
+     * @deprecated This method is deprecated and in future it will be removed
      */
     @Override
+    @Deprecated
     public Mounts mounts() {
         return new Mounts(vaultConfig);
     }
@@ -280,8 +286,11 @@ public class VaultImpl implements Vault {
      * Returns the implementing class for Vault's seal operations (e.g. seal, unseal, sealStatus).
      *
      * @return The implementing class for Vault's seal operations (e.g. seal, unseal, sealStatus).
+     *
+     * @deprecated This method is deprecated and in future it will be removed
      */
     @Override
+    @Deprecated
     public Seal seal() {
         return new Seal(vaultConfig);
     }
@@ -307,15 +316,12 @@ public class VaultImpl implements Vault {
      */
     private Map<String, String> collectSecretEngineVersions() {
         try {
-            final var restResponse = new Rest()//NOPMD
+            final var restResponse = new Rest(vaultConfig.getHttpClient())//NOPMD
                     .url(vaultConfig.getAddress() + "/v1/sys/mounts")
                     .token(vaultConfig.getToken())
                     .header("X-Vault-Namespace", this.vaultConfig.getNameSpace())
                     .header("X-Vault-Request", "true")
-                    .connectTimeoutSeconds(vaultConfig.getOpenTimeout())
                     .readTimeoutSeconds(vaultConfig.getReadTimeout())
-                    .sslVerification(vaultConfig.getSslConfig().isVerify())
-                    .sslContext(vaultConfig.getSslConfig().getSslContext())
                     .get();
             if (restResponse.getStatus() != 200) {
                 return null;
@@ -339,7 +345,7 @@ public class VaultImpl implements Vault {
             }
             return data;
         } catch (RestException e) {
-            System.err.print(
+            logger.warning(
                     String.format("Unable to retrieve the KV Engine secrets, due to exception: %s",
                             e.getMessage()));
             return null;

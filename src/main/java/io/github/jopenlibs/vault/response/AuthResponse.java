@@ -40,15 +40,14 @@ public class AuthResponse extends VaultResponse {
             final var responseJson = new String(restResponse.getBody(), StandardCharsets.UTF_8);
             jsonResponse = Json.parse(responseJson).asObject();
             final var authJsonVal = jsonResponse.get("auth");
-            final var authJsonObject =
-                    authJsonVal != null && !authJsonVal.isNull() ? authJsonVal.asObject() : null;
+            final var authJsonObject = hasValue(authJsonVal) ? authJsonVal.asObject() : null;
 
             if (authJsonObject != null) {
                 authLeaseDuration = authJsonObject.getInt("lease_duration", 0);
                 authRenewable = authJsonObject.getBoolean("renewable", false);
-                if (authJsonObject.get("metadata") != null && !authJsonObject.get("metadata")
-                        .toString().equalsIgnoreCase("null")) {
-                    final var metadata = authJsonObject.get("metadata").asObject();
+                final var metadataJsonVal = authJsonObject.get("metadata");
+                if (hasValue(metadataJsonVal)) {
+                    final var metadata = metadataJsonVal.asObject();
                     appId = metadata.getString("app-id", "");
                     userId = metadata.getString("user-id", "");
                     username = metadata.getString("username", "");
@@ -58,13 +57,18 @@ public class AuthResponse extends VaultResponse {
                 authClientToken = authJsonObject.getString("client_token", "");
                 tokenAccessor = authJsonObject.getString("accessor", "");
 
-                final var authPoliciesJsonArray = authJsonObject.get("policies").asArray();
-                authPolicies = authPoliciesJsonArray.values().stream()
-                        .map(JsonValue::asString)
-                        .collect(Collectors.toUnmodifiableList());
+                final var authPoliciesJsonVal = authJsonObject.get("policies");
+                if (hasValue(authPoliciesJsonVal)) {
+                    authPolicies = authPoliciesJsonVal.asArray().values().stream()
+                            .map(JsonValue::asString)
+                            .collect(Collectors.toUnmodifiableList());
+                }
             }
 
-            renewable = jsonResponse.get("renewable").asBoolean();
+            final var renewableJsonVal = jsonResponse.get("renewable");
+            if (hasValue(renewableJsonVal)) {
+                renewable = renewableJsonVal.asBoolean();
+            }
         } catch (ParseException e) {
             // No-op.
         }

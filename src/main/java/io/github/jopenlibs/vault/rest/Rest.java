@@ -203,8 +203,8 @@ public class Rest {
      * <p>This method may be chained together repeatedly</p>
      *
      * @param value The vault token value as a {@code char[]}
-     * @return This object, with a vault token added, ready for other builder-pattern config methods or
-     * an HTTP verb method
+     * @return This object, with a vault token added, ready for other builder-pattern config methods
+     * or an HTTP verb method
      */
     public Rest token(final char[] value) {
         if (value != null && value.length > 0) {
@@ -235,7 +235,7 @@ public class Rest {
      * <p>The number of seconds to wait before giving up on establishing an HTTP(S) connection.</p>
      *
      * @param connectTimeoutSeconds Number of seconds to wait for an HTTP(S) connection to
-     * successfully establish
+     * successfully establish, or <code>0</code> for no timeout
      * @return This object, with connectTimeoutSeconds populated, ready for other builder-pattern
      * config methods or an HTTP verb method
      */
@@ -249,7 +249,7 @@ public class Rest {
      * to wait for all data to finish downloading.</p>
      *
      * @param readTimeoutSeconds Number of seconds to wait for all data to be retrieved from an
-     * established HTTP(S) connection
+     * established HTTP(S) connection, or <code>0</code> for no timeout
      * @return This object, with readTimeoutSeconds populated, ready for other builder-pattern
      * config methods or an HTTP verb method
      */
@@ -445,27 +445,43 @@ public class Rest {
      */
     private RestResponse send(final HttpRequest req) throws IOException, InterruptedException {
         final var client = getClient();
-        final var response = client.send(req, BodyHandlers.ofString());
+        final var response = client.send(req, BodyHandlers.ofByteArray());
 
         // Get the resulting status code
         final var statusCode = response.statusCode();
 
-        // Download and parse response
+        // Keep the raw response bytes, decoding is left to the caller
         final var mimeType = response.headers().firstValue("Content-Type").orElse("");
-        final var body = response.body().getBytes(StandardCharsets.UTF_8);
 
-        return new RestResponse(statusCode, mimeType, body);
+        return new RestResponse(statusCode, mimeType, response.body());
     }
 
     private HttpClient getClient() {
         if (configuredClient != null) {
             return configuredClient;
         }
+        return newHttpClient(connectTimeoutSeconds, sslVerification, sslContext);
+    }
+
+    /**
+     * Builds an {@link HttpClient} with the given connection settings. The returned client is meant
+     * to be built once and shared between requests (see {@link #Rest(HttpClient)}), so that
+     * connections and worker threads are reused.
+     *
+     * @param connectTimeoutSeconds Number of seconds to wait for a connection, or
+     * <code>null</code> for no timeout
+     * @param sslVerification <code>false</code> to disable SSL certificate verification
+     * @param sslContext The SSLContext to use, or <code>null</code> for the JVM default
+     * @return A new {@link HttpClient} instance
+     */
+    public static HttpClient newHttpClient(final Integer connectTimeoutSeconds,
+            final Boolean sslVerification, final SSLContext sslContext) {
         final var client = HttpClient.newBuilder()
                 //Stick to HTTP/1.1 by default, coz Vault Agent fails proxying h2c request to https
                 .version(Version.HTTP_1_1);
 
-        if (connectTimeoutSeconds != null) {
+        // As with HttpURLConnection, 0 means no timeout
+        if (connectTimeoutSeconds != null && connectTimeoutSeconds > 0) {
             client.connectTimeout(Duration.ofSeconds(connectTimeoutSeconds));
         }
 
@@ -494,18 +510,18 @@ public class Rest {
             throw new RestException("No URL is set");
         }
 
-        final var baseUri = new URI(urlString);
+        var uri = new URI(urlString);
         final var params = isGetOrDelete ? parametersToQueryString() : "";
-        var query = params;
 
-        if (baseUri.getQuery() != null) {
-            query = baseUri.getQuery();
-            if (!params.isEmpty()) {
-                query = baseUri.getQuery() + "&" + params;
-            }
+        if (!params.isEmpty()) {
+            // Work on the raw (still encoded) components: parameters are already url-encoded, and
+            // the multi-argument URI constructors would encode them again (e.g. '%' to "%25")
+            final var query = uri.getRawQuery() == null ? params : uri.getRawQuery() + "&" + params;
+            uri = new URI(uri.getScheme() + "://" + uri.getRawAuthority()
+                    + (uri.getRawPath() == null ? "" : uri.getRawPath())
+                    + "?" + query
+                    + (uri.getRawFragment() == null ? "" : "#" + uri.getRawFragment()));
         }
-        final var uri = new URI(baseUri.getScheme(), baseUri.getUserInfo(), baseUri.getHost(),
-                baseUri.getPort(), baseUri.getPath(), query, baseUri.getFragment());
 
         // Initialize HTTP(S) connection, and set any header values
         final var request = HttpRequest.newBuilder()
@@ -513,7 +529,8 @@ public class Rest {
 
         headers.forEach(request::header);
 
-        if (readTimeoutSeconds != null) {
+        // As with HttpURLConnection, 0 means no timeout
+        if (readTimeoutSeconds != null && readTimeoutSeconds > 0) {
             request.timeout(Duration.ofSeconds(readTimeoutSeconds));
         }
 

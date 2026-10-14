@@ -4,16 +4,19 @@ on:
     workflows: [ 'CI' ]                     # runs after CI workflow
     types:
       - completed
+permissions:
+  contents: read
+  actions: read                             # download artifacts of the CI run
+  checks: write                             # publish the report as a check run
 jobs:
   report:
     runs-on: ubuntu-latest
     steps:
       - uses: dorny/test-reporter@v1
         with:
-          artifact: test-results
-          name: Tests Report
-          path: '**/reports/*.*'
+          artifact: /test-results-(.*)/     # one report per CI matrix entry
+          name: Tests Report $1
+          path: '**/TEST-*.xml'
           reporter: java-junit
           list-suites: 'all'
           list-tests: 'all'
-

@@ -98,6 +98,7 @@ public class AuthBackendPkiIT {
                         .allowSubdomains(true)
                         .maxTtl("9h")
         );
+        // Deprecated: Vault before 1.13 (no longer tested in CI) returns 204
         int statusCode = VaultVersion.lessThan("1.13.0") ? 204 : 200;
         int responseCode = createRoleResponse.getRestResponse().getStatus();
         TestCase.assertEquals(statusCode, responseCode);
@@ -159,6 +160,7 @@ public class AuthBackendPkiIT {
                         .allowSubdomains(true)
                         .maxTtl("9h")
         );
+        // Deprecated: Vault before 1.13 (no longer tested in CI) returns 204
         int statusCode = VaultVersion.lessThan("1.13.0") ? 204 : 200;
         int responseCode = createRoleResponse.getRestResponse().getStatus();
         TestCase.assertEquals(statusCode, responseCode);
@@ -177,6 +179,8 @@ public class AuthBackendPkiIT {
             throws VaultException, InterruptedException, NoSuchAlgorithmException {
 
         // Test not work in Vault versions less than 1.11.0
+        // Deprecated: true for every pinned Vault version in CI (1.16 and later), but false for
+        // "latest", where this test is skipped
         assumeTrue(VaultVersion.greatThan("1.11.0"));
 
         issueCredentialWithCsrTemplate((pki, csr) -> {
@@ -194,6 +198,8 @@ public class AuthBackendPkiIT {
             throws VaultException, InterruptedException, NoSuchAlgorithmException {
 
         // Test not works in Vault versions less than 1.11.0
+        // Deprecated: true for every pinned Vault version in CI (1.16 and later), but false for
+        // "latest", where this test is skipped
         assumeTrue(VaultVersion.greatThan("1.11.0"));
 
         issueCredentialWithCsrTemplate((pki, csr) -> {
@@ -217,6 +223,7 @@ public class AuthBackendPkiIT {
                         .allowSubdomains(true)
                         .maxTtl("9h")
         );
+        // Deprecated: Vault before 1.13 (no longer tested in CI) returns 204
         int statusCode = VaultVersion.lessThan("1.13.0") ? 204 : 200;
         int responseCode = createRoleResponse.getRestResponse().getStatus();
         TestCase.assertEquals(statusCode, responseCode);

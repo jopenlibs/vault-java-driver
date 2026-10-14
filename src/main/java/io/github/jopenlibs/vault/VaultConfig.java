@@ -1,10 +1,14 @@
 package io.github.jopenlibs.vault;
 
+import io.github.jopenlibs.vault.rest.Rest;
 import java.io.Serializable;
 import java.net.http.HttpClient;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
+import javax.net.ssl.SSLContext;
 
 /**
  * <p>A container for the configuration settings needed to initialize a <code>Vault</code> driver
@@ -33,6 +37,8 @@ public class VaultConfig implements Serializable {
     private static final String VAULT_OPEN_TIMEOUT = "VAULT_OPEN_TIMEOUT";
     private static final String VAULT_READ_TIMEOUT = "VAULT_READ_TIMEOUT";
 
+    private static final Logger LOGGER = Logger.getLogger(VaultConfig.class.getCanonicalName());
+
     private Map<String, String> secretsEnginePathMap = new ConcurrentHashMap<>();
     private String address;
     private char[] token;
@@ -45,7 +51,9 @@ public class VaultConfig implements Serializable {
     private Integer globalEngineVersion;
     private String nameSpace;
     private EnvironmentLoader environmentLoader;
-    private HttpClient httpClient;
+    // HttpClient is not serializable: a deserialized config falls back to the default client
+    private transient HttpClient httpClient;
+    private transient volatile DefaultHttpClient defaultHttpClient;
 
     /**
      * <p>The code used to load environment variables is encapsulated here, so that a mock version
@@ -113,12 +121,18 @@ public class VaultConfig implements Serializable {
      * it explicitly AND no environment variable value is found, then initialization of the
      * <code>VaultConfig</code> object will fail.</p>
      *
+     * <p>A <code>null</code>, empty or blank address is treated as unset.</p>
+     *
      * @param address The Vault server base URL
      * @return This object, with address populated, ready for additional builder-pattern method
      * calls or else finalization with the build() method
      */
     public VaultConfig address(final String address) {
-        this.address = address.trim();
+        if (address == null || address.isBlank()) {
+            this.address = null;
+            return this;
+        }
+        this.address = address.strip();
         if (this.address.endsWith("/")) {
             this.address = this.address.substring(0, this.address.length() - 1);
         }
@@ -188,6 +202,10 @@ public class VaultConfig implements Serializable {
      * <code>SslConfig</code> object with {@link SslConfig#verify(Boolean)} explicitly set to
      * <code>false</code>.</p>
      *
+     * <p>If {@link SslConfig#build()} was not called on the passed object, {@link #build()} calls
+     * it, using this object's environment loader unless the <code>SslConfig</code> has its
+     * own.</p>
+     *
      * @param sslConfig SSL-related configuration options
      * @return This object, with SSL configuration options populated, ready for additional
      * builder-pattern method calls or else finalization with the build() method
@@ -206,7 +224,7 @@ public class VaultConfig implements Serializable {
      * environment variable.</p>
      *
      * @param openTimeout Number of seconds to wait for an HTTP(S) connection to successfully
-     * establish
+     * establish, or <code>0</code> for no timeout
      * @return This object, with openTimeout populated, ready for additional builder-pattern method
      * calls or else finalization with the build() method
      */
@@ -224,7 +242,7 @@ public class VaultConfig implements Serializable {
      * environment variable.</p>
      *
      * @param readTimeout Number of seconds to wait for all data to be retrieved from an established
-     * HTTP(S) connection
+     * HTTP(S) connection, or <code>0</code> for no timeout
      * @return This object, with readTimeout populated, ready for additional builder-pattern method
      * calls or else finalization with the build() method
      */
@@ -243,7 +261,8 @@ public class VaultConfig implements Serializable {
      */
     public VaultConfig prefixPathDepth(int prefixPathDepth) {
         if (prefixPathDepth < 1) {
-            throw new IllegalArgumentException("pathLength must be > 1");
+            throw new IllegalArgumentException(
+                    "prefixPathDepth must be at least 1, was: " + prefixPathDepth);
         }
 
         this.prefixPathDepth = prefixPathDepth;
@@ -286,8 +305,11 @@ public class VaultConfig implements Serializable {
 
     /**
      * <p>Set a preconfigured HttpClient instance to use by REST API calls. This allows to reuse
-     * http resources (connections, worker threads) between calls. If a preconfigured HttpClient is specified, then
-     * sslConfig and openTimeout values passed to VaultConfig are ignored.
+     * http resources (connections, worker threads) between calls. If a preconfigured HttpClient is
+     * specified, then sslConfig and openTimeout values passed to VaultConfig are ignored.
+     *
+     * <p>The client is not serialized: a deserialized <code>VaultConfig</code> builds its own
+     * client from sslConfig and openTimeout, unless a new one is set with this method.</p>
      *
      * @param httpClient preconfigured http client instance
      * @return VaultConfig
@@ -344,7 +366,8 @@ public class VaultConfig implements Serializable {
      *
      * @return This object, with all available config options parsed and loaded
      * @throws VaultException If the <code>address</code> field was left unset, and there is no
-     * <code>VAULT_ADDR</code> environment variable value with which to populate it.
+     * <code>VAULT_ADDR</code> environment variable value with which to populate it, or if a
+     * negative timeout was set.
      */
     public VaultConfig build() throws VaultException {
         if (this.nameSpace != null && this.nameSpace.isEmpty()) {
@@ -354,43 +377,63 @@ public class VaultConfig implements Serializable {
             this.environmentLoader = new EnvironmentLoader();
         }
         if (this.address == null) {
-            final String addressFromEnv = environmentLoader.loadVariable(VAULT_ADDR);
+            final String addressFromEnv = EnvironmentLoader.load(environmentLoader, VAULT_ADDR);
             if (addressFromEnv != null) {
                 this.address = addressFromEnv;
             } else {
                 throw new VaultException("No address is set");
             }
         }
-        String envVaultToken = environmentLoader.loadVariable(VAULT_TOKEN);
-        if (this.token == null && envVaultToken != null) {
-            this.token = envVaultToken.toCharArray();
-        }
-        if (this.openTimeout == null
-                && environmentLoader.loadVariable(VAULT_OPEN_TIMEOUT) != null) {
-            try {
-                this.openTimeout = Integer.valueOf(
-                        environmentLoader.loadVariable(VAULT_OPEN_TIMEOUT));
-            } catch (NumberFormatException e) {
-                System.err.printf("The " + VAULT_OPEN_TIMEOUT
-                                + " environment variable contains value \"%s\", which cannot be parsed as an integer timeout period.%n",
-                        environmentLoader.loadVariable(VAULT_OPEN_TIMEOUT));
+        if (this.token == null) {
+            // Only looked up when needed: the default loader may read ~/.vault-token from disk
+            final String envVaultToken = EnvironmentLoader.load(environmentLoader, VAULT_TOKEN);
+            if (envVaultToken != null) {
+                this.token = envVaultToken.toCharArray();
             }
         }
-        if (this.readTimeout == null
-                && environmentLoader.loadVariable(VAULT_READ_TIMEOUT) != null) {
-            try {
-                this.readTimeout = Integer.valueOf(
-                        environmentLoader.loadVariable(VAULT_READ_TIMEOUT));
-            } catch (NumberFormatException e) {
-                System.err.printf("The " + VAULT_READ_TIMEOUT
-                                + " environment variable contains value \"%s\", which cannot be parsed as an integer timeout period.%n",
-                        environmentLoader.loadVariable(VAULT_READ_TIMEOUT));
-            }
+        if (this.openTimeout == null) {
+            this.openTimeout = loadTimeoutVariable(VAULT_OPEN_TIMEOUT);
+        }
+        if (this.readTimeout == null) {
+            this.readTimeout = loadTimeoutVariable(VAULT_READ_TIMEOUT);
+        }
+        if (this.openTimeout != null && this.openTimeout < 0) {
+            throw new VaultException("The open timeout cannot be negative: " + this.openTimeout);
+        }
+        if (this.readTimeout != null && this.readTimeout < 0) {
+            throw new VaultException("The read timeout cannot be negative: " + this.readTimeout);
         }
         if (this.sslConfig == null) {
-            this.sslConfig = new SslConfig().environmentLoader(this.environmentLoader).build();
+            this.sslConfig = new SslConfig();
         }
+        this.sslConfig.buildIfNeeded(this.environmentLoader);
         return this;
+    }
+
+    /**
+     * Reads a timeout period from an environment variable.
+     *
+     * @param name The environment variable name
+     * @return The timeout, or <code>null</code> if the variable is unset, not an integer, or
+     * negative
+     */
+    private Integer loadTimeoutVariable(final String name) {
+        final String value = EnvironmentLoader.load(environmentLoader, name);
+        if (value == null) {
+            return null;
+        }
+        try {
+            final int timeout = Integer.parseInt(value);
+            if (timeout >= 0) {
+                return timeout;
+            }
+        } catch (NumberFormatException e) {
+            // Reported below
+        }
+        LOGGER.warning(String.format(
+                "The %s environment variable contains value \"%s\", which is not a valid timeout period (a non-negative integer).",
+                name, value));
+        return null;
     }
 
     public Map<String, String> getSecretsEnginePathMap() {
@@ -437,7 +480,62 @@ public class VaultConfig implements Serializable {
         return prefixPathDepth;
     }
 
+    /**
+     * <p>Returns the HttpClient used by REST API calls: the one set with
+     * {@link #httpClient(HttpClient)} if any, otherwise a client built from this config's sslConfig
+     * and openTimeout values. The latter is shared by all calls, so connections and worker threads
+     * are reused, and is rebuilt whenever those values change (e.g. a new sslConfig, SSL
+     * verification turned on or off, or a new SSLContext from calling {@link SslConfig#build()}
+     * again).</p>
+     *
+     * <p>Certificate settings changed on the sslConfig (e.g. {@link SslConfig#pemUTF8(String)})
+     * only take effect once {@link SslConfig#build()} is called again.</p>
+     *
+     * @return The HttpClient used by REST API calls
+     */
     public HttpClient getHttpClient() {
-        return httpClient;
+        if (httpClient != null) {
+            return httpClient;
+        }
+        final Boolean verify = sslConfig == null ? null : sslConfig.isVerify();
+        final SSLContext sslContext = sslConfig == null ? null : sslConfig.getSslContext();
+        var client = defaultHttpClient;
+        if (client == null || !client.matches(openTimeout, verify, sslContext)) {
+            synchronized (this) {
+                client = defaultHttpClient;
+                if (client == null || !client.matches(openTimeout, verify, sslContext)) {
+                    client = new DefaultHttpClient(openTimeout, verify, sslContext);
+                    defaultHttpClient = client;
+                }
+            }
+        }
+        return client.httpClient;
+    }
+
+    /**
+     * The default HttpClient, along with the settings it was built from.
+     */
+    private static final class DefaultHttpClient {
+
+        private final HttpClient httpClient;
+        private final Integer openTimeout;
+        private final Boolean verify;
+        private final SSLContext sslContext;
+
+        private DefaultHttpClient(final Integer openTimeout, final Boolean verify,
+                final SSLContext sslContext) {
+            this.httpClient = Rest.newHttpClient(openTimeout, verify, sslContext);
+            this.openTimeout = openTimeout;
+            this.verify = verify;
+            this.sslContext = sslContext;
+        }
+
+        private boolean matches(final Integer openTimeout, final Boolean verify,
+                final SSLContext sslContext) {
+            // SSLContext has no equals(): a new instance means new certificates
+            return Objects.equals(this.openTimeout, openTimeout)
+                    && Objects.equals(this.verify, verify)
+                    && this.sslContext == sslContext;
+        }
     }
 }

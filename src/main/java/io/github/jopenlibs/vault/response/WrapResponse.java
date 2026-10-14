@@ -31,16 +31,20 @@ public class WrapResponse extends VaultResponse {
             final var responseJson = new String(restResponse.getBody(), StandardCharsets.UTF_8);
             final var jsonResponse = Json.parse(responseJson).asObject();
             final var wrapInfoJsonVal = jsonResponse.get("wrap_info");
-            if (wrapInfoJsonVal != null && !wrapInfoJsonVal.isNull()) {
+            if (hasValue(wrapInfoJsonVal)) {
                 final var wrapInfoJsonObject = wrapInfoJsonVal.asObject();
-                token = wrapInfoJsonObject.getString("token", null).toCharArray();
+                final var tokenString = wrapInfoJsonObject.getString("token", null);
+                token = tokenString == null ? null : tokenString.toCharArray();
                 accessor = wrapInfoJsonObject.getString("accessor", null);
                 ttl = wrapInfoJsonObject.getInt("ttl", 0);
                 creationTime = wrapInfoJsonObject.getString("creation_time", null);
                 creationPath = wrapInfoJsonObject.getString("creation_path", null);
             }
 
-            renewable = jsonResponse.get("renewable").asBoolean();
+            final var renewableJsonVal = jsonResponse.get("renewable");
+            if (hasValue(renewableJsonVal)) {
+                renewable = renewableJsonVal.asBoolean();
+            }
         } catch (ParseException e) {
             // No-op.
         }

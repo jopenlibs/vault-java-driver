@@ -27,6 +27,9 @@ import java.security.cert.X509Certificate;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Base64;
+import java.util.List;
+import java.util.Locale;
+import java.util.logging.Logger;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -46,8 +49,10 @@ public class SslConfig implements Serializable {
 
     private static final String VAULT_SSL_VERIFY = "VAULT_SSL_VERIFY";
     private static final String VAULT_SSL_CERT = "VAULT_SSL_CERT";
+    private static final List<String> VERIFY_TRUE_VALUES = List.of("t", "true", "1", "y", "yes", "on");
+    private static final Logger LOGGER = Logger.getLogger(SslConfig.class.getCanonicalName());
 
-    private boolean verify;
+    private boolean verify = true;
     private transient SSLContext sslContext;
     private transient KeyStore trustStore;
     private transient KeyStore keyStore;
@@ -57,6 +62,7 @@ public class SslConfig implements Serializable {
     private String clientKeyPemUTF8;
     private Boolean verifyObject;
     private EnvironmentLoader environmentLoader;
+    private boolean built;
 
     /**
      * <p>The code used to load environment variables is encapsulated here, so that a mock version
@@ -90,7 +96,8 @@ public class SslConfig implements Serializable {
      *
      * <p>If no verify is explicitly set, either by this method in a builder pattern approach or
      * else by one of the convenience constructors, then <code>SslConfig</code> will look to the
-     * <code>VAULT_SSL_VERIFY</code> environment variable.</p>
+     * <code>VAULT_SSL_VERIFY</code> environment variable. Only the value <code>false</code>
+     * (case-insensitive) disables verification; any other value keeps it enabled.</p>
      *
      * @param verify Whether or not to verify the SSL certificate used by Vault with HTTPS
      * connections.  Default is <code>true</code>.
@@ -495,27 +502,87 @@ public class SslConfig implements Serializable {
         if (this.environmentLoader == null) {
             this.environmentLoader = new EnvironmentLoader();
         }
-        if (this.verifyObject == null && environmentLoader.loadVariable(VAULT_SSL_VERIFY) != null) {
-            this.verify = Boolean.parseBoolean(environmentLoader.loadVariable(VAULT_SSL_VERIFY));
-        } else if (this.verifyObject != null) {
+        if (this.verifyObject != null) {
             this.verify = verifyObject;
         } else {
-            this.verify = true;
+            this.verify = parseVerify(EnvironmentLoader.load(environmentLoader, VAULT_SSL_VERIFY));
         }
-        if (this.verify && this.pemUTF8 == null
-                && environmentLoader.loadVariable(VAULT_SSL_CERT) != null) {
-            final var pemFile = new File(environmentLoader.loadVariable(VAULT_SSL_CERT));
-            try {
-                this.pemUTF8 = Files.readString(pemFile.toPath(), StandardCharsets.UTF_8);
-            } catch (IOException e) {
-                throw new VaultException(e);
+        if (this.verify && this.pemUTF8 == null) {
+            final String pemPath = EnvironmentLoader.load(environmentLoader, VAULT_SSL_CERT);
+            if (pemPath != null) {
+                try {
+                    this.pemUTF8 = Files.readString(new File(pemPath).toPath(),
+                            StandardCharsets.UTF_8);
+                } catch (IOException e) {
+                    throw new VaultException(e);
+                }
             }
         }
         buildSsl();
+        this.built = true;
         return this;
     }
 
+    /**
+     * Builds this object, unless {@link #build()} was already called. Used by
+     * {@link VaultConfig#build()}, so that a <code>SslConfig</code> passed to it is ready for use
+     * even if its own <code>build()</code> was not called.
+     *
+     * @param defaultEnvironmentLoader The environment loader to use, if none was set on this object
+     * @return This object
+     * @throws VaultException If any problem occurs while building
+     */
+    SslConfig buildIfNeeded(final EnvironmentLoader defaultEnvironmentLoader)
+            throws VaultException {
+        if (built) {
+            return this;
+        }
+        if (this.environmentLoader == null) {
+            this.environmentLoader = defaultEnvironmentLoader;
+        }
+        return build();
+    }
+
+    /**
+     * Parses the <code>VAULT_SSL_VERIFY</code> environment variable, ignoring case and surrounding
+     * whitespace. Verification is only disabled by an explicit <code>false</code>, so that a typo
+     * or an unexpected value can never silently turn it off. <code>t</code>, <code>true</code>,
+     * <code>1</code>, <code>y</code>, <code>yes</code> and <code>on</code> enable it; any other
+     * value also enables it, with a warning.
+     *
+     * @param value The variable value, or <code>null</code> if unset
+     * @return <code>false</code> only if the value is <code>false</code>
+     */
+    static boolean parseVerify(final String value) {
+        if (value == null || value.isBlank()) {
+            return true;
+        }
+        final String normalized = value.strip().toLowerCase(Locale.ROOT);
+        if (normalized.equals("false")) {
+            return false;
+        }
+        if (!VERIFY_TRUE_VALUES.contains(normalized)) {
+            LOGGER.warning(String.format(
+                    "The %s environment variable contains value \"%s\", which is neither \"false\" nor one of %s. SSL verification stays enabled.",
+                    VAULT_SSL_VERIFY, value, VERIFY_TRUE_VALUES));
+        }
+        return true;
+    }
+
+    /**
+     * <p>Whether HTTPS connections should verify the Vault server's SSL certificate.</p>
+     *
+     * <p>A value set with {@link #verify(Boolean)} always takes priority, even if it was set after
+     * {@link #build()}. Otherwise this is the value resolved by {@link #build()} (from the
+     * <code>VAULT_SSL_VERIFY</code> environment variable), or <code>true</code> if
+     * {@link #build()} was not called.</p>
+     *
+     * @return <code>false</code> only if verification was explicitly disabled
+     */
     public boolean isVerify() {
+        if (verifyObject != null) {
+            return verifyObject;
+        }
         return verify;
     }
 
@@ -721,6 +788,14 @@ public class SslConfig implements Serializable {
      */
     private void readObject(java.io.ObjectInputStream in)
             throws IOException, ClassNotFoundException {//NOPMD
+        // Restore the serialized fields first: buildSsl() depends on them (e.g. verify, pemUTF8)
+        in.defaultReadObject();
+        // Field initializers don't run on deserialization, so a stream written by an older release
+        // (which has no "built" field) or by a never-built instance may carry verify=false without
+        // it ever being requested. Unless explicitly disabled, verification stays enabled.
+        if (!built && verifyObject == null) {
+            this.verify = true;
+        }
         try {
             buildSsl();
         } catch (VaultException e) {

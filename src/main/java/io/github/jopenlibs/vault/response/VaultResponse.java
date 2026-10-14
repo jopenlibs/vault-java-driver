@@ -1,5 +1,6 @@
 package io.github.jopenlibs.vault.response;
 
+import io.github.jopenlibs.vault.json.JsonValue;
 import io.github.jopenlibs.vault.rest.RestResponse;
 import java.io.Serializable;
 
@@ -29,5 +30,12 @@ public class VaultResponse implements Serializable {
 
     public int getRetries() {
         return retries;
+    }
+
+    /**
+     * @return <code>true</code> if a JSON field is present and not <code>null</code>
+     */
+    static boolean hasValue(final JsonValue value) {
+        return value != null && !value.isNull();
     }
 }

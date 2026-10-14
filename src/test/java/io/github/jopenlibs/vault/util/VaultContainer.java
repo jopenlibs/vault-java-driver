@@ -118,7 +118,11 @@ public class VaultContainer extends GenericContainer<VaultContainer> implements 
     /**
      * Prepares the Vault server for testing of the AppID auth backend (i.e. mounts the backend and
      * populates test data).
+     *
+     * @deprecated The AppID auth backend is not available in Vault 1.16 and later, the versions
+     * tested in CI
      */
+    @Deprecated
     public void setupBackendAppId() throws IOException, InterruptedException {
         runCommand("vault", "login", "-ca-cert=" + CONTAINER_CERT_PEMFILE, rootToken);
 

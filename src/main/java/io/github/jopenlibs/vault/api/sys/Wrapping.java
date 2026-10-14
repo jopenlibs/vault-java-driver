@@ -9,7 +9,6 @@ import io.github.jopenlibs.vault.json.JsonObject;
 import io.github.jopenlibs.vault.response.LogicalResponse;
 import io.github.jopenlibs.vault.response.UnwrapResponse;
 import io.github.jopenlibs.vault.response.WrapResponse;
-import io.github.jopenlibs.vault.rest.Rest;
 import io.github.jopenlibs.vault.rest.RestResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
@@ -30,9 +29,7 @@ public class Wrapping extends OperationsBase {
     public Wrapping(final VaultConfig config) {
         super(config);
 
-        if (this.config.getNameSpace() != null && !this.config.getNameSpace().isEmpty()) {
-            this.nameSpace = this.config.getNameSpace();
-        }
+        this.nameSpace = this.config.getNameSpace();
     }
 
     /**
@@ -43,8 +40,8 @@ public class Wrapping extends OperationsBase {
      * <pre>{@code
      * final String wrappingToken = "...";
      * final VaultConfig config = new VaultConfig().address(...).token(wrappingToken).build();
-     * final Vault vault = new Vault(config);
-     * final LogicalResponse response = vault.sys().wrapping().lookupWarp();
+     * final Vault vault = Vault.create(config);
+     * final LogicalResponse response = vault.sys().wrapping().lookupWrap();
      * // Then you can validate "path" for example ...
      * final String path = response.getData().get("path");
      * }</pre>
@@ -64,10 +61,10 @@ public class Wrapping extends OperationsBase {
      * <blockquote>
      * <pre>{@code
      * final VaultConfig config = new VaultConfig().address(...).token(authToken).build();
-     * final Vault vault = new Vault(config);
+     * final Vault vault = Vault.create(config);
      * ...
      * final String wrappingToken = "...";
-     * final LogicalResponse response = vault.sys().wrapping().lookupWarp(wrappingToken);
+     * final LogicalResponse response = vault.sys().wrapping().lookupWrap(wrappingToken);
      * // Then you can validate "path" for example ...
      * final String path = response.getData().get("path");
      * }</pre>
@@ -88,10 +85,10 @@ public class Wrapping extends OperationsBase {
      * <blockquote>
      * <pre>{@code
      * final VaultConfig config = new VaultConfig().address(...).token(authToken).build();
-     * final Vault vault = new Vault(config);
+     * final Vault vault = Vault.create(config);
      * ...
      * final String wrappingToken = "...";
-     * final LogicalResponse response = vault.sys().wrapping().lookupWarp(wrappingToken);
+     * final LogicalResponse response = vault.sys().wrapping().lookupWrap(wrappingToken);
      * // Then you can validate "path" for example ...
      * final String path = response.getData().get("path");
      * }</pre>
@@ -111,14 +108,11 @@ public class Wrapping extends OperationsBase {
 
         return retry(attempt -> {
             // HTTP request to Vault
-            var rest = new Rest()//NOPMD
+            var rest = getRest()//NOPMD
                     .url(config.getAddress() + "/v1/sys/wrapping/lookup")
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
-                    .connectTimeoutSeconds(config.getOpenTimeout())
-                    .readTimeoutSeconds(config.getReadTimeout())
-                    .sslVerification(config.getSslConfig().isVerify())
-                    .sslContext(config.getSslConfig().getSslContext());
+                    .readTimeoutSeconds(config.getReadTimeout());
 
             if (inBody) {
                 rest = rest
@@ -180,7 +174,7 @@ public class Wrapping extends OperationsBase {
      * final String authToken = "...";
      * final String wrappingToken = "...";
      * final VaultConfig config = new VaultConfig().address(...).token(authToken).build();
-     * final Vault vault = new Vault(config);
+     * final Vault vault = Vault.create(config);
      *
      * final WrapResponse wrapResponse = vault.sys().wrapping().wrap(
      *                 // Data to wrap
@@ -193,7 +187,7 @@ public class Wrapping extends OperationsBase {
      *         );
      *
      * final UnwrapResponse unwrapResponse = vault.sys().wrapping().unwrap(wrapResponse.getToken());
-     * final JsonObject unwrappedData = response.getData(); // original data
+     * final JsonObject unwrappedData = unwrapResponse.getData(); // original data
      * }</pre>
      * </blockquote>
      *
@@ -212,17 +206,14 @@ public class Wrapping extends OperationsBase {
             final String url = config.getAddress() + "/v1/sys/wrapping/wrap";
 
             // HTTP request to Vault
-            final var restResponse = new Rest()
+            final var restResponse = getRest()
                     .url(url)
                     .token(config.getToken())
                     .header("X-Vault-Wrap-TTL", Integer.toString(ttlInSec))
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
                     .body(requestJson.getBytes(StandardCharsets.UTF_8))
-                    .connectTimeoutSeconds(config.getOpenTimeout())
                     .readTimeoutSeconds(config.getReadTimeout())
-                    .sslVerification(config.getSslConfig().isVerify())
-                    .sslContext(config.getSslConfig().getSslContext())
                     .post();
 
             // Validate restResponse
@@ -258,7 +249,7 @@ public class Wrapping extends OperationsBase {
      * <pre>{@code
      * final String wrappingToken = "...";
      * final VaultConfig config = new VaultConfig().address(...).token(wrappingToken).build();
-     * final Vault vault = new Vault(config);
+     * final Vault vault = Vault.create(config);
      * final AuthResponse response = vault.sys().wrapping().unwrap();
      * final String unwrappedToken = response.getAuthClientToken();
      * }</pre>
@@ -296,7 +287,7 @@ public class Wrapping extends OperationsBase {
      * final String authToken = "...";
      * final String wrappingToken = "...";
      * final VaultConfig config = new VaultConfig().address(...).token(authToken).build();
-     * final Vault vault = new Vault(config);
+     * final Vault vault = Vault.create(config);
      *
      * final WrapResponse wrapResponse = vault.sys().wrapping().wrap(
      *                 // Data to wrap
@@ -309,7 +300,7 @@ public class Wrapping extends OperationsBase {
      *         );
      *
      * final UnwrapResponse unwrapResponse = vault.sys().wrapping().unwrap(wrapResponse.getToken());
-     * final JsonObject unwrappedData = response.getData(); // original data
+     * final JsonObject unwrappedData = unwrapResponse.getData(); // original data
      * }</pre>
      * </blockquote>
      *
@@ -349,7 +340,7 @@ public class Wrapping extends OperationsBase {
      * final String authToken = "...";
      * final String wrappingToken = "...";
      * final VaultConfig config = new VaultConfig().address(...).token(authToken).build();
-     * final Vault vault = new Vault(config);
+     * final Vault vault = Vault.create(config);
      *
      * final WrapResponse wrapResponse = vault.sys().wrapping().wrap(
      *                 // Data to wrap
@@ -362,7 +353,7 @@ public class Wrapping extends OperationsBase {
      *         );
      *
      * final UnwrapResponse unwrapResponse = vault.sys().wrapping().unwrap(wrapResponse.getToken(), true);
-     * final JsonObject unwrappedData = response.getData(); // original data
+     * final JsonObject unwrappedData = unwrapResponse.getData(); // original data
      * }</pre>
      * </blockquote>
      *
@@ -384,14 +375,11 @@ public class Wrapping extends OperationsBase {
             final String url = config.getAddress() + "/v1/sys/wrapping/unwrap";
 
             // HTTP request to Vault
-            var rest = new Rest()
+            var rest = getRest()
                     .url(url)
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
-                    .connectTimeoutSeconds(config.getOpenTimeout())
-                    .readTimeoutSeconds(config.getReadTimeout())
-                    .sslVerification(config.getSslConfig().isVerify())
-                    .sslContext(config.getSslConfig().getSslContext());
+                    .readTimeoutSeconds(config.getReadTimeout());
 
             if (inBody) {
                 final String requestJson = Json.object().add("token", new String(wrappedToken)).toString();
@@ -438,9 +426,9 @@ public class Wrapping extends OperationsBase {
      * final String authToken = "...";
      * final String wrappingToken = "...";
      * final VaultConfig config = new VaultConfig().address(...).token(authToken).build();
-     * final Vault vault = new Vault(config);
+     * final Vault vault = Vault.create(config);
      *
-     * final WrapResponse wrapResponse = vault.auth().wrap(
+     * final WrapResponse wrapResponse = vault.sys().wrapping().wrap(
      *                 // Data to wrap
      *                 new JsonObject()
      *                         .add("foo", "bar")
@@ -450,10 +438,10 @@ public class Wrapping extends OperationsBase {
      *                 60
      *         );
      * ...
-     * final WrapResponse wrapResponse2 = vault.auth().rewrap(wrapResponse.getToken());
+     * final WrapResponse wrapResponse2 = vault.sys().wrapping().rewrap(wrapResponse.getToken());
      *
-     * final UnwrapResponse unwrapResponse = vault.auth().unwrap(wrapResponse2.getToken());
-     * final JsonObject unwrappedData = response.getData(); // original data
+     * final UnwrapResponse unwrapResponse = vault.sys().wrapping().unwrap(wrapResponse2.getToken());
+     * final JsonObject unwrappedData = unwrapResponse.getData(); // original data
      * }</pre>
      * </blockquote>
      *
@@ -471,16 +459,13 @@ public class Wrapping extends OperationsBase {
             final String url = config.getAddress() + "/v1/sys/wrapping/rewrap";
 
             // HTTP request to Vault
-            final var restResponse = new Rest()
+            final var restResponse = getRest()
                     .url(url)
                     .token(config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
                     .body(requestJson.getBytes(StandardCharsets.UTF_8))
-                    .connectTimeoutSeconds(config.getOpenTimeout())
                     .readTimeoutSeconds(config.getReadTimeout())
-                    .sslVerification(config.getSslConfig().isVerify())
-                    .sslContext(config.getSslConfig().getSslContext())
                     .post();
 
             // Validate restResponse

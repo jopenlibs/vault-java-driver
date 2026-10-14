@@ -5,7 +5,6 @@ import io.github.jopenlibs.vault.VaultException;
 import io.github.jopenlibs.vault.api.OperationsBase;
 import io.github.jopenlibs.vault.json.Json;
 import io.github.jopenlibs.vault.response.SealResponse;
-import io.github.jopenlibs.vault.rest.Rest;
 import io.github.jopenlibs.vault.rest.RestResponse;
 import java.nio.charset.StandardCharsets;
 
@@ -26,9 +25,7 @@ public class Seal extends OperationsBase {
     public Seal(final VaultConfig config) {
         super(config);
 
-        if (this.config.getNameSpace() != null && !this.config.getNameSpace().isEmpty()) {
-            this.nameSpace = this.config.getNameSpace();
-        }
+        this.nameSpace = this.config.getNameSpace();
     }
 
     public Seal withNameSpace(final String nameSpace) {
@@ -45,15 +42,12 @@ public class Seal extends OperationsBase {
     public SealResponse seal() throws VaultException {
         return retry((attempt) -> {
             // HTTP request to Vault
-            final var restResponse = new Rest()//NOPMD
+            final var restResponse = getRest()//NOPMD
                     .url(config.getAddress() + "/v1/sys/seal")
                     .token(config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
-                    .connectTimeoutSeconds(config.getOpenTimeout())
                     .readTimeoutSeconds(config.getReadTimeout())
-                    .sslVerification(config.getSslConfig().isVerify())
-                    .sslContext(config.getSslConfig().getSslContext())
                     .post();
 
             return getSealResponse(attempt, restResponse, 204);
@@ -86,15 +80,12 @@ public class Seal extends OperationsBase {
             // HTTP request to Vault
             final String requestJson = Json.object().add("key", key).add("reset", reset)
                     .toString();
-            final var restResponse = new Rest()//NOPMD
+            final var restResponse = getRest()//NOPMD
                     .url(config.getAddress() + "/v1/sys/unseal")
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
                     .body(requestJson.getBytes(StandardCharsets.UTF_8))
-                    .connectTimeoutSeconds(config.getOpenTimeout())
                     .readTimeoutSeconds(config.getReadTimeout())
-                    .sslVerification(config.getSslConfig().isVerify())
-                    .sslContext(config.getSslConfig().getSslContext())
                     .post();
 
             // Validate restResponse
@@ -111,14 +102,11 @@ public class Seal extends OperationsBase {
     public SealResponse sealStatus() throws VaultException {
         return retry((attempt) -> {
             // HTTP request to Vault
-            final var restResponse = new Rest()//NOPMD
+            final var restResponse = getRest()//NOPMD
                     .url(config.getAddress() + "/v1/sys/seal-status")
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
-                    .connectTimeoutSeconds(config.getOpenTimeout())
                     .readTimeoutSeconds(config.getReadTimeout())
-                    .sslVerification(config.getSslConfig().isVerify())
-                    .sslContext(config.getSslConfig().getSslContext())
                     .get();
 
             // Validate restResponse

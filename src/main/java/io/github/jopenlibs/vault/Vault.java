@@ -124,6 +124,7 @@ public interface Vault {
      * @see Sys#leases()
      * @deprecated This method is deprecated and in future it will be removed
      */
+    @Deprecated
     Leases leases();
 
     /**
@@ -137,12 +138,14 @@ public interface Vault {
      * @see Sys#mounts()
      * @deprecated This method is deprecated and in future it will be removed
      */
+    @Deprecated
     Mounts mounts();
 
     /**
      * @see Sys#seal()
      * @deprecated This method is deprecated and in future it will be removed
      */
+    @Deprecated
     Seal seal();
 
     Map<String, String> getSecretEngineVersions();

@@ -5,8 +5,6 @@ import io.github.jopenlibs.vault.VaultException;
 import io.github.jopenlibs.vault.api.OperationsBase;
 import io.github.jopenlibs.vault.json.Json;
 import io.github.jopenlibs.vault.response.VaultResponse;
-import io.github.jopenlibs.vault.rest.Rest;
-import io.github.jopenlibs.vault.rest.RestResponse;
 import java.nio.charset.StandardCharsets;
 
 
@@ -27,9 +25,7 @@ public class Leases extends OperationsBase {
     public Leases(final VaultConfig config) {
         super(config);
 
-        if (this.config.getNameSpace() != null && !this.config.getNameSpace().isEmpty()) {
-            this.nameSpace = this.config.getNameSpace();
-        }
+        this.nameSpace = this.config.getNameSpace();
     }
 
     public Leases withNameSpace(final String nameSpace) {
@@ -42,7 +38,7 @@ public class Leases extends OperationsBase {
      *
      * <blockquote>
      * <pre>{@code
-     * final VaultResponse response = vault.leases().revoke("7c63da27-a56b-3e3b-377d-ef74630a6d0b");
+     * final VaultResponse response = vault.sys().leases().revoke("7c63da27-a56b-3e3b-377d-ef74630a6d0b");
      * assertEquals(204, response.getRestResponse().getStatus());
      * }</pre>
      * </blockquote>
@@ -54,16 +50,13 @@ public class Leases extends OperationsBase {
     public VaultResponse revoke(final String leaseId) throws VaultException {
         return retry(attempt -> {
             final String requestJson = Json.object().add("lease_id", leaseId).toString();
-            final var restResponse = new Rest()//NOPMD
+            final var restResponse = getRest()//NOPMD
                     .url(config.getAddress() + "/v1/sys/leases/revoke")
                     .token(config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
                     .body(requestJson.getBytes(StandardCharsets.UTF_8))
-                    .connectTimeoutSeconds(config.getOpenTimeout())
                     .readTimeoutSeconds(config.getReadTimeout())
-                    .sslVerification(config.getSslConfig().isVerify())
-                    .sslContext(config.getSslConfig().getSslContext())
                     .post();
 
             // Validate response
@@ -84,7 +77,7 @@ public class Leases extends OperationsBase {
      *
      * <blockquote>
      * <pre>{@code
-     * final VaultResponse response = vault.leases().revokePrefix("aws");
+     * final VaultResponse response = vault.sys().leases().revokePrefix("aws");
      * assertEquals(204, response.getRestResponse().getStatus());
      * }</pre>
      * </blockquote>
@@ -95,15 +88,12 @@ public class Leases extends OperationsBase {
      */
     public VaultResponse revokePrefix(final String prefix) throws VaultException {
         return retry(attempt -> {
-            final var restResponse = new Rest()//NOPMD
+            final var restResponse = getRest()//NOPMD
                     .url(config.getAddress() + "/v1/sys/leases/revoke-prefix/" + prefix)
                     .token(config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
-                    .connectTimeoutSeconds(config.getOpenTimeout())
                     .readTimeoutSeconds(config.getReadTimeout())
-                    .sslVerification(config.getSslConfig().isVerify())
-                    .sslContext(config.getSslConfig().getSslContext())
                     .post();
 
             // Validate response
@@ -126,7 +116,7 @@ public class Leases extends OperationsBase {
      *
      * <blockquote>
      * <pre>{@code
-     * final VaultResponse response = vault.leases().revokePrefix("aws");
+     * final VaultResponse response = vault.sys().leases().revokePrefix("aws");
      * assertEquals(204, response.getRestResponse().getStatus());
      * }</pre>
      * </blockquote>
@@ -137,15 +127,12 @@ public class Leases extends OperationsBase {
      */
     public VaultResponse revokeForce(final String prefix) throws VaultException {
         return retry(attempt -> {
-            final var restResponse = new Rest()//NOPMD
+            final var restResponse = getRest()//NOPMD
                     .url(config.getAddress() + "/v1/sys/leases/revoke-force/" + prefix)
                     .token(config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
-                    .connectTimeoutSeconds(config.getOpenTimeout())
                     .readTimeoutSeconds(config.getReadTimeout())
-                    .sslVerification(config.getSslConfig().isVerify())
-                    .sslContext(config.getSslConfig().getSslContext())
                     .post();
 
             // Validate response
@@ -163,7 +150,7 @@ public class Leases extends OperationsBase {
      *
      * <blockquote>
      * <pre>{@code
-     * final VaultResponse response = vault.leases().renew("mongodb/creds/myapp/cd7f9834-b870-9ebc-3da5-27bf9cdc42ad");
+     * final VaultResponse response = vault.sys().leases().renew("mongodb/creds/myapp/cd7f9834-b870-9ebc-3da5-27bf9cdc42ad");
      * assertEquals(200, response.getRestResponse().getStatus());
      * }</pre>
      * </blockquote>
@@ -185,16 +172,13 @@ public class Leases extends OperationsBase {
 
         return retry(attempt -> {
             final String requestJson = Json.object().add("increment", increment).toString();
-            final var restResponse = new Rest()//NOPMD
+            final var restResponse = getRest()//NOPMD
                     .url(config.getAddress() + "/v1/sys/leases/renew/" + leaseId)
                     .token(config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
                     .body(increment < 0 ? null : requestJson.getBytes(StandardCharsets.UTF_8))
-                    .connectTimeoutSeconds(config.getOpenTimeout())
                     .readTimeoutSeconds(config.getReadTimeout())
-                    .sslVerification(config.getSslConfig().isVerify())
-                    .sslContext(config.getSslConfig().getSslContext())
                     .post();
 
             // Validate response

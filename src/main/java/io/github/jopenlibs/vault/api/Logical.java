@@ -10,6 +10,7 @@ import io.github.jopenlibs.vault.rest.RestResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 
 import static io.github.jopenlibs.vault.api.LogicalUtilities.adjustPathForDelete;
 import static io.github.jopenlibs.vault.api.LogicalUtilities.adjustPathForList;
@@ -38,9 +39,7 @@ public class Logical extends OperationsBase {
     public Logical(final VaultConfig config) {
         super(config);
 
-        if (this.config.getNameSpace() != null && !this.config.getNameSpace().isEmpty()) {
-            this.nameSpace = this.config.getNameSpace();
-        }
+        this.nameSpace = this.config.getNameSpace();
     }
 
     /**
@@ -92,10 +91,7 @@ public class Logical extends OperationsBase {
                     .token(config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
-                    .connectTimeoutSeconds(config.getOpenTimeout())
                     .readTimeoutSeconds(config.getReadTimeout())
-                    .sslVerification(config.getSslConfig().isVerify())
-                    .sslContext(config.getSslConfig().getSslContext())
                     .get();
 
             // Validate response - don't treat 4xx class errors as exceptions (except 412), we want to return an error as the response
@@ -152,10 +148,7 @@ public class Logical extends OperationsBase {
                                     .header("X-Vault-Namespace", this.nameSpace)
                                     .header("X-Vault-Request", "true")
                                     .parameter("version", version.toString())
-                                    .connectTimeoutSeconds(config.getOpenTimeout())
                                     .readTimeoutSeconds(config.getReadTimeout())
-                                    .sslVerification(config.getSslConfig().isVerify())
-                                    .sslContext(config.getSslConfig().getSslContext())
                                     .get();
 
                     // Validate response - don't treat 4xx class errors as exceptions (except 412), we want to return an error as the response
@@ -292,10 +285,7 @@ public class Logical extends OperationsBase {
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
                     .header("X-Vault-Wrap-TTL", wrapTTL != null ? wrapTTL.toString() : null)
-                    .connectTimeoutSeconds(config.getOpenTimeout())
                     .readTimeoutSeconds(config.getReadTimeout())
-                    .sslVerification(config.getSslConfig().isVerify())
-                    .sslContext(config.getSslConfig().getSslContext())
                     .post();
 
             // HTTP Status should be either 200 (with content - e.g. PKI write) or 204 (no content)
@@ -401,10 +391,7 @@ public class Logical extends OperationsBase {
                     .token(config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
-                    .connectTimeoutSeconds(config.getOpenTimeout())
                     .readTimeoutSeconds(config.getReadTimeout())
-                    .sslVerification(config.getSslConfig().isVerify())
-                    .sslContext(config.getSslConfig().getSslContext())
                     .delete();
 
             // Validate response
@@ -451,10 +438,7 @@ public class Logical extends OperationsBase {
                     .token(config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
-                    .connectTimeoutSeconds(config.getOpenTimeout())
                     .readTimeoutSeconds(config.getReadTimeout())
-                    .sslVerification(config.getSslConfig().isVerify())
-                    .sslContext(config.getSslConfig().getSslContext())
                     .body(versionsToDelete.toString().getBytes(StandardCharsets.UTF_8))
                     .post();
 
@@ -511,10 +495,7 @@ public class Logical extends OperationsBase {
                     .token(config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
-                    .connectTimeoutSeconds(config.getOpenTimeout())
                     .readTimeoutSeconds(config.getReadTimeout())
-                    .sslVerification(config.getSslConfig().isVerify())
-                    .sslContext(config.getSslConfig().getSslContext())
                     .body(versionsToUnDelete.toString().getBytes(StandardCharsets.UTF_8))
                     .post();
 
@@ -558,10 +539,7 @@ public class Logical extends OperationsBase {
                     .token(config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
-                    .connectTimeoutSeconds(config.getOpenTimeout())
                     .readTimeoutSeconds(config.getReadTimeout())
-                    .sslVerification(config.getSslConfig().isVerify())
-                    .sslContext(config.getSslConfig().getSslContext())
                     .body(versionsToDestroy.toString().getBytes(StandardCharsets.UTF_8))
                     .post();
 
@@ -595,10 +573,7 @@ public class Logical extends OperationsBase {
                     .token(config.getToken())
                     .header("X-Vault-Namespace", this.nameSpace)
                     .header("X-Vault-Request", "true")
-                    .connectTimeoutSeconds(config.getOpenTimeout())
                     .readTimeoutSeconds(config.getReadTimeout())
-                    .sslVerification(config.getSslConfig().isVerify())
-                    .sslContext(config.getSslConfig().getSslContext())
                     .body(kvToUpgrade.toString().getBytes(StandardCharsets.UTF_8))
                     .post();
 
@@ -633,7 +608,8 @@ public class Logical extends OperationsBase {
      * </ul>
      *
      * @param secretPath The Vault secret path to check (e.g. <code>secret/hello</code>).
-     * @return the detected engine version (1 or 2), or the global default if not found
+     * @return the detected engine version (1 or 2), or the global default if not found, or 2 if
+     * no global default is set
      */
     private Integer engineVersionForSecretPath(final String secretPath) {
         final var pathMap = this.config.getSecretsEnginePathMap();
@@ -648,7 +624,7 @@ public class Logical extends OperationsBase {
                 idx = prefix.lastIndexOf('/');
             } while (idx != -1);
         }
-        return this.config.getGlobalEngineVersion();
+        return Objects.requireNonNullElse(this.config.getGlobalEngineVersion(), 2);
     }
 
     /**
