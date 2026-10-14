@@ -86,6 +86,7 @@ public interface Vault {
      * @throws IllegalArgumentException If either value is negative
      * @throws UnsupportedOperationException If this implementation does not support it
      * @see RetryPolicy
+     * @see VaultConfig#retries(int, int)
      */
     default Vault retrying(final int maxRetries, final int retryIntervalMilliseconds) {
         throw new UnsupportedOperationException(

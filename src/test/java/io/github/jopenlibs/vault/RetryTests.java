@@ -234,6 +234,62 @@ public class RetryTests {
         assertThrows(IllegalArgumentException.class, () -> vault.retrying(5, -1));
     }
 
+    @Test
+    public void testConfigRetries_SetsValues() throws Exception {
+        final var config = new VaultConfig();
+        assertSame(config, config.retries(5, 1000));
+        assertEquals(5, config.getMaxRetries());
+        assertEquals(1000, config.getRetryIntervalMilliseconds());
+    }
+
+    @Test
+    public void testConfigRetries_AppliesToEveryCall() throws Exception {
+        final var vault = Vault.create(new VaultConfig().address("http://127.0.0.1:8999")
+                .token("mock_token").engineVersion(1).retries(2, 10).build());
+
+        final var readServer = VaultTestUtils.initHttpMockVault(
+                new RetriesMockVault(2, 200, READ_RESPONSE));
+        readServer.start();
+        try {
+            assertEquals(2, vault.logical().read("secret/hello").getRetries());
+        } finally {
+            VaultTestUtils.shutdownMockVault(readServer);
+        }
+
+        final var revokeServer = VaultTestUtils.initHttpMockVault(
+                new RetriesMockVault(2, 204, null));
+        revokeServer.start();
+        try {
+            assertEquals(2, vault.sys().leases().revoke("lease-id").getRetries());
+        } finally {
+            VaultTestUtils.shutdownMockVault(revokeServer);
+        }
+    }
+
+    @Test
+    public void testConfigRetries_RejectsNegativeValues() throws Exception {
+        final var config = new VaultConfig().retries(5, 1000);
+        assertThrows(IllegalArgumentException.class, () -> config.retries(-1, 10));
+        assertThrows(IllegalArgumentException.class, () -> config.retries(3, -1));
+        assertEquals(5, config.getMaxRetries());
+        assertEquals(1000, config.getRetryIntervalMilliseconds());
+    }
+
+    @Test
+    public void testConfigRetries_OverriddenByRetrying() throws Exception {
+        final var server = VaultTestUtils.initHttpMockVault(
+                new RetriesMockVault(3, 200, READ_RESPONSE));
+        server.start();
+        try {
+            final var vault = Vault.create(mockConfig().retries(5, 10));
+            final var e = assertThrows(VaultException.class,
+                    () -> vault.retrying(1, 10).logical().read("secret/hello"));
+            assertEquals(500, e.getHttpStatusCode());
+        } finally {
+            VaultTestUtils.shutdownMockVault(server);
+        }
+    }
+
     private static VaultConfig mockConfig() throws VaultException {
         return new VaultConfig().address("http://127.0.0.1:8999")
                 .token("mock_token").engineVersion(1).build();

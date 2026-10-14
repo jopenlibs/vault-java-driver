@@ -7,6 +7,7 @@ package io.github.jopenlibs.vault;
  * <p>A policy with <code>maxRetries</code> set to <code>0</code> disables retries.</p>
  *
  * @see Vault#retrying(int, int)
+ * @see VaultConfig#retries(int, int)
  */
 public final class RetryPolicy {
 
