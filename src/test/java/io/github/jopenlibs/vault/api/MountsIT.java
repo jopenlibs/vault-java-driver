@@ -20,6 +20,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -152,12 +153,13 @@ public class MountsIT {
 
     @Test
     public void testReadExceptionNotFound() throws VaultException {
-        expectedEx.expect(VaultException.class);
-        expectedEx.expectMessage("cannot fetch sysview for path");
-
         final Vault vault = container.getRootVault();
 
-        vault.sys().mounts().read("pki-non-existing-path");
+        // Vault 2.2 and later answer "invalid request" instead of "cannot fetch sysview for path",
+        // so only the status code is checked
+        final VaultException e = assertThrows(VaultException.class,
+                () -> vault.sys().mounts().read("pki-non-existing-path"));
+        assertEquals(400, e.getHttpStatusCode());
     }
 
     @Test
