@@ -1,6 +1,7 @@
 package io.github.jopenlibs.vault.response;
 
-import io.github.jopenlibs.vault.json.Json;
+import io.github.jopenlibs.vault.internal.JsonNestingException;
+import io.github.jopenlibs.vault.internal.SafeJson;
 import io.github.jopenlibs.vault.json.ParseException;
 import io.github.jopenlibs.vault.rest.RestResponse;
 import java.nio.charset.StandardCharsets;
@@ -27,14 +28,14 @@ public class SealResponse extends VaultResponse {
 
         try {
             final var responseJson = new String(restResponse.getBody(), StandardCharsets.UTF_8);
-            final var jsonObject = Json.parse(responseJson).asObject();
+            final var jsonObject = SafeJson.parse(responseJson).asObject();
 
             sealed = jsonObject.getBoolean("sealed", false);
             threshold = jsonObject.getLong("t", 0);
             numberOfShares = jsonObject.getLong("n", 0);
             progress = jsonObject.getLong("progress", 0);
 
-        } catch (ParseException ignored) {
+        } catch (ParseException | JsonNestingException ignored) {
         }
     }
 
