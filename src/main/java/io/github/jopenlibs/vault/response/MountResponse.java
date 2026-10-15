@@ -6,6 +6,7 @@ import io.github.jopenlibs.vault.api.sys.mounts.MountConfig;
 import io.github.jopenlibs.vault.api.sys.mounts.MountType;
 import io.github.jopenlibs.vault.json.JsonObject;
 import io.github.jopenlibs.vault.json.JsonObject.Member;
+import io.github.jopenlibs.vault.json.JsonValue;
 import io.github.jopenlibs.vault.rest.RestResponse;
 import java.util.Collections;
 import java.util.Map;
@@ -48,11 +49,11 @@ public class MountResponse extends LogicalResponse {
             return null;
         }
 
-        final MountType type = MountType.of(data.getString("type"));
-        final String description = data.getString("description");
+        final MountType type = MountType.of(getString(data, "type"));
+        final String description = getString(data, "description");
         final MountConfig config = buildMountConfig(data);
-        final Boolean local = data.getBoolean("local");
-        final Boolean sealWrap = data.getBoolean("seal_wrap");
+        final Boolean local = getBoolean(data, "local");
+        final Boolean sealWrap = getBoolean(data, "seal_wrap");
 
         if (type == null && description == null && config == null && local == null
                 && sealWrap == null) {
@@ -79,11 +80,11 @@ public class MountResponse extends LogicalResponse {
             return null;
         }
 
-        final Integer defaultLeaseTtl = config.getInt("default_lease_ttl");
-        final Integer maxLeaseTtl = config.getInt("max_lease_ttl");
-        final String description = config.getString("description");
-        final Boolean forceNoCache = config.getBoolean("force_no_cache");
-        final String pluginName = config.getString("plugin_name");
+        final Integer defaultLeaseTtl = getInt(config, "default_lease_ttl");
+        final Integer maxLeaseTtl = getInt(config, "max_lease_ttl");
+        final String description = getString(config, "description");
+        final Boolean forceNoCache = getBoolean(config, "force_no_cache");
+        final String pluginName = getString(config, "plugin_name");
 
         if (defaultLeaseTtl == null && maxLeaseTtl == null && description == null
                 && forceNoCache == null && pluginName == null) {
@@ -108,5 +109,20 @@ public class MountResponse extends LogicalResponse {
         return StreamSupport.stream(data.spliterator(), false)
                 .collect(Collectors.toMap(Member::getName,
                         member -> buildMount(member.getValue().asObject())));
+    }
+
+    private static String getString(final JsonObject object, final String name) {
+        final JsonValue value = object.get(name);
+        return value != null ? value.asString() : null;
+    }
+
+    private static Integer getInt(final JsonObject object, final String name) {
+        final JsonValue value = object.get(name);
+        return value != null ? value.asInt() : null;
+    }
+
+    private static Boolean getBoolean(final JsonObject object, final String name) {
+        final JsonValue value = object.get(name);
+        return value != null ? value.asBoolean() : null;
     }
 }

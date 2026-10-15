@@ -2,6 +2,7 @@ package io.github.jopenlibs.vault.api.sys.mounts;
 
 import io.github.jopenlibs.vault.json.Json;
 import io.github.jopenlibs.vault.json.JsonObject;
+import io.github.jopenlibs.vault.json.JsonValue;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -101,12 +102,12 @@ public class MountPayload implements Serializable {
     public JsonObject toEnableJson(MountType type) {
         final JsonObject jsonObject = Json.object();
 
-        jsonObject.addIfNotNull("type", type.value());
-        jsonObject.addIfNotNull("description", this.description);
-        jsonObject.addIfNotNull("config", this.toConfigJson());
-        jsonObject.addIfNotNull("plugin_name", this.pluginName);
-        jsonObject.addIfNotNull("local", this.local);
-        jsonObject.addIfNotNull("seal_wrap", this.sealWrap);
+        addIfNotNull(jsonObject, "type", type.value());
+        addIfNotNull(jsonObject, "description", this.description);
+        addIfNotNull(jsonObject, "config", this.toConfigJson());
+        addIfNotNull(jsonObject, "plugin_name", this.pluginName);
+        addIfNotNull(jsonObject, "local", this.local);
+        addIfNotNull(jsonObject, "seal_wrap", this.sealWrap);
 
         return jsonObject;
     }
@@ -115,22 +116,22 @@ public class MountPayload implements Serializable {
         final JsonObject jsonObject = Json.object();
 
         if (this.defaultLeaseTtl != null) {
-            jsonObject.addIfNotNull("default_lease_ttl", this.defaultLeaseTtl.toString());
+            addIfNotNull(jsonObject, "default_lease_ttl", this.defaultLeaseTtl.toString());
         }
 
         if (this.maxLeaseTtl != null) {
-            jsonObject.addIfNotNull("max_lease_ttl", this.maxLeaseTtl.toString());
+            addIfNotNull(jsonObject, "max_lease_ttl", this.maxLeaseTtl.toString());
         }
 
-        jsonObject.addIfNotNull("description", this.description);
+        addIfNotNull(jsonObject, "description", this.description);
 
         if (this.auditNonHmacRequestKeys != null && !this.auditNonHmacRequestKeys.isEmpty()) {
-            jsonObject.addIfNotNull("audit_non_hmac_request_keys",
+            addIfNotNull(jsonObject, "audit_non_hmac_request_keys",
                     String.join(",", this.auditNonHmacRequestKeys));
         }
 
         if (this.auditNonHmacResponseKeys != null && !this.auditNonHmacResponseKeys.isEmpty()) {
-            jsonObject.addIfNotNull("audit_non_hmac_response_keys",
+            addIfNotNull(jsonObject, "audit_non_hmac_response_keys",
                     String.join(",", this.auditNonHmacResponseKeys));
         }
 
@@ -140,14 +141,35 @@ public class MountPayload implements Serializable {
     private JsonObject toConfigJson() {
         final JsonObject jsonObject = toTuneJson();
 
-        jsonObject.addIfNotNull("force_no_cache", this.forceNoCache);
-        jsonObject.addIfNotNull("plugin_name", this.pluginName);
+        addIfNotNull(jsonObject, "force_no_cache", this.forceNoCache);
+        addIfNotNull(jsonObject, "plugin_name", this.pluginName);
 
         if (jsonObject.isEmpty()) {
             return null;
         }
 
         return jsonObject;
+    }
+
+    private static void addIfNotNull(final JsonObject jsonObject, final String name,
+            final String value) {
+        if (value != null) {
+            jsonObject.add(name, value);
+        }
+    }
+
+    private static void addIfNotNull(final JsonObject jsonObject, final String name,
+            final Boolean value) {
+        if (value != null) {
+            jsonObject.add(name, value.booleanValue());
+        }
+    }
+
+    private static void addIfNotNull(final JsonObject jsonObject, final String name,
+            final JsonValue value) {
+        if (value != null) {
+            jsonObject.add(name, value);
+        }
     }
 
     public TimeToLive getDefaultLeaseTtl() {

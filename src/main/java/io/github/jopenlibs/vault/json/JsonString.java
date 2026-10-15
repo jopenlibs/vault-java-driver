@@ -24,51 +24,51 @@ package io.github.jopenlibs.vault.json;
 import java.io.IOException;
 
 
-@SuppressWarnings({"serial", "PMD"}) // use default serial UID
+@SuppressWarnings("serial") // use default serial UID
 class JsonString extends JsonValue {
 
-    private final String string;
+  private final String string;
 
-    JsonString(String string) {
-        if (string == null) {
-            throw new NullPointerException("string is null");
-        }
-        this.string = string;
+  JsonString(String string) {
+    if (string == null) {
+      throw new NullPointerException("string is null");
     }
+    this.string = string;
+  }
 
-    @Override
-    void write(JsonWriter writer) throws IOException {
-        writer.writeString(string);
-    }
+  @Override
+  void write(JsonWriter writer) throws IOException {
+    writer.writeString(string);
+  }
 
-    @Override
-    public boolean isString() {
-        return true;
-    }
+  @Override
+  public boolean isString() {
+    return true;
+  }
 
-    @Override
-    public String asString() {
-        return string;
-    }
+  @Override
+  public String asString() {
+    return string;
+  }
 
-    @Override
-    public int hashCode() {
-        return string.hashCode();
-    }
+  @Override
+  public int hashCode() {
+    return string.hashCode();
+  }
 
-    @Override
-    public boolean equals(Object object) {
-        if (this == object) {
-            return true;
-        }
-        if (object == null) {
-            return false;
-        }
-        if (getClass() != object.getClass()) {
-            return false;
-        }
-        JsonString other = (JsonString) object;
-        return string.equals(other.string);
+  @Override
+  public boolean equals(Object object) {
+    if (this == object) {
+      return true;
     }
+    if (object == null) {
+      return false;
+    }
+    if (getClass() != object.getClass()) {
+      return false;
+    }
+    JsonString other = (JsonString)object;
+    return string.equals(other.string);
+  }
 
 }
