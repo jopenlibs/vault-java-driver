@@ -326,15 +326,30 @@ Vault's HTTP API:
   credentials).
 * `debug()`: Health check endpoints.
 
-The driver DSL also allows you to specify retry logic, by chaining the `withRetries()` ahead of
-accessing the endpoint implementation:
+By default, API operations are not retried. To retry every call, set the retries in the
+configuration:
 
 ```
 // Retry up to 5 times if failures occur, waiting 1000 milliseconds in between each retry attempt.
-final LogicalResponse response = vault.withRetries(5, 1000)
+final VaultConfig config = new VaultConfig()
+                                  .address("http://127.0.0.1:8200")
+                                  .token("3c9fd6be-7bc2-9d1f-6fb3-cd746c0fc4e8")
+                                  .retries(5, 1000)
+                                  .build();
+```
+
+To retry only some calls, chain `retrying()` ahead of accessing the endpoint implementation. It
+returns a new `Vault` sharing the same configuration, and leaves the original `vault` unchanged:
+
+```
+final LogicalResponse response = vault.retrying(5, 1000)
                                    .logical()
                                    .read("secret/hello");
 ```
+
+`withRetries()` is deprecated: despite being chained like `retrying()`, it changes the retries in the
+configuration, so they apply to every later call, and to every `Vault` sharing that configuration.
+Replace it with `retrying()` or `VaultConfig.retries()`.
 
 Only transient failures are retried: I/O errors (e.g. connection refused or timed out) and HTTP 5xx,
 408, 412 and 429 responses. Other 4xx responses (e.g. 400, 403, 404) fail immediately, since
@@ -407,6 +422,17 @@ patches.
   * Javadoc examples use the `Sys` methods instead of the deprecated ones. The `Wrapping` examples
     are fixed: they used `new Vault(config)` instead of `Vault.create(config)`, and a misspelled
     `lookupWarp()` method
+  * Retries can be limited to some calls [(issue #75)](https://github.com/jopenlibs/vault-java-driver/issues/75).
+    `Vault.retrying(maxRetries, retryIntervalMilliseconds)` returns a new `Vault` whose operations
+    use those retries, leaving the original instance and its configuration unchanged.
+    `VaultConfig.retries(maxRetries, retryIntervalMilliseconds)` sets retries for every call.
+    Both reject negative values with `IllegalArgumentException`. The operation classes (e.g.
+    `Logical`, `Sys`, `Pki`) have new constructors taking a `RetryPolicy`
+  * `Vault.withRetries()` is deprecated, with unchanged behaviour: it writes the retries to the
+    shared `VaultConfig`, so they apply to every later call and to every `Vault` sharing that
+    configuration, not only the chained call. Use `retrying()` or `VaultConfig.retries()` instead.
+    `Vault.retrying()` is a `default` method throwing `UnsupportedOperationException`, so custom
+    implementations of `Vault` keep compiling
 * **6.2.3**: This release contains the following updates:
   * Improved Java 11 compatibility
   * Fixed integration tests with Vault 2.x

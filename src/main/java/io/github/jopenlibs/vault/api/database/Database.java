@@ -1,5 +1,6 @@
 package io.github.jopenlibs.vault.api.database;
 
+import io.github.jopenlibs.vault.RetryPolicy;
 import io.github.jopenlibs.vault.VaultConfig;
 import io.github.jopenlibs.vault.VaultException;
 import io.github.jopenlibs.vault.api.OperationsBase;
@@ -49,7 +50,23 @@ public class Database extends OperationsBase {
      * <code>/v1/</code> prefix (e.g. <code>"root-ca"</code>)
      */
     public Database(final VaultConfig config, final String mountPath) {
-        super(config);
+        this(config, mountPath, null);
+    }
+
+    /**
+     * Constructor for use when the Database backend is mounted on some non-default custom path, with
+     * a retry policy.
+     *
+     * @param config A container for the configuration settings needed to initialize a
+     * <code>Vault</code> driver instance
+     * @param mountPath The path on which your Vault Database backend is mounted, without the
+     * <code>/v1/</code> prefix (e.g. <code>"db123"</code>)
+     * @param retryPolicy The retries for this instance, overriding those set in the configuration,
+     * or <code>null</code> to use the retries currently set in the configuration
+     */
+    public Database(final VaultConfig config, final String mountPath,
+            final RetryPolicy retryPolicy) {
+        super(config, retryPolicy);
 
         this.mountPath = mountPath;
         this.nameSpace = this.config.getNameSpace();

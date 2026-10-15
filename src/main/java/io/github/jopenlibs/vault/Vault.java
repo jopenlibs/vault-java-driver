@@ -50,16 +50,57 @@ public interface Vault {
     }
 
     /**
-     * This method is chained ahead of endpoints (e.g. <code>logical()</code>, <code>auth()</code>,
-     * etc... to specify retry rules for any API operations invoked on that endpoint.
+     * <p>Sets the retry rules for API operations, by writing them to the configuration of this
+     * instance.</p>
+     *
+     * <p>Despite being chained ahead of endpoints (e.g. <code>logical()</code>,
+     * <code>auth()</code>), the retries are not limited to that call: they apply to every later
+     * call on this instance, and on every other <code>Vault</code> sharing the same configuration.
+     * A <code>Vault</code> returned by {@link #retrying(int, int)} ignores them.</p>
      *
      * @param maxRetries The number of times that API operations will be retried when a failure
      * occurs
      * @param retryIntervalMilliseconds The number of milliseconds that the driver will wait in
      * between retries
-     * @return This object, with maxRetries and retryIntervalMilliseconds populated
+     * @return This object, with maxRetries and retryIntervalMilliseconds populated in its
+     * configuration
+     * @deprecated To retry only some calls, use {@link #retrying(int, int)}, which returns a new
+     * instance. To retry every call, use {@link VaultConfig#retries(int, int)}.
      */
+    @Deprecated
     Vault withRetries(final int maxRetries, final int retryIntervalMilliseconds);
+
+    /**
+     * <p>Returns a new <code>Vault</code> whose API operations are retried with the given rules,
+     * overriding the retries set in the configuration. This instance, and its configuration, are
+     * left unchanged:</p>
+     *
+     * <blockquote>
+     * <pre>{@code
+     * final LogicalResponse response = vault.retrying(5, 1000).logical().read("secret/hello");
+     * }</pre>
+     * </blockquote>
+     *
+     * <p>The returned instance shares the configuration of this one, so later changes to it (e.g.
+     * a new token) apply to both.</p>
+     *
+     * <p>The default implementation throws <code>UnsupportedOperationException</code>, so that
+     * existing implementations of this interface keep compiling.</p>
+     *
+     * @param maxRetries The number of times that API operations will be retried when a failure
+     * occurs
+     * @param retryIntervalMilliseconds The number of milliseconds that the driver will wait in
+     * between retries
+     * @return A new <code>Vault</code> using the given retries
+     * @throws IllegalArgumentException If either value is negative
+     * @throws UnsupportedOperationException If this implementation does not support it
+     * @see RetryPolicy
+     * @see VaultConfig#retries(int, int)
+     */
+    default Vault retrying(final int maxRetries, final int retryIntervalMilliseconds) {
+        throw new UnsupportedOperationException(
+                getClass().getName() + " does not support retrying()");
+    }
 
     /**
      * Returns the implementing class for Vault's core/logical operations (e.g. read, write).

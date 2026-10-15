@@ -1,5 +1,6 @@
 package io.github.jopenlibs.vault.api.sys;
 
+import io.github.jopenlibs.vault.RetryPolicy;
 import io.github.jopenlibs.vault.Vault;
 import io.github.jopenlibs.vault.VaultConfig;
 import io.github.jopenlibs.vault.api.OperationsBase;
@@ -19,7 +20,17 @@ public class Sys extends OperationsBase {
     private String nameSpace;
 
     public Sys(final VaultConfig config) {
-        super(config);
+        this(config, null);
+    }
+
+    /**
+     * @param config A container for the configuration settings needed to initialize a
+     * <code>Vault</code> driver instance
+     * @param retryPolicy The retries for this instance, overriding those set in the configuration,
+     * or <code>null</code> to use the retries currently set in the configuration
+     */
+    public Sys(final VaultConfig config, final RetryPolicy retryPolicy) {
+        super(config, retryPolicy);
 
         this.nameSpace = this.config.getNameSpace();
     }
@@ -35,7 +46,7 @@ public class Sys extends OperationsBase {
      * @return The implementing class for wrapping operations
      */
     public Wrapping wrapping() {
-        return new Wrapping(this.config);
+        return new Wrapping(this.config, this.retryPolicy);
     }
 
     /**
@@ -44,7 +55,7 @@ public class Sys extends OperationsBase {
      * @return The implementing class for Vault's seal operations (e.g. seal, unseal, sealStatus).
      */
     public Seal seal() {
-        return new Seal(this.config);
+        return new Seal(this.config, this.retryPolicy);
     }
 
     /**
@@ -54,7 +65,7 @@ public class Sys extends OperationsBase {
      * @return the implementing class for Vault's sys mounts operations
      */
     public Mounts mounts() {
-        return new Mounts(this.config);
+        return new Mounts(this.config, this.retryPolicy);
     }
 
     /**
@@ -64,6 +75,6 @@ public class Sys extends OperationsBase {
      * @return The implementing class for Vault's lease operations
      */
     public Leases leases() {
-        return new Leases(this.config);
+        return new Leases(this.config, this.retryPolicy);
     }
 }

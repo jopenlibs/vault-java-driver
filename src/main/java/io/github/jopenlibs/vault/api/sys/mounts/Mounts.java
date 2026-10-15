@@ -1,5 +1,6 @@
 package io.github.jopenlibs.vault.api.sys.mounts;
 
+import io.github.jopenlibs.vault.RetryPolicy;
 import io.github.jopenlibs.vault.VaultConfig;
 import io.github.jopenlibs.vault.VaultException;
 import io.github.jopenlibs.vault.api.OperationsBase;
@@ -17,7 +18,17 @@ import java.nio.charset.StandardCharsets;
 public class Mounts extends OperationsBase {
 
     public Mounts(final VaultConfig config) {
-        super(config);
+        this(config, null);
+    }
+
+    /**
+     * @param config A container for the configuration settings needed to initialize a
+     * <code>Vault</code> driver instance
+     * @param retryPolicy The retries for this instance, overriding those set in the configuration,
+     * or <code>null</code> to use the retries currently set in the configuration
+     */
+    public Mounts(final VaultConfig config, final RetryPolicy retryPolicy) {
+        super(config, retryPolicy);
     }
 
     /**

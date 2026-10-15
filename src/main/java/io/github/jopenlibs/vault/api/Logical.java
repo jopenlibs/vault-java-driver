@@ -1,5 +1,6 @@
 package io.github.jopenlibs.vault.api;
 
+import io.github.jopenlibs.vault.RetryPolicy;
 import io.github.jopenlibs.vault.VaultConfig;
 import io.github.jopenlibs.vault.VaultException;
 import io.github.jopenlibs.vault.json.Json;
@@ -37,7 +38,17 @@ public class Logical extends OperationsBase {
     public enum logicalOperations {authentication, deleteV1, deleteV2, destroy, listV1, listV2, listSubKeys, readV1, readV2, writeV1, writeV2, unDelete, mount}
 
     public Logical(final VaultConfig config) {
-        super(config);
+        this(config, null);
+    }
+
+    /**
+     * @param config A container for the configuration settings needed to initialize a
+     * <code>Vault</code> driver instance
+     * @param retryPolicy The retries for this instance, overriding those set in the configuration,
+     * or <code>null</code> to use the retries currently set in the configuration
+     */
+    public Logical(final VaultConfig config, final RetryPolicy retryPolicy) {
+        super(config, retryPolicy);
 
         this.nameSpace = this.config.getNameSpace();
     }
@@ -164,8 +175,8 @@ public class Logical extends OperationsBase {
 
                     return new LogicalResponse(restResponse, attempt, logicalOperations.readV2);
                 },
-                shouldRetry ? config.getMaxRetries() : 1,
-                config.getRetryIntervalMilliseconds()
+                shouldRetry ? getMaxRetries() : 1,
+                getRetryIntervalMilliseconds()
         );
     }
 
