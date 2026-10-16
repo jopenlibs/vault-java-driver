@@ -490,7 +490,7 @@ public class JsonArray extends JsonValue implements Iterable<JsonValue> {
    *
    * @param object
    *          the object to be compared with this JsonArray
-   * @return <tt>true</tt> if the specified object is equal to this JsonArray, <code>false</code>
+   * @return <code>true</code> if the specified object is equal to this JsonArray, <code>false</code>
    *         otherwise
    */
   @Override
