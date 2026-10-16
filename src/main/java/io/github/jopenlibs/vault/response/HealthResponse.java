@@ -2,7 +2,7 @@ package io.github.jopenlibs.vault.response;
 
 import io.github.jopenlibs.vault.VaultException;
 import io.github.jopenlibs.vault.api.Debug;
-import io.github.jopenlibs.vault.json.Json;
+import io.github.jopenlibs.vault.internal.SafeJson;
 import io.github.jopenlibs.vault.rest.RestResponse;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
@@ -59,7 +59,7 @@ public class HealthResponse implements Serializable {
             try {
                 final var jsonString = new String(restResponse.getBody(),
                         StandardCharsets.UTF_8);//NOPMD
-                final var jsonObject = Json.parse(jsonString).asObject();
+                final var jsonObject = SafeJson.parse(jsonString).asObject();
                 this.initialized = jsonObject.get("initialized") == null ? null
                         : jsonObject.get("initialized").asBoolean();
                 this.sealed = jsonObject.get("sealed") == null ? null

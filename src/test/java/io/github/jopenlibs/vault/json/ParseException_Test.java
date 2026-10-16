@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015 EclipseSource.
+ * Copyright (c) 2013, 2016 EclipseSource.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,28 +21,44 @@
  ******************************************************************************/
 package io.github.jopenlibs.vault.json;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 
 
-@SuppressWarnings("PMD")
 public class ParseException_Test {
 
-    @Test
-    public void position() {
-        ParseException exception = new ParseException("Foo", 17, 23, 42);
+  private Location location;
 
-        assertEquals(17, exception.getOffset());
-        assertEquals(23, exception.getLine());
-        assertEquals(42, exception.getColumn());
-    }
+  @Before
+  public void setUp() {
+    location = new Location(4711, 23, 42);
+  }
 
-    @Test
-    public void message() {
-        ParseException exception = new ParseException("Foo", 17, 23, 42);
+  @Test
+  public void location() {
+    ParseException exception = new ParseException("Foo", location);
 
-        assertEquals("Foo at 23:42", exception.getMessage());
-    }
+    assertSame(location, exception.getLocation());
+  }
+
+  @Test
+  @SuppressWarnings("deprecation")
+  public void position() {
+    ParseException exception = new ParseException("Foo", location);
+
+    assertEquals(location.offset, exception.getOffset());
+    assertEquals(location.line, exception.getLine());
+    assertEquals(location.column, exception.getColumn());
+  }
+
+  @Test
+  public void message() {
+    ParseException exception = new ParseException("Foo", location);
+
+    assertEquals("Foo at 23:42", exception.getMessage());
+  }
 
 }

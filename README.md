@@ -371,6 +371,10 @@ patches.
   * Security: fixes [CVE-2026-109408](https://www.cve.org/CVERecord?id=CVE-2026-109408), where SSL
     certificate verification could be silently disabled. See the `VAULT_SSL_VERIFY` and `SslConfig`
     entries below
+  * Security: a deeply nested JSON value stored in Vault no longer kills the reading thread with an
+    uncaught `StackOverflowError`. Responses nested deeper than 500 levels are now ignored like
+    other malformed responses (Vault 1.20 and later reject values nested deeper than 298 levels).
+    The vendored JSON parser also rejects documents nested deeper than 1000 levels
   * Environment variables: surrounding whitespace is removed, and empty values are treated as unset
   * `VAULT_SSL_VERIFY` now only disables SSL verification when set to `false`. Previously any value
     other than `true` disabled it, including `1`, `yes`, typos and empty values. **Values like `0`,

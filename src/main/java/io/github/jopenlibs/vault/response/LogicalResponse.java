@@ -2,7 +2,7 @@ package io.github.jopenlibs.vault.response;
 
 import io.github.jopenlibs.vault.api.Logical;
 import io.github.jopenlibs.vault.api.Logical.logicalOperations;
-import io.github.jopenlibs.vault.json.Json;
+import io.github.jopenlibs.vault.internal.SafeJson;
 import io.github.jopenlibs.vault.json.JsonObject;
 import io.github.jopenlibs.vault.json.JsonValue;
 import io.github.jopenlibs.vault.rest.RestResponse;
@@ -80,7 +80,7 @@ public class LogicalResponse extends VaultResponse {
         try {
             final var jsonString = new String(getRestResponse().getBody(),
                     StandardCharsets.UTF_8);
-            final var jsonObject = Json.parse(jsonString).asObject();
+            final var jsonObject = SafeJson.parse(jsonString).asObject();
 
             this.leaseId = jsonObject.get("lease_id").asString();
             this.renewable = jsonObject.get("renewable").asBoolean();
@@ -95,7 +95,7 @@ public class LogicalResponse extends VaultResponse {
         try {
             final var jsonString = new String(getRestResponse().getBody(),
                     StandardCharsets.UTF_8);
-            var jsonObject = Json.parse(jsonString).asObject();
+            var jsonObject = SafeJson.parse(jsonString).asObject();
             if (operation.equals(Logical.logicalOperations.readV2)) {
                 jsonObject = jsonObject.get("data").asObject();
                 final var metadataValue = jsonObject.get("metadata");
@@ -112,7 +112,7 @@ public class LogicalResponse extends VaultResponse {
                     Logical.logicalOperations.listV2)) {
                 if (getRestResponse().getStatus() != 404 && data.get("keys") != null) {
 
-                    final var keys = Json.parse(data.get("keys")).asArray();
+                    final var keys = SafeJson.parse(data.get("keys")).asArray();
                     keys.forEach(key -> listData.add(key.asString()));
                 }
 
@@ -120,7 +120,7 @@ public class LogicalResponse extends VaultResponse {
 
             if (operation.equals(logicalOperations.listSubKeys)) {
                 if (data.containsKey("subkeys")) {
-                    final var keys = Json.parse(data.get("subkeys")).asObject();
+                    final var keys = SafeJson.parse(data.get("subkeys")).asObject();
                     this.listSubkeys.addAll(keys.names());
                 }
             }
