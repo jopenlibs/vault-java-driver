@@ -42,7 +42,7 @@ public class SafeJsonTests {
     public void testArraysAboveLimitRejected() {
         final var input = nestedArrays(SafeJson.MAX_NESTING_DEPTH + 1);
         final var e = assertThrows(JsonNestingException.class, () -> SafeJson.parse(input));
-        assertEquals("JSON nested deeper than 500 levels at offset 500", e.getMessage());
+        assertEquals("JSON nested deeper than 320 levels at offset 320", e.getMessage());
     }
 
     @Test
@@ -108,8 +108,28 @@ public class SafeJsonTests {
      */
     @Test
     public void testDeeplyNestedLogicalResponseOnSmallStack() throws InterruptedException {
+        assertTrue(readOnSmallStack(REPORTED_DEPTH).getData().isEmpty());
+    }
+
+    /**
+     * A response nested exactly at the limit passes the depth check and reaches the recursive
+     * parser, so it must fit in a small stack.
+     */
+    @Test
+    public void testLogicalResponseAtLimitOnSmallStack() throws InterruptedException {
+        final var data = readOnSmallStack(SafeJson.MAX_NESTING_DEPTH - 3).getData();
+        assertEquals("looks-normal", data.get("note"));
+    }
+
+    /**
+     * Reads a KV version 2 response through {@link LogicalResponse} in a thread with a 256 KB
+     * stack, failing if the thread dies. The payload is nested under three levels of the response
+     * (<code>data.data.payload</code>).
+     */
+    private static LogicalResponse readOnSmallStack(final int payloadDepth)
+            throws InterruptedException {
         final var body = "{\"data\":{\"data\":{\"note\":\"looks-normal\",\"payload\":"
-                + nestedArrays(REPORTED_DEPTH) + "}}}";
+                + nestedArrays(payloadDepth) + "}}}";
         final var restResponse = new RestResponse(200, "application/json",
                 body.getBytes(StandardCharsets.UTF_8));
         final var result = new AtomicReference<LogicalResponse>();
@@ -123,6 +143,6 @@ public class SafeJsonTests {
         thread.join();
 
         assertNull(error.get());
-        assertTrue(result.get().getData().isEmpty());
+        return result.get();
     }
 }
