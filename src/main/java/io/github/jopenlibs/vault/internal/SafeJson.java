@@ -19,9 +19,12 @@ public final class SafeJson {
 
     /**
      * Maximum depth of nested arrays and objects accepted. Vault 1.20 and later reject JSON nested
-     * deeper than 298 levels, so valid Vault responses stay well below this limit.
+     * deeper than 298 levels. The limit applies to the whole response, so it leaves a margin for
+     * the levels Vault wraps around a stored value (such as <code>data.data</code> in KV version
+     * 2). It is kept this low because the parser recurses: every level uses stack, and on threads
+     * with a small stack a higher limit could still let a value raise {@link StackOverflowError}.
      */
-    public static final int MAX_NESTING_DEPTH = 500;
+    public static final int MAX_NESTING_DEPTH = 320;
 
     private SafeJson() {
     }
