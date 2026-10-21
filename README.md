@@ -382,8 +382,9 @@ patches.
   * Security: fixes [CVE-2026-109408](https://www.cve.org/CVERecord?id=CVE-2026-109408), where SSL
     certificate verification could be silently disabled. See the `VAULT_SSL_VERIFY` and `SslConfig`
     entries below
-  * Security: a deeply nested JSON value stored in Vault no longer kills the reading thread with an
-    uncaught `StackOverflowError`. Responses nested deeper than 320 levels are now ignored like
+  * Security: fixes [CVE-2026-112072](https://www.cve.org/CVERecord?id=CVE-2026-112072), where a
+    deeply nested JSON value stored in Vault could kill the reading thread with an uncaught
+    `StackOverflowError`. Responses nested deeper than 320 levels are now ignored like
     other malformed responses (Vault 1.20 and later reject values nested deeper than 298 levels).
     The vendored JSON parser also rejects documents nested deeper than 1000 levels. Threads calling
     the driver need a stack of at least 256 KB: see [Thread stack size](#thread-stack-size)
