@@ -27,6 +27,7 @@ Table of Contents
     * [Java Keystore (JKS) based config](#java-keystore-jks-based-config)
     * [OpenSSL (PEM) based config](#openssl-pem-based-config)
 * [Using the driver](#using-the-driver)
+    * [Thread stack size](#thread-stack-size)
 * [API Reference (Javadocs)](#api-reference-javadocs)
 * [Version History](#version-history)
 * [Development](#development)
@@ -355,6 +356,16 @@ Only transient failures are retried: I/O errors (e.g. connection refused or time
 408, 412 and 429 responses. Other 4xx responses (e.g. 400, 403, 404) fail immediately, since
 retrying them would not help.
 
+#### Thread stack size
+
+The driver parses JSON responses recursively, so every level of nested arrays and objects uses
+some of the calling thread's stack. Responses nested deeper than 320 levels are ignored before
+parsing, like other malformed responses. To parse a response up to that limit, call the driver
+from threads with a stack of at least 256 KB. The default JVM thread stack (usually 1 MB) is
+enough. Only threads created with a smaller stack size, for example through
+`new Thread(group, task, name, stackSize)` or the `-Xss` option, can be affected: on those, a
+deeply nested value stored in Vault can raise `StackOverflowError` in the reading thread.
+
 API Reference (Javadocs)
 ------------------------
 Full [Javadoc documentation](https://jopenlibs.github.io/vault-java-driver/javadoc).
@@ -371,6 +382,12 @@ patches.
   * Security: fixes [CVE-2026-109408](https://www.cve.org/CVERecord?id=CVE-2026-109408), where SSL
     certificate verification could be silently disabled. See the `VAULT_SSL_VERIFY` and `SslConfig`
     entries below
+  * Security: fixes [CVE-2026-112072](https://www.cve.org/CVERecord?id=CVE-2026-112072), where a
+    deeply nested JSON value stored in Vault could kill the reading thread with an uncaught
+    `StackOverflowError`. Responses nested deeper than 320 levels are now ignored like
+    other malformed responses (Vault 1.20 and later reject values nested deeper than 298 levels).
+    The vendored JSON parser also rejects documents nested deeper than 1000 levels. Threads calling
+    the driver need a stack of at least 256 KB: see [Thread stack size](#thread-stack-size)
   * Environment variables: surrounding whitespace is removed, and empty values are treated as unset
   * `VAULT_SSL_VERIFY` now only disables SSL verification when set to `false`. Previously any value
     other than `true` disabled it, including `1`, `yes`, typos and empty values. **Values like `0`,

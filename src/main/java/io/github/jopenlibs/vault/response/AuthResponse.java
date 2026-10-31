@@ -1,6 +1,7 @@
 package io.github.jopenlibs.vault.response;
 
-import io.github.jopenlibs.vault.json.Json;
+import io.github.jopenlibs.vault.internal.JsonNestingException;
+import io.github.jopenlibs.vault.internal.SafeJson;
 import io.github.jopenlibs.vault.json.JsonObject;
 import io.github.jopenlibs.vault.json.JsonValue;
 import io.github.jopenlibs.vault.json.ParseException;
@@ -38,7 +39,7 @@ public class AuthResponse extends VaultResponse {
 
         try {
             final var responseJson = new String(restResponse.getBody(), StandardCharsets.UTF_8);
-            jsonResponse = Json.parse(responseJson).asObject();
+            jsonResponse = SafeJson.parse(responseJson).asObject();
             final var authJsonVal = jsonResponse.get("auth");
             final var authJsonObject = hasValue(authJsonVal) ? authJsonVal.asObject() : null;
 
@@ -69,7 +70,7 @@ public class AuthResponse extends VaultResponse {
             if (hasValue(renewableJsonVal)) {
                 renewable = renewableJsonVal.asBoolean();
             }
-        } catch (ParseException e) {
+        } catch (ParseException | JsonNestingException e) {
             // No-op.
         }
     }

@@ -442,7 +442,7 @@ public class Logical extends OperationsBase {
 
         return retry(attempt -> {
             // Make an HTTP request to Vault
-            final var versionsToDelete = new JsonObject().add("versions", versions);
+            final var versionsToDelete = new JsonObject().add("versions", Json.array(versions));
             final var restResponse = getRest()//NOPMD
                     .url(config.getAddress() + "/v1/" + adjustPathForVersionDelete(path,
                             config.getPrefixPathDepth()))
@@ -499,7 +499,7 @@ public class Logical extends OperationsBase {
 
         return retry(attempt -> {
             // Make an HTTP request to Vault
-            final var versionsToUnDelete = new JsonObject().add("versions", versions);
+            final var versionsToUnDelete = new JsonObject().add("versions", Json.array(versions));
             final var restResponse = getRest() //NOPMD
                     .url(config.getAddress() + "/v1/" + adjustPathForVersionUnDelete(path,
                             config.getPrefixPathDepth()))
@@ -543,7 +543,7 @@ public class Logical extends OperationsBase {
 
         return retry(attempt -> {
             // Make an HTTP request to Vault
-            final var versionsToDestroy = new JsonObject().add("versions", versions);
+            final var versionsToDestroy = new JsonObject().add("versions", Json.array(versions));
             final var restResponse = getRest()//NOPMD
                     .url(config.getAddress() + "/v1/" + adjustPathForVersionDestroy(path,
                             config.getPrefixPathDepth()))

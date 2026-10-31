@@ -9,7 +9,7 @@ import io.github.jopenlibs.vault.api.sys.Leases;
 import io.github.jopenlibs.vault.api.sys.Seal;
 import io.github.jopenlibs.vault.api.sys.Sys;
 import io.github.jopenlibs.vault.api.sys.mounts.Mounts;
-import io.github.jopenlibs.vault.json.Json;
+import io.github.jopenlibs.vault.internal.SafeJson;
 import io.github.jopenlibs.vault.json.JsonValue;
 import io.github.jopenlibs.vault.rest.Rest;
 import io.github.jopenlibs.vault.rest.RestException;
@@ -375,7 +375,7 @@ public class VaultImpl implements Vault {
 
             final var jsonString = new String(restResponse.getBody(), StandardCharsets.UTF_8);
             final var data = new HashMap<String, String>();
-            final var jsonData = Json.parse(jsonString).asObject().get("data").asObject();
+            final var jsonData = SafeJson.parse(jsonString).asObject().get("data").asObject();
             for (final var member : jsonData) {
                 final String name = member.getName();
                 String version = "unknown";
