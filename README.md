@@ -42,7 +42,7 @@ Gradle:
 
 ```
 dependencies {
-    implementation 'io.github.jopenlibs:vault-java-driver:6.2.3'
+    implementation 'io.github.jopenlibs:vault-java-driver:7.0.0'
 }
 ```
 
@@ -52,7 +52,7 @@ Maven:
 <dependency>
     <groupId>io.github.jopenlibs</groupId>
     <artifactId>vault-java-driver</artifactId>
-    <version>6.2.3</version>
+    <version>7.0.0</version>
 </dependency>
 ```
 
@@ -378,7 +378,7 @@ and may require modifications in your code to migrate. Changes to the minor vers
 number) should represent non-breaking changes. The third number represents any very minor bugfix
 patches.
 
-* **Unreleased**: This release contains the following updates:
+* **7.0.0**: This release contains the following updates:
   * Security: fixes [CVE-2026-109408](https://www.cve.org/CVERecord?id=CVE-2026-109408), where SSL
     certificate verification could be silently disabled. See the `VAULT_SSL_VERIFY` and `SslConfig`
     entries below
