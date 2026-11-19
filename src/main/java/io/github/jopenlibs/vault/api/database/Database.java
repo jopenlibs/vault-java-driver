@@ -7,6 +7,7 @@ import io.github.jopenlibs.vault.api.OperationsBase;
 import io.github.jopenlibs.vault.json.Json;
 import io.github.jopenlibs.vault.json.JsonObject;
 import io.github.jopenlibs.vault.response.DatabaseResponse;
+import io.github.jopenlibs.vault.response.DatabaseStaticResponse;
 import io.github.jopenlibs.vault.rest.RestResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -125,6 +126,31 @@ public class Database extends OperationsBase {
         });
     }
 
+    public DatabaseStaticResponse createOrUpdateStaticRole(final String roleName,
+            final DatabaseStaticRoleOptions options) throws VaultException {
+        return retry(attempt -> {
+            final String requestJson = staticRoleOptionsToJson(options);
+
+            final RestResponse restResponse = getRest()//NOPMD
+                    .url(String.format("%s/v1/%s/static-roles/%s", config.getAddress(), this.mountPath,
+                            roleName))
+                    .token(config.getToken())
+                    .header("X-Vault-Namespace", this.nameSpace)
+                    .header("X-Vault-Request", "true")
+                    .body(requestJson.getBytes(StandardCharsets.UTF_8))
+                    .readTimeoutSeconds(config.getReadTimeout())
+                    .post();
+
+            // Validate restResponse
+            if (restResponse.getStatus() != 204) {
+                throw new VaultException(
+                        "Vault responded with HTTP status code: " + restResponse.getStatus(),
+                        restResponse.getStatus());
+            }
+            return new DatabaseStaticResponse(restResponse, attempt);
+        });
+    }
+
     /**
      * <p>Operation to retrieve an role using the Database backend.  Relies on an authentication
      * token being present in the <code>VaultConfig</code> instance.</p>
@@ -167,8 +193,29 @@ public class Database extends OperationsBase {
         });
     }
 
+    public DatabaseStaticResponse getStaticRole(final String roleName) throws VaultException {
+        return retry(attempt -> {
+            final RestResponse restResponse = getRest()//NOPMD
+                    .url(String.format("%s/v1/%s/static-roles/%s", config.getAddress(), this.mountPath,
+                            roleName))
+                    .token(config.getToken())
+                    .header("X-Vault-Namespace", this.nameSpace)
+                    .header("X-Vault-Request", "true")
+                    .readTimeoutSeconds(config.getReadTimeout())
+                    .get();
+
+            // Validate response
+            if (restResponse.getStatus() != 200 && restResponse.getStatus() != 404) {
+                throw new VaultException(
+                        "Vault responded with HTTP status code: " + restResponse.getStatus(),
+                        restResponse.getStatus());
+            }
+            return new DatabaseStaticResponse(restResponse, attempt);
+        });
+    }
+
     /**
-     * <p>Operation to revike  a certificate in the vault using the Database backend.
+     * <p>Operation to revoke a certificate in the vault using the Database backend.
      * Relies on an authentication token being present in the <code>VaultConfig</code>
      * instance.</p>
      *
@@ -259,6 +306,27 @@ public class Database extends OperationsBase {
         });
     }
 
+    public DatabaseStaticResponse deleteStaticRole(final String roleName) throws VaultException {
+        return retry(attempt -> {
+            final RestResponse restResponse = getRest()//NOPMD
+                    .url(String.format("%s/v1/%s/static-roles/%s", config.getAddress(), this.mountPath,
+                            roleName))
+                    .token(config.getToken())
+                    .header("X-Vault-Namespace", this.nameSpace)
+                    .header("X-Vault-Request", "true")
+                    .readTimeoutSeconds(config.getReadTimeout())
+                    .delete();
+
+            // Validate response
+            if (restResponse.getStatus() != 204) {
+                throw new VaultException(
+                        "Vault responded with HTTP status code: " + restResponse.getStatus(),
+                        restResponse.getStatus());
+            }
+            return new DatabaseStaticResponse(restResponse, attempt);
+        });
+    }
+
     /**
      * <p>Operation to generate a new set of credentials using the Database backend.
      *
@@ -308,6 +376,32 @@ public class Database extends OperationsBase {
         });
     }
 
+    public DatabaseStaticResponse staticCreds(final String roleName) throws VaultException {
+        return retry(attempt -> {
+            final RestResponse restResponse = getRest()//NOPMD
+                    .url(String.format("%s/v1/%s/static-creds/%s", config.getAddress(), this.mountPath,
+                            roleName))
+                    .token(config.getToken())
+                    .header("X-Vault-Namespace", this.nameSpace)
+                    .header("X-Vault-Request", "true")
+                    .readTimeoutSeconds(config.getReadTimeout())
+                    .get();
+
+            // Validate response
+            if (restResponse.getStatus() != 200 && restResponse.getStatus() != 404) {
+                String body =
+                        restResponse.getBody() != null ? new String(restResponse.getBody(),
+                                StandardCharsets.UTF_8)
+                                : "(no body)";
+                throw new VaultException(
+                        "Vault responded with HTTP status code: " + restResponse.getStatus()
+                                + " " + body, restResponse.getStatus());
+            }
+
+            return new DatabaseStaticResponse(restResponse, attempt);
+        });
+    }
+
     private String roleOptionsToJson(final DatabaseRoleOptions options) {
         final JsonObject jsonObject = Json.object();
 
@@ -323,6 +417,22 @@ public class Database extends OperationsBase {
                     joinList(options.getRollbackStatements()));
             addJsonFieldIfNotNull(jsonObject, "renew_statements",
                     joinList(options.getRenewStatements()));
+        }
+
+        return jsonObject.toString();
+    }
+
+    private String staticRoleOptionsToJson(final DatabaseStaticRoleOptions options) {
+        final JsonObject jsonObject = Json.object();
+
+        if (options != null) {
+            addJsonFieldIfNotNull(jsonObject, "db_name", options.getDbName());
+            addJsonFieldIfNotNull(jsonObject, "username", options.getUsername());
+            addJsonFieldIfNotNull(jsonObject, "credential_type", options.getCredentialType());
+            addJsonFieldIfNotNull(jsonObject, "rotation_period", options.getRotationPeriod());
+            addJsonFieldIfNotNull(jsonObject, "skip_import_rotation", options.getSkipImportRotation());
+            addJsonFieldIfNotNull(jsonObject, "rotation_statements",
+                    joinList(options.getRotationStatements()));
         }
 
         return jsonObject.toString();
