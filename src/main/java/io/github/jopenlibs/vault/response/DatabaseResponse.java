@@ -52,7 +52,7 @@ public class DatabaseResponse extends LogicalResponse {
 
         final String dbName = data.get("db_name");
         final String defaultTtl = data.get("default_ttl");
-        final String maxTtl = data.get("default_ttl");
+        final String maxTtl = data.get("max_ttl");
 
         if (dbName == null && defaultTtl == null && maxTtl == null) {
             return null;
@@ -85,8 +85,7 @@ public class DatabaseResponse extends LogicalResponse {
     }
 
     private JsonArray safeGetJsonArray(JsonObject source, String key) {
-        if (source == null || source.get(key) == null || source.get(key) == null || !source.get(key)
-                .isArray()) {
+        if (source == null || source.get(key) == null || !source.get(key).isArray()) {
             return new JsonArray();
         }
 
