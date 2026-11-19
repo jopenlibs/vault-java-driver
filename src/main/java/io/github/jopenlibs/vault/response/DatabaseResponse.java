@@ -52,7 +52,7 @@ public class DatabaseResponse extends LogicalResponse {
 
         final String dbName = data.get("db_name");
         final String defaultTtl = data.get("default_ttl");
-        final String maxTtl = data.get("default_ttl");
+        final String maxTtl = data.get("max_ttl");
 
         if (dbName == null && defaultTtl == null && maxTtl == null) {
             return null;

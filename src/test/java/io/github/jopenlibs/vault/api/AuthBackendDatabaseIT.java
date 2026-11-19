@@ -39,7 +39,8 @@ public class AuthBackendDatabaseIT {
                 "CREATE USER \"{{name}}\" WITH PASSWORD '{{password}}'; GRANT ALL PRIVILEGES ON DATABASE \"postgres\" to \"{{name}}\";");
 
         final var roleToCreate = new DatabaseRoleOptions().dbName("postgres")
-                .creationStatements(creationStatements);
+                .creationStatements(creationStatements)
+                .defaultTtl("100").maxTtl("300");
 
         DatabaseResponse response = vault.database().createOrUpdateRole("test-role", roleToCreate);
         TestCase.assertEquals(204, response.getRestResponse().getStatus());
@@ -48,6 +49,8 @@ public class AuthBackendDatabaseIT {
         TestCase.assertEquals(200, role.getRestResponse().getStatus());
 
         assertTrue(compareRoleOptions(role.getRoleOptions(), roleToCreate));
+        TestCase.assertEquals("100", role.getRoleOptions().getDefaultTtl());
+        TestCase.assertEquals("300", role.getRoleOptions().getMaxTtl());
     }
 
     @Test
