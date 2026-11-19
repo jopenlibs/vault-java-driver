@@ -85,8 +85,7 @@ public class DatabaseResponse extends LogicalResponse {
     }
 
     private JsonArray safeGetJsonArray(JsonObject source, String key) {
-        if (source == null || source.get(key) == null || source.get(key) == null || !source.get(key)
-                .isArray()) {
+        if (source == null || source.get(key) == null || !source.get(key).isArray()) {
             return new JsonArray();
         }
 
